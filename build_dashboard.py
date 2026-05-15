@@ -1912,39 +1912,57 @@ async function sendToTrinh() {{
 
     document.getElementById('trinhTyping').style.display = 'block';
 
-    try {{
-        const response = await fetch('http://localhost:5005/chat', {{
-            method: 'POST',
-            headers: {{ 'Content-Type': 'application/json' }},
-            body: JSON.stringify({{ 
-                message: msg || "Phân tích file đính kèm này giúp Sếp", 
-                history: trinhHistory,
-                files: base64Files
-            }})
-        }});
-        const data = await response.json();
-        
-        document.getElementById('trinhTyping').style.display = 'none';
-        
-        if(data.status === 'success') {{
-            const botMsg = data.response;
-            const formatted = botMsg
-                .replace(/<\\/div>\\n/g, '</div>')
-                .replace(/\\n\\n/g, '<br>')
-                .replace(/\\n/g, '<br>')
-                .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')
-                .replace(/^- (.*)$/gm, '• $1');
-            box.innerHTML += `<div class="trinh-msg bot">${{formatted}}</div>`;
-            trinhHistory.push({{role: 'user', content: msg || "Phân tích file đính kèm"}});
-            trinhHistory.push({{role: 'model', content: botMsg}});
-        }} else {{
-            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: ${{data.response}}</div>`;
+    let chatApiUrl = 'http://localhost:5005/chat';
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
+        fetch('http://localhost:5001/', {{ mode: 'no-cors' }}).catch(() => {{}});
+    }} else {{
+        if (typeof BOT_URL !== 'undefined' && BOT_URL) {{
+            chatApiUrl = BOT_URL + '/chat';
         }}
-        box.scrollTop = box.scrollHeight;
-    }} catch(e) {{
-        document.getElementById('trinhTyping').style.display = 'none';
-        box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối với dịch vụ chat.</div>`;
-        box.scrollTop = box.scrollHeight;
+    }}
+
+    const maxRetries = 2;
+    for (let i = 0; i <= maxRetries; i++) {{
+        try {{
+            const response = await fetch(chatApiUrl, {{
+                method: 'POST',
+                headers: {{ 'Content-Type': 'application/json' }},
+                body: JSON.stringify({{ 
+                    message: msg || "Phân tích file đính kèm này giúp Sếp", 
+                    history: trinhHistory,
+                    files: base64Files
+                }})
+            }});
+            const data = await response.json();
+            document.getElementById('trinhTyping').style.display = 'none';
+            
+            if(data.status === 'success') {{
+                const botMsg = data.response;
+                const formatted = botMsg
+                    .replace(/<\\/div>\\n/g, '</div>')
+                    .replace(/\\n\\n/g, '<br>')
+                    .replace(/\\n/g, '<br>')
+                    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')
+                    .replace(/^- (.*)$/gm, '• $1');
+                box.innerHTML += `<div class="trinh-msg bot">${{formatted}}</div>`;
+                trinhHistory.push({{role: 'user', content: msg || "Phân tích file đính kèm"}});
+                trinhHistory.push({{role: 'model', content: botMsg}});
+            }} else {{
+                box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: ${{data.response}}</div>`;
+            }}
+            box.scrollTop = box.scrollHeight;
+            lucide.createIcons();
+            return;
+        }} catch(e) {{
+            if (i < maxRetries) {{
+                console.log("Retrying connection...");
+                await new Promise(r => setTimeout(r, 2000));
+                continue;
+            }}
+            document.getElementById('trinhTyping').style.display = 'none';
+            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối. Sếp đợi 1 chút để em khởi động nhé! (Nhấn F5 nếu cần)</div>`;
+            box.scrollTop = box.scrollHeight;
+        }}
     }}
 }}
 lucide.createIcons();

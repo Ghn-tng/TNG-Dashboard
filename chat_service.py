@@ -27,7 +27,7 @@ def get_keys():
             return [line.strip() for line in f if line.strip()]
     return []
 
-def get_compact_data(data):
+def get_compact_data(data, user_msg=""):
     """Giảm dung lượng dữ liệu gửi cho AI và tiền xử lý số liệu địa phương."""
     if not data: return {}
     
@@ -57,24 +57,28 @@ def get_compact_data(data):
                 "gtc": f"{round(total_gtc_vol / total_vol * 100, 2)}%"
             }
     
-    # 2. Load External Knowledge (Folder: Tai Lieu GHN)
+    # 2. Load External Knowledge (Chỉ nạp khi cần thiết để tiết kiệm Token)
     external_knowledge = ""
-    kb_path = 'Tai Lieu GHN'
-    if os.path.exists(kb_path):
-        for file in os.listdir(kb_path):
-            fpath = os.path.join(kb_path, file)
-            try:
-                if file.endswith('.json'):
-                    with open(fpath, 'r') as f:
-                        external_knowledge += f"\n[Knowledge {file}]:\n{f.read()}\n"
-                elif file.endswith('.docx'):
-                    doc = docx.Document(fpath)
-                    text = "\n".join([p.text for p in doc.paragraphs])
-                    external_knowledge += f"\n[Knowledge {file}]:\n{text}\n"
-                elif file.endswith('.xlsx'):
-                    df = pd.read_excel(fpath)
-                    external_knowledge += f"\n[Knowledge {file}]:\n{df.to_markdown(index=False)}\n"
-            except: pass
+    keywords = ["ông", "anh", "chị", "quản lý", "số điện thoại", "liên hệ", "danh sách", "quy định", "chế độ"]
+    needs_kb = any(k in user_msg.lower() for k in keywords) or "file" in user_msg.lower()
+    
+    if needs_kb:
+        kb_path = 'Tai Lieu GHN'
+        if os.path.exists(kb_path):
+            for file in os.listdir(kb_path):
+                fpath = os.path.join(kb_path, file)
+                try:
+                    if file.endswith('.json'):
+                        with open(fpath, 'r') as f:
+                            external_knowledge += f"\n[Knowledge {file}]:\n{f.read()}\n"
+                    elif file.endswith('.docx'):
+                        doc = docx.Document(fpath)
+                        text = "\n".join([p.text for p in doc.paragraphs])
+                        external_knowledge += f"\n[Knowledge {file}]:\n{text[:2000]}\n" # Giới hạn độ dài
+                    elif file.endswith('.xlsx'):
+                        df = pd.read_excel(fpath)
+                        external_knowledge += f"\n[Knowledge {file}]:\n{df.to_markdown(index=False)}\n"
+                except: pass
     
     # 3. Phân tích rủi ro (Risk Analysis for BCs)
     risk_bc = sorted(data.get('canh_bao_vung', []), key=lambda x: x.get('gap', 0))[:5]
@@ -126,7 +130,7 @@ def chat():
                 dashboard_data = json.load(f)
         except: pass
 
-    compact_context = get_compact_data(dashboard_data)
+    compact_context = get_compact_data(dashboard_data, user_msg)
     
     # Load Style Guide
     style_guide = ""
@@ -161,6 +165,7 @@ HƯỚNG DẪN QUAN TRỌNG:
    - Cấm tuyệt đối dùng từ "của chúng ta" khi nói về các vùng khác (Ví dụ: KHÔNG ĐƯỢC nói "Vùng HNO của chúng ta"). 
    - Coi các GĐV (Giám đốc Vùng) khác là đồng nghiệp ngang hàng của Sếp, tôn trọng nhưng phân định ranh giới rõ ràng.
 9. Nếu Sếp gửi file hoặc hình ảnh, hãy phân tích nội dung đó kết hợp với dữ liệu Dashboard hoặc Kiến thức bên ngoài nếu cần.
+10. TỐI ƯU TÀI NGUYÊN: Trả lời cực kỳ súc tích, tập trung vào số liệu và hành động. Tránh các câu dẫn rườm rà. Mỗi ý phân tích phải sắc bén, "đắt" và ngắn gọn.
 """
 
     api_keys = get_keys()
@@ -226,9 +231,9 @@ HƯỚNG DẪN QUAN TRỌNG:
                 continue # Thử key tiếp theo thay vì return ngay
 
             # Nếu đã tìm thấy model_instance, tiến hành chat chính thức
-            # Convert history format - Optimized to last 5 messages
+            # Convert history format - Optimized to last 3 messages
             formatted_history = []
-            for h in history[-5:]: 
+            for h in history[-3:]: 
                 role = "user" if h['role'] == 'user' else "model"
                 formatted_history.append({"role": role, "parts": [h['content']]})
                 
@@ -282,7 +287,15 @@ HƯỚNG DẪN QUAN TRỌNG:
                     except Exception as fe:
                         print(f"  ❌ Lỗi xử lý file ({mime}): {str(fe)}")
                 
-            response = chat_session.send_message(msg_parts)
+            # Gửi tin nhắn với giới hạn Token để tiết kiệm tài nguyên
+            response = chat_session.send_message(
+                msg_parts,
+                generation_config={
+                    "max_output_tokens": 800, 
+                    "temperature": 0.7,
+                    "top_p": 0.9
+                }
+            )
             
             # Cập nhật key đang hoạt động tốt nhất
             LAST_WORKING_KEY_IDX = api_keys.index(key)
