@@ -26,6 +26,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add data.json dashboard.html history.json gtc_prov_history.json
+          git add data.json dashboard.html index.html history.json gtc_prov_history.json
           git commit -m "Auto-update data: $(date)" || echo "No changes to commit"
           git push
