@@ -1,0 +1,1 @@
+window.BOT_URL = "https://studio-issue-inclusive-trails.trycloudflare.com";
