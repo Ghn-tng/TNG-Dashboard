@@ -232,7 +232,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:35 15/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:38 15/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">👥 QLNS</a>
@@ -1502,7 +1502,14 @@ async function sendToTrinh() {
     document.getElementById('trinhTyping').style.display = 'block';
 
     try {
-        const chatApiUrl = (window.BOT_URL || 'http://localhost:5005').replace(/\/$/, '') + '/chat';
+        let chatApiUrl = 'http://localhost:5005/chat';
+        // Nếu không phải localhost (đang dùng link online), sử dụng link Tunnel công khai
+        if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            if (window.BOT_URL) {
+                chatApiUrl = window.BOT_URL.replace(/\/$/, '') + '/chat';
+            }
+        }
+        
         const response = await fetch(chatApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
