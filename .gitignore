@@ -1,0 +1,5 @@
+backups/
+*.xlsx
+*.log
+__pycache__/
+.DS_Store
