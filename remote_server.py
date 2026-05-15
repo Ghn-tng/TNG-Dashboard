@@ -42,6 +42,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    def do_GET(self):
+        if self.path.endswith('dashboard.html') or self.path == '/':
+            ensure_chat_service()
+        super().do_GET()
+
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print(f"Server Ngọc Trinh phục vụ tại Port {PORT}")
     httpd.serve_forever()

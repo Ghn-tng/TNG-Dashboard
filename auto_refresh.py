@@ -497,11 +497,6 @@ def extract_and_build():
 
 def refresh():
     """Full refresh cycle."""
-    # Ensure Public Bot Tunnel is running
-    log("🔌 Checking Bot Tunnel...")
-    subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'start_tunnel.py')], 
-                   cwd=os.path.dirname(__file__))
-    
     fetch_weather()
     if download_sheet():
         try:
@@ -512,12 +507,6 @@ def refresh():
             report_date = run_extraction()
             update_history_json(report_date)
             extract_and_build()
-            
-            # Sync to GitHub for Online Hosting
-            log("🌐 Syncing to GitHub Pages...")
-            subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'sync_to_github.py')], 
-                           cwd=os.path.dirname(__file__))
-            
         except Exception as e:
             log(f"❌ Refresh failed: {e}")
             if os.path.exists('data_snapshot.json'):
@@ -527,10 +516,6 @@ def refresh():
     else:
         log("⚠️ Using existing files due to download failure.")
         extract_and_build()
-        # Still try to sync in case of local changes
-        log("🌐 Syncing to GitHub Pages (local only)...")
-        subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'sync_to_github.py')], 
-                       cwd=os.path.dirname(__file__))
 
 if __name__ == '__main__':
     log("🚀 Auto-refresh starting (Hourly on the hour)")

@@ -843,7 +843,9 @@
       "total_vol": 16326.0,
       "total_gan": 0.9704765405,
       "total_ltc": 0.8913389685
-    },
+    }
+  ],
+  "ltc_tts": [
     {
       "am": "Huỳnh Thị Mới",
       "ca1_vol": 249.0,
@@ -4365,10 +4367,10 @@
       "ptt_can": 59.0,
       "ptt_co": 53.0,
       "so_thieu": 10.0,
-      "yctd": 2.0,
+      "yctd": 12.0,
       "da_tuyen": 2.0,
-      "con_lam": 0,
-      "dk_ob": 7.0,
+      "con_lam": 2.0,
+      "dk_ob": 0,
       "can_tuyen": 10.0
     },
     {
@@ -4376,10 +4378,10 @@
       "ptt_can": 60.0,
       "ptt_co": 54.0,
       "so_thieu": 7.0,
-      "yctd": 2.0,
+      "yctd": 9.0,
       "da_tuyen": 2.0,
-      "con_lam": 0,
-      "dk_ob": 6.0,
+      "con_lam": 2.0,
+      "dk_ob": 0,
       "can_tuyen": 7.0
     },
     {
@@ -4387,10 +4389,10 @@
       "ptt_can": 44.0,
       "ptt_co": 39.0,
       "so_thieu": 7.0,
-      "yctd": 2.0,
+      "yctd": 9.0,
       "da_tuyen": 2.0,
-      "con_lam": 0,
-      "dk_ob": 4.0,
+      "con_lam": 2.0,
+      "dk_ob": 0,
       "can_tuyen": 7.0
     },
     {
@@ -4398,10 +4400,10 @@
       "ptt_can": 30.0,
       "ptt_co": 26.0,
       "so_thieu": 5.0,
-      "yctd": 0,
+      "yctd": 5.0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "dk_ob": 3.0,
+      "dk_ob": 0,
       "can_tuyen": 5.0
     },
     {
@@ -4409,10 +4411,10 @@
       "ptt_can": 33.0,
       "ptt_co": 31.0,
       "so_thieu": 5.0,
-      "yctd": 0,
+      "yctd": 5.0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "dk_ob": -3.0,
+      "dk_ob": 0,
       "can_tuyen": 5.0
     },
     {
@@ -4420,10 +4422,10 @@
       "ptt_can": 32.0,
       "ptt_co": 32.0,
       "so_thieu": 3.0,
-      "yctd": 0,
+      "yctd": 3.0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "dk_ob": 0.0,
+      "dk_ob": 0,
       "can_tuyen": 3.0
     },
     {
@@ -4431,10 +4433,10 @@
       "ptt_can": 76.0,
       "ptt_co": 74.0,
       "so_thieu": 2.0,
-      "yctd": 3.0,
+      "yctd": 5.0,
       "da_tuyen": 3.0,
-      "con_lam": 0,
-      "dk_ob": 2.0,
+      "con_lam": 3.0,
+      "dk_ob": 0,
       "can_tuyen": 2.0
     },
     {
@@ -4442,10 +4444,10 @@
       "ptt_can": 39.0,
       "ptt_co": 38.0,
       "so_thieu": 2.0,
-      "yctd": 2.0,
+      "yctd": 4.0,
       "da_tuyen": 2.0,
-      "con_lam": 0,
-      "dk_ob": 1.0,
+      "con_lam": 2.0,
+      "dk_ob": 0,
       "can_tuyen": 2.0
     },
     {
@@ -4453,10 +4455,10 @@
       "ptt_can": 49.0,
       "ptt_co": 48.0,
       "so_thieu": 2.0,
-      "yctd": 3.0,
+      "yctd": 5.0,
       "da_tuyen": 3.0,
-      "con_lam": 0,
-      "dk_ob": 2.0,
+      "con_lam": 3.0,
+      "dk_ob": 0,
       "can_tuyen": 2.0
     },
     {
@@ -4464,10 +4466,10 @@
       "ptt_can": 45.0,
       "ptt_co": 44.0,
       "so_thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "dk_ob": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 1.0
     },
     {
@@ -4475,10 +4477,10 @@
       "ptt_can": 52.0,
       "ptt_co": 52.0,
       "so_thieu": 1.0,
-      "yctd": 1.0,
+      "yctd": 2.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
-      "dk_ob": -1.0,
+      "con_lam": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 1.0
     },
     {
@@ -4486,10 +4488,10 @@
       "ptt_can": 57.0,
       "ptt_co": 55.0,
       "so_thieu": 1.0,
-      "yctd": 1.0,
+      "yctd": 2.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
-      "dk_ob": 2.0,
+      "con_lam": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 1.0
     },
     {
@@ -4499,8 +4501,8 @@
       "so_thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
-      "dk_ob": -2.0,
+      "con_lam": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 0
     },
     {
@@ -4522,7 +4524,7 @@
       "yctd": 0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "dk_ob": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 0
     }
   ],
@@ -4536,9 +4538,9 @@
       "thieu": 0,
       "yctd": 2.0,
       "da_tuyen": 2.0,
-      "con_lam": 0,
+      "con_lam": 2.0,
       "can_tuyen": 0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Bình Định",
@@ -4575,7 +4577,7 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
       "dk_ob": 0
     },
@@ -4599,7 +4601,7 @@
       "can": 21.0,
       "co": 19.0,
       "thieu": 2.0,
-      "yctd": 0,
+      "yctd": 2.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
@@ -4664,11 +4666,11 @@
       "can": 15.0,
       "co": 14.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Bình Định",
@@ -4677,7 +4679,7 @@
       "can": 11.0,
       "co": 10.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -4705,9 +4707,9 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
-      "dk_ob": -1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Bình Định",
@@ -4742,7 +4744,7 @@
       "can": 14.0,
       "co": 14.0,
       "thieu": 2.0,
-      "yctd": 0,
+      "yctd": 2.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
@@ -4759,7 +4761,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 0,
-      "dk_ob": -1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4768,11 +4770,11 @@
       "can": 7.0,
       "co": 6.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4785,7 +4787,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 0,
-      "dk_ob": -2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4809,7 +4811,7 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
       "dk_ob": 0
     },
@@ -4833,7 +4835,7 @@
       "can": 8.0,
       "co": 7.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -4846,11 +4848,11 @@
       "can": 7.0,
       "co": 7.0,
       "thieu": 1.0,
-      "yctd": 1.0,
+      "yctd": 2.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4863,7 +4865,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4874,9 +4876,9 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
-      "dk_ob": -1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4885,11 +4887,11 @@
       "can": 8.0,
       "co": 6.0,
       "thieu": 3.0,
-      "yctd": 0,
+      "yctd": 3.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 3.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4898,7 +4900,7 @@
       "can": 9.0,
       "co": 8.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -4911,11 +4913,11 @@
       "can": 13.0,
       "co": 12.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4937,11 +4939,11 @@
       "can": 9.0,
       "co": 8.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4965,9 +4967,9 @@
       "thieu": 0,
       "yctd": 3.0,
       "da_tuyen": 3.0,
-      "con_lam": 0,
+      "con_lam": 3.0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -4976,7 +4978,7 @@
       "can": 12.0,
       "co": 13.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -4989,11 +4991,11 @@
       "can": 9.0,
       "co": 7.0,
       "thieu": 2.0,
-      "yctd": 0,
+      "yctd": 2.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -5004,7 +5006,7 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
       "dk_ob": 0
     },
@@ -5015,11 +5017,11 @@
       "can": 10.0,
       "co": 8.0,
       "thieu": 2.0,
-      "yctd": 1.0,
+      "yctd": 3.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 2.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -5028,7 +5030,7 @@
       "can": 13.0,
       "co": 13.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -5041,11 +5043,11 @@
       "can": 15.0,
       "co": 13.0,
       "thieu": 2.0,
-      "yctd": 0,
+      "yctd": 2.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5054,11 +5056,11 @@
       "can": 8.0,
       "co": 8.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": -5.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5067,11 +5069,11 @@
       "can": 15.0,
       "co": 13.0,
       "thieu": 3.0,
-      "yctd": 1.0,
+      "yctd": 4.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 3.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5080,11 +5082,11 @@
       "can": 12.0,
       "co": 10.0,
       "thieu": 3.0,
-      "yctd": 0,
+      "yctd": 3.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 3.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5093,7 +5095,7 @@
       "can": 13.0,
       "co": 13.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
@@ -5106,11 +5108,11 @@
       "can": 16.0,
       "co": 14.0,
       "thieu": 4.0,
-      "yctd": 0,
+      "yctd": 4.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 4.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5121,9 +5123,9 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5132,11 +5134,11 @@
       "can": 15.0,
       "co": 13.0,
       "thieu": 3.0,
-      "yctd": 1.0,
+      "yctd": 4.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 3.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5147,9 +5149,9 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5171,11 +5173,11 @@
       "can": 10.0,
       "co": 8.0,
       "thieu": 5.0,
-      "yctd": 0,
+      "yctd": 5.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 5.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5184,11 +5186,11 @@
       "can": 12.0,
       "co": 10.0,
       "thieu": 2.0,
-      "yctd": 0,
+      "yctd": 2.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
-      "dk_ob": 2.0
+      "dk_ob": 0
     },
     {
       "tinh": "Gia Lai",
@@ -5253,7 +5255,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Phú Yên",
@@ -5264,7 +5266,7 @@
       "thieu": 0,
       "yctd": 1.0,
       "da_tuyen": 1.0,
-      "con_lam": 0,
+      "con_lam": 1.0,
       "can_tuyen": 0,
       "dk_ob": 0
     },
@@ -5288,11 +5290,11 @@
       "can": 18.0,
       "co": 17.0,
       "thieu": 1.0,
-      "yctd": 0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 1.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Phú Yên",
@@ -5331,7 +5333,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Phú Yên",

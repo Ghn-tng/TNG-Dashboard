@@ -83,7 +83,7 @@ def get_compact_data(data):
     compact = {
         "timestamp": data.get("timestamp"),
         "prov_stats": prov_stats,
-        "gtc_vung": f"{data.get('grand_total_gtc', 0)*100:.2f}%",
+        "gtc_vung": f"{data.get('grand_total_gtc', {}).get('gtc', 0)*100:.2f}%",
         "canh_bao_top": [{**x, 'gap': f"{x.get('gap',0)*100:.2f}%"} for x in data.get("canh_bao_vung", [])[:10]],
         "risk_forecast": risk_bc,
         "hr_summary": data.get("ns_total"),
@@ -150,11 +150,11 @@ HƯỚNG DẪN QUAN TRỌNG:
    - Trả lời đúng trọng tâm, văn phong Executive, quyến rũ.
 5. Quy tắc Trình bày & Màu sắc: 
    - CHỈ tiêu đề các phần (1, 2, 3...) dùng màu Hồng (#db2777). 
-   - TẤT CẢ nội dung còn lại (kể cả số liệu in đậm) dùng màu ĐEN.
+   - **BẮT BUỘC Highlight**: Phải **IN ĐẬM** (`**`) toàn bộ số liệu, **TÊN TỈNH**, **TÊN BƯU CỤC** và các từ khóa quan trọng, nhưng giữ màu **ĐEN**.
    - Các số liệu tỷ lệ (GTC, OPR, ODR...) PHẢI trình bày đúng định dạng % (Ví dụ: 74.15% thay vì 0.7415).
    - Dãn dòng thoáng, tăng khoảng cách giữa các phần báo cáo. Tuy nhiên, TUYỆT ĐỐI KHÔNG để dòng trống ngay sau Tiêu đề. Khoảng cách Tiêu đề và nội dung phải cực kỳ hẹp.
-   - Sử dụng dấu (•) cho danh sách. In đậm (**) các con số quan trọng.
-   - Tên Bưu cục: PHẢI hiển thị ĐẦY ĐỦ tên bưu cục theo dữ liệu gốc (Ví dụ: "Bưu cục 123 Hùng Vương-Quy Nhơn-Bình Định"). Cấm tuyệt đối việc viết tắt hoặc rút gọn tên bưu cục.
+   - Tên Tỉnh và Tên Bưu cục: PHẢI hiển thị **IN ĐẬM** và ĐẦY ĐỦ (Ví dụ: **Đắk Lắk**, **Gia Lai**, **Bưu cục 123 Hùng Vương-Quy Nhơn-Bình Định**). Cấm tuyệt đối việc viết tắt hoặc rút gọn.
+   - Luôn sử dụng dấu (•) và ngắt dòng dứt khoát cho từng ý phân tích. Mỗi ý phải là một dòng riêng biệt.
 9. Nếu Sếp gửi file hoặc hình ảnh, hãy phân tích nội dung đó kết hợp với dữ liệu Dashboard hoặc Kiến thức bên ngoài nếu cần.
 """
 
@@ -173,14 +173,14 @@ HƯỚNG DẪN QUAN TRỌNG:
             # Ưu tiên các model mới nhất và ổn định nhất dựa trên list_models thực tế
             # Danh sách model tối ưu (Ưu tiên Flash 1.5 để tốc độ nhanh và hạn mức cao)
             models = [
-                "gemini-1.5-flash", 
-                "gemini-1.5-flash-latest",
-                "gemini-1.5-flash-8b",
-                "gemini-2.0-flash-exp",
+                "gemini-2.5-pro", 
+                "gemini-2.5-flash",
+                "gemini-2.0-flash",
                 "gemini-1.5-pro",
-                "gemini-1.5-pro-latest",
-                "gemini-3.1-flash-lite", # Giữ lại các model cũ của sếp ở cuối
-                "gemini-3-flash-preview"
+                "gemini-1.5-flash",
+                "gemini-3.1-flash-lite",
+                "gemini-pro-latest",
+                "gemini-flash-latest"
             ]
             
             model_instance = None
