@@ -1,1 +1,1 @@
-window.BOT_URL = "https://studio-issue-inclusive-trails.trycloudflare.com";
+window.BOT_URL = "https://lanka-enhance-erik-reliable.trycloudflare.com";
