@@ -4366,12 +4366,12 @@
       "am": "Nguyễn Công Luận",
       "ptt_can": 59.0,
       "ptt_co": 53.0,
-      "so_thieu": 10.0,
+      "so_thieu": 9.0,
       "yctd": 12.0,
-      "da_tuyen": 2.0,
-      "con_lam": 2.0,
+      "da_tuyen": 3.0,
+      "con_lam": 3.0,
       "dk_ob": 0,
-      "can_tuyen": 10.0
+      "can_tuyen": 9.0
     },
     {
       "am": "Nguyễn Văn Sáng",
@@ -4418,17 +4418,6 @@
       "can_tuyen": 5.0
     },
     {
-      "am": "Mai Đức Hoàng Long",
-      "ptt_can": 32.0,
-      "ptt_co": 32.0,
-      "so_thieu": 3.0,
-      "yctd": 3.0,
-      "da_tuyen": 0,
-      "con_lam": 0,
-      "dk_ob": 0,
-      "can_tuyen": 3.0
-    },
-    {
       "am": "Phan Thanh Thức",
       "ptt_can": 76.0,
       "ptt_co": 74.0,
@@ -4436,6 +4425,17 @@
       "yctd": 5.0,
       "da_tuyen": 3.0,
       "con_lam": 3.0,
+      "dk_ob": 0,
+      "can_tuyen": 2.0
+    },
+    {
+      "am": "Mai Đức Hoàng Long",
+      "ptt_can": 32.0,
+      "ptt_co": 32.0,
+      "so_thieu": 2.0,
+      "yctd": 2.0,
+      "da_tuyen": 0,
+      "con_lam": 0,
       "dk_ob": 0,
       "can_tuyen": 2.0
     },
@@ -4743,11 +4743,11 @@
       "am": "Mai Đức Hoàng Long",
       "can": 14.0,
       "co": 14.0,
-      "thieu": 2.0,
-      "yctd": 2.0,
+      "thieu": 1.0,
+      "yctd": 1.0,
       "da_tuyen": 0,
       "con_lam": 0,
-      "can_tuyen": 2.0,
+      "can_tuyen": 1.0,
       "dk_ob": 0
     },
     {
@@ -5146,11 +5146,11 @@
       "am": "Nguyễn Công Luận",
       "can": 15.0,
       "co": 15.0,
-      "thieu": 0,
+      "thieu": -1.0,
       "yctd": 1.0,
-      "da_tuyen": 1.0,
-      "con_lam": 1.0,
-      "can_tuyen": 0,
+      "da_tuyen": 2.0,
+      "con_lam": 2.0,
+      "can_tuyen": -1.0,
       "dk_ob": 0
     },
     {
@@ -5378,7 +5378,7 @@
   "ns_total": {
     "ptt_can": 721.0,
     "ptt_co": 692.0,
-    "so_thieu": 46.0
+    "so_thieu": 44.0
   },
   "opr_report": {
     "dates": [
