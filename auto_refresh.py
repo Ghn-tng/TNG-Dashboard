@@ -497,6 +497,11 @@ def extract_and_build():
 
 def refresh():
     """Full refresh cycle."""
+    # Ensure Public Bot Tunnel is running
+    log("🔌 Checking Bot Tunnel...")
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), 'start_tunnel.py')], 
+                   cwd=os.path.dirname(__file__))
+    
     fetch_weather()
     if download_sheet():
         try:

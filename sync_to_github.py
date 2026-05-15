@@ -25,7 +25,7 @@ def sync():
     # 2. Check if there are changes to commit
     try:
         # Add files
-        files_to_sync = ['index.html', 'dashboard.html', 'data.json', 'data.js', 'history.json', 'gtc_prov_history.json', 'weather.json']
+        files_to_sync = ['index.html', 'dashboard.html', 'data.json', 'data.js', 'history.json', 'gtc_prov_history.json', 'weather.json', 'bot_url.js']
         # Filter only existing files
         existing_files = [f for f in files_to_sync if os.path.exists(f)]
         

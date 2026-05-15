@@ -904,6 +904,7 @@ for province in provinces:
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="bot_url.js"></script>
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 :root{{--bg:linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);--card:#ffffff;--card2:#f1f5f9;--border:#cbd5e1;--text:#0f172a;--dim:#475569;--accent:#0284c7;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--cyan:#0ea5e9}}
@@ -1913,7 +1914,8 @@ async function sendToTrinh() {{
     document.getElementById('trinhTyping').style.display = 'block';
 
     try {{
-        const response = await fetch('http://localhost:5005/chat', {{
+        const chatApiUrl = (window.BOT_URL || 'http://localhost:5005').replace(/\/$/, '') + '/chat';
+        const response = await fetch(chatApiUrl, {{
             method: 'POST',
             headers: {{ 'Content-Type': 'application/json' }},
             body: JSON.stringify({{ 
