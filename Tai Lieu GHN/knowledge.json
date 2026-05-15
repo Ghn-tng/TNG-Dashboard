@@ -1,0 +1,20 @@
+{
+  "regional_directors": [
+    {"name": "Lê Đức Vũ", "vung": "BTB", "tinh": ["Thanh Hóa", "Nghệ An", "Hà Tĩnh"], "sdt": "0979987062"},
+    {"name": "Hoàng Thị Hồng Diên", "vung": "ĐBB", "tinh": ["Cao Bằng", "Tuyên Quang", "Bắc Kạn", "Thái Nguyên"], "sdt": "0983566350"},
+    {"name": "Lê Ngọc Bảo Trân", "vung": "ĐCL", "tinh": ["Đồng Tháp", "Vĩnh Long"], "sdt": "0939232466"},
+    {"name": "Hồ Quốc Trực", "vung": "ĐNB", "tinh": ["Tây Ninh", "Đồng Nai"], "sdt": "0903314422"},
+    {"name": "Ngô Ngọc Quân", "vung": "ĐSH", "tinh": ["Hưng Yên"], "sdt": "0858286789"},
+    {"name": "Nguyễn Văn Tân", "vung": "HCM", "tinh": ["Hồ Chí Minh"], "sdt": "0932791291"},
+    {"name": "Nguyễn Danh Long", "vung": "HNO", "tinh": ["Hà Nội"], "sdt": "0365587587"},
+    {"name": "Trần Ngọc Trung", "vung": "NTB", "tinh": ["Lâm Đồng", "Khánh Hòa"], "sdt": "0776907779"},
+    {"name": "Vũ Khắc Việt", "vung": "TBB", "tinh": ["Lai Châu", "Điện Biên", "Lào Cai", "Sơn La"], "sdt": "0985034460"},
+    {"name": "Nguyễn Đại Danh", "vung": "TNB", "tinh": ["Cà Mau", "Cần Thơ", "An Giang"], "sdt": "0963502256"},
+    {"name": "Lê Văn Cường", "vung": "TNG", "tinh": ["Gia Lai", "Đắk Lắk"], "sdt": "0971880888"},
+    {"name": "Nguyễn Văn Doanh", "vung": "TNT", "tinh": ["Phú Thọ", "Ninh Bình"], "sdt": "0987541666"},
+    {"name": "Nguyễn Đình Hiển", "vung": "TTB", "tinh": ["Đà Nẵng", "Quảng Trị", "Quảng Ngãi", "Huế"], "sdt": "0979800797"},
+    {"name": "Thiều Hoàng Ban", "vung": "XBG", "tinh": ["Hải Phòng", "Bắc Ninh", "Lạng Sơn", "Quảng Ninh"], "sdt": "0977369468"},
+    {"name": "Nguyễn Tấn Tài", "vung": "Kho M12", "tinh": ["Kho M12"], "sdt": ""},
+    {"name": "Lại Xuân Nam", "vung": "Kho Đài Tư", "tinh": ["Kho Đài Tư"], "sdt": ""}
+  ]
+}

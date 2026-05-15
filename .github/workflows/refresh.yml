@@ -1,0 +1,31 @@
+name: Refresh Dashboard
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch:      # Allow manual run
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests openpyxl
+
+      - name: Run Extraction
+        run: python auto_refresh.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add data.json dashboard.html history.json gtc_prov_history.json
+          git commit -m "Auto-update data: $(date)" || echo "No changes to commit"
+          git push

@@ -1,0 +1,50 @@
+2026-05-12T08:52:26Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-05-12T08:52:26Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-05-12T08:52:29Z INF +--------------------------------------------------------------------------------------------+
+2026-05-12T08:52:29Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-05-12T08:52:29Z INF |  https://vat-elected-fascinating-lexmark.trycloudflare.com                                 |
+2026-05-12T08:52:29Z INF +--------------------------------------------------------------------------------------------+
+2026-05-12T08:52:29Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-05-12T08:52:29Z INF Version 2026.3.0 (Checksum b91dbec79a3e3809d5508b96d8b0bdfbf3ad7d51f858200228fa3e57100580d9)
+2026-05-12T08:52:29Z INF GOOS: darwin, GOVersion: go1.26.0, GoArch: amd64
+2026-05-12T08:52:29Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:5001]
+2026-05-12T08:52:29Z INF Autoupdate frequency is set autoupdateFreq=86400000
+2026-05-12T08:52:39Z ERR Failed to fetch features, default to disable error="lookup cfd-features.argotunnel.com on 8.8.4.4:53: dial udp 8.8.4.4:53: i/o timeout"
+2026-05-12T08:52:39Z INF Generated Connector ID: ee5bec57-2180-4294-b7e0-0f4ecb7113de
+2026-05-12T08:52:59Z WRN Unable to lookup protocol percentage.
+2026-05-12T08:52:59Z INF Initial protocol quic
+2026-05-12T08:52:59Z INF ICMP proxy will use 172.23.18.142 as source for IPv4
+2026-05-12T08:52:59Z INF ICMP proxy will use fe80::84a:7e86:9a6:de7d in zone en0 as source for IPv6
+2026-05-12T08:52:59Z INF Created ICMP proxy listening on 172.23.18.142:0
+2026-05-12T08:53:20Z INF ICMP proxy will use 172.23.18.142 as source for IPv4
+2026-05-12T08:53:20Z INF ICMP proxy will use fe80::84a:7e86:9a6:de7d in zone en0 as source for IPv6
+2026-05-12T08:53:20Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-05-12T08:53:40Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T08:53:40Z INF Registered tunnel connection connIndex=0 connection=c273c965-d267-4650-a524-95ef22fcc4b7 event=0 ip=198.41.200.113 location=hkg12 protocol=quic
+2026-05-12T08:53:45Z ERR Failed to initialize DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"
+2026-05-12T08:58:50Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"
+2026-05-12T09:03:55Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"
+2026-05-12T09:09:00Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"
+2026-05-12T09:29:22Z ERR failed to accept incoming stream requests error="failed to accept QUIC stream: write udp4 0.0.0.0:58416->198.41.200.113:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:22Z ERR failed to run the datagram handler error="write udp4 0.0.0.0:58416->198.41.200.113:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:22Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:22Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:22Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:23Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:23Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: write udp4 0.0.0.0:58416->198.41.200.113:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:23Z INF Retrying connection in up to 4s connIndex=0 event=0 ip=198.41.200.113
+2026-05-12T09:29:26Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.233
+2026-05-12T09:29:26Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: write udp4 0.0.0.0:58416->198.41.200.233:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.200.233
+2026-05-12T09:29:26Z INF Retrying connection in up to 8s connIndex=0 event=0 ip=198.41.200.233
+2026-05-12T09:29:27Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.57
+2026-05-12T09:29:27Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: write udp4 0.0.0.0:58416->198.41.192.57:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.192.57
+2026-05-12T09:29:27Z INF Retrying connection in up to 16s connIndex=0 event=0 ip=198.41.192.57
+2026-05-12T09:29:28Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com on [::1]:53: read udp [::1]:53242->[::1]:53: read: connection refused"
+2026-05-12T09:29:39Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.47
+2026-05-12T09:29:39Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: write udp4 0.0.0.0:58416->198.41.192.47:7844: sendmsg: network is unreachable" connIndex=0 event=0 ip=198.41.192.47
+2026-05-12T09:29:39Z INF Retrying connection in up to 32s connIndex=0 event=0 ip=198.41.192.47
+2026-05-12T09:29:56Z INF Initiating graceful shutdown due to signal terminated ...
+2026-05-12T09:29:56Z ERR Connection terminated connIndex=0
+2026-05-12T09:29:56Z ERR no more connections active and exiting
+2026-05-12T09:29:56Z INF Tunnel server stopped
+2026-05-12T09:29:56Z INF Metrics server stopped

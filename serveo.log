@@ -1,0 +1,11 @@
+Pseudo-terminal will not be allocated because stdin is not a terminal.
+[32mForwarding HTTP traffic from https://01383a77ead7c1dd-14-241-159-174.serveousercontent.com
+[0m[33mTip (1): Create an account to reserve names. Pro removes the warning page: https://console.serveo.net/settings?n=1&src=ssh_nudge&v=B
+[0msetsockopt TCP_NODELAY: Invalid argument
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
+connect_to localhost port 5001: failed.
