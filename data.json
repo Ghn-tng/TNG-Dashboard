@@ -4370,7 +4370,7 @@
       "yctd": 13.0,
       "da_tuyen": 3.0,
       "con_lam": 3.0,
-      "dk_ob": 0,
+      "dk_ob": 1.0,
       "can_tuyen": 10.0
     },
     {
@@ -4381,7 +4381,7 @@
       "yctd": 9.0,
       "da_tuyen": 2.0,
       "con_lam": 2.0,
-      "dk_ob": 1.0,
+      "dk_ob": 0,
       "can_tuyen": 7.0
     },
     {
@@ -4995,7 +4995,7 @@
       "da_tuyen": 0,
       "con_lam": 0,
       "can_tuyen": 2.0,
-      "dk_ob": 1.0
+      "dk_ob": 0
     },
     {
       "tinh": "Đắk Lắk",
@@ -5138,7 +5138,7 @@
       "da_tuyen": 1.0,
       "con_lam": 1.0,
       "can_tuyen": 3.0,
-      "dk_ob": 0
+      "dk_ob": 1.0
     },
     {
       "tinh": "Gia Lai",
