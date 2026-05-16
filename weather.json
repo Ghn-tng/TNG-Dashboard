@@ -1,25 +1,25 @@
 {
   "Đắk Lắk": {
-    "temp": 26.1,
-    "windspeed": 9.3,
-    "status": "Mưa phùn nhẹ",
+    "temp": 28.8,
+    "windspeed": 7.6,
+    "status": "Mây u ám",
     "is_bad": false
   },
   "Gia Lai": {
-    "temp": 28.0,
-    "windspeed": 8.7,
-    "status": "Nhiều mây",
+    "temp": 25.6,
+    "windspeed": 7.0,
+    "status": "Mây u ám",
     "is_bad": false
   },
   "Phú Yên": {
-    "temp": 32.8,
-    "windspeed": 16.9,
+    "temp": 33.2,
+    "windspeed": 6.2,
     "status": "Mây u ám",
     "is_bad": false
   },
   "Bình Định": {
-    "temp": 31.0,
-    "windspeed": 7.3,
+    "temp": 33.7,
+    "windspeed": 7.6,
     "status": "Mây u ám",
     "is_bad": false
   }
