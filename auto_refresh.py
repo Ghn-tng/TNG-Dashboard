@@ -518,11 +518,36 @@ def refresh():
         extract_and_build()
 
 if __name__ == '__main__':
-    log("🚀 Auto-refresh starting (Hourly on the hour)")
-    start_chat_service()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--once', action='store_true', help='Run once and exit')
+    args = parser.parse_args()
+
+    is_github = os.environ.get('GITHUB_ACTIONS') == 'true'
+    run_once = args.once or is_github
+
+    log(f"🚀 Auto-refresh starting (Mode: {'Once' if run_once else 'Loop'})")
     
-    # Run once at startup
+    # Skip chat service in GitHub Actions (no environment for it)
+    if not is_github:
+        start_chat_service()
+    
+    # Initial run
     refresh()
+    
+    # Sync to GitHub if running locally (GitHub Action workflow handles its own push)
+    if not is_github:
+        try:
+            import sync_to_github
+            sync_to_github.sync()
+        except ImportError:
+            log("⚠️ sync_to_github.py not found, skipping sync.")
+        except Exception as e:
+            log(f"⚠️ Sync failed: {e}")
+
+    if run_once:
+        log("✅ One-shot refresh completed.")
+        sys.exit(0)
     
     last_run_hour = datetime.now().hour
     while True:
@@ -530,5 +555,13 @@ if __name__ == '__main__':
         if now.minute == 0 and now.hour != last_run_hour:
             log(f"⏰ Scheduled update: {now.hour}:00")
             refresh()
+            
+            # Sync after scheduled refresh
+            if not is_github:
+                try:
+                    import sync_to_github
+                    sync_to_github.sync()
+                except: pass
+                
             last_run_hour = now.hour
         time.sleep(30)

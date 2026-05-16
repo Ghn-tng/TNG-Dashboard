@@ -20,7 +20,7 @@ jobs:
         run: pip install requests openpyxl
 
       - name: Run Extraction
-        run: python auto_refresh.py
+        run: python auto_refresh.py --once
 
       - name: Commit and Push
         run: |

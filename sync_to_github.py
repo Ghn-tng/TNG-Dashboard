@@ -47,7 +47,7 @@ def sync():
         
         if result.returncode == 0:
             log("✅ Successfully synced to GitHub Pages!")
-            log(f"🔗 Link: https://lecuongkd1.github.io/TNG-Dashboard/")
+            log(f"🔗 Link: https://Ghn-tng.github.io/TNG/")
         else:
             log(f"❌ Push failed: {result.stderr}")
 

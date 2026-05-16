@@ -6,13 +6,15 @@
     <string>com.ghn.dashboard.refresh</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Library/Frameworks/Python.framework/Versions/3.14/bin/python3</string>
-        <string>/Users/macbook/Downloads/GHN/auto_refresh.py</string>
+        <string>/Users/macbook/Downloads/GHN/run_refresh.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
-    <key>KeepAlive</key>
-    <true/>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
     <key>WorkingDirectory</key>
     <string>/Users/macbook/Downloads/GHN</string>
     <key>StandardOutPath</key>

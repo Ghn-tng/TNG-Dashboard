@@ -482,22 +482,30 @@ for x in sorted(data.get('bc_kd_lay', []), key=lambda a: safe_num(a.get('gr',0))
 
 # 2. BC Hotspots
 bc_hotspots = []
-# Worst GTC BC (Including AM name for context)
-for x in sorted(data['gtc_bc'], key=lambda a: safe_num(a.get('total_gtc',0)))[:2]:
-    g = safe_num(x['total_gtc'])*100
-    if g < 65:
-        am = x.get('am', 'N/A')
-        bc_hotspots.append(f'📍 <b>{x["bc"]}</b>: GTC <b>{g:.1f}%</b> (AM: {am})')
 
+# Worst GTC BC (Top 2)
+if 'gtc_bc' in data:
+    for x in sorted(data['gtc_bc'], key=lambda a: safe_num(a.get('total_gtc',1)))[:2]:
+        g = safe_num(x.get('total_gtc',0))*100
+        if g < 75: # Threshold for GTC
+            am = x.get('am', 'N/A')
+            bc_hotspots.append(f'📍 <b>{x["bc"]}</b>: GTC <b>{g:.1f}%</b> (AM: {am})')
 
-# Ontime BC
-bc_ontime = [x for x in data.get('ontime_tts', []) if x.get('am','').startswith('BC ')]
-for x in sorted(bc_ontime, key=lambda a: safe_num(a.get('today',0)))[:2]:
-    ot = safe_num(x.get('today',0))*100
-    if ot < 85:
-        chg = safe_num(x.get('n_change',0))*100
-        chg_str = f"giảm {abs(chg):.1f}%" if chg < 0 else f"tăng {chg:.1f}%"
-        bc_hotspots.append(f'⏱️ <b>{x["am"]}</b>: ODR <b>{ot:.1f}%</b> ({chg_str})')
+# Worst Personnel (Top 2)
+if 'ns_bc' in data:
+    for x in sorted(data['ns_bc'], key=lambda a: safe_num(a.get('thieu',0)), reverse=True)[:2]:
+        thieu = safe_num(x.get('thieu', 0))
+        if thieu >= 2: # At least 2 people missing
+            am = x.get('am', 'N/A')
+            bc_hotspots.append(f'👥 <b>{x["bc"]}</b>: Thiếu <b>{int(thieu)} NS</b> (AM: {am})')
+
+# Worst ODR (Top 1)
+bc_ontime = [x for x in data.get('ontime_tts', []) if 'BC ' in str(x.get('am',''))]
+if bc_ontime:
+    for x in sorted(bc_ontime, key=lambda a: safe_num(a.get('today',1)))[:1]:
+        ot = safe_num(x.get('today',0))*100
+        if ot < 90:
+            bc_hotspots.append(f'⏱️ <b>{x["am"]}</b>: ODR <b>{ot:.1f}%</b>')
 
 def render_hs(h_list):
     if not h_list: return '<div style="color:var(--green); font-size:13px; font-weight:600; padding:10px">✅ Không có cảnh báo</div>'
@@ -1973,3 +1981,10 @@ lucide.createIcons();
     with open('dashboard.html', 'w', encoding='utf-8') as f:
         f.write(html)
 print(f"Dashboard created! Size: {len(html)} bytes")
+
+# Tự động đồng bộ lên GitHub Pages ngay khi build xong
+try:
+    import sync_to_github
+    sync_to_github.sync()
+except Exception as e:
+    print(f"⚠️ Không thể đồng bộ GitHub: {e}")

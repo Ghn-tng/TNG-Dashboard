@@ -9,19 +9,24 @@ import time
 
 def ensure_chat_service():
     """Đảm bảo dịch vụ chat đang chạy trên cổng 5005."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(0.5)
-        if s.connect_ex(('127.0.0.1', 5005)) != 0:
-            print("⚠️ Chat Service chưa chạy, đang kích hoạt...")
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            if s.connect_ex(('127.0.0.1', 5005)) == 0:
+                return # Đã chạy, ok
+            
+            print("⚠️ Ngọc Trinh đang nghỉ ngơi, đang gọi dậy ngay...")
             base_dir = os.path.dirname(os.path.abspath(__file__))
             
-            # 1. Thử kích hoạt qua LaunchAgent (Thiết lập vĩnh viễn)
+            # 1. Thử kích hoạt qua LaunchAgent
             plist_path = os.path.expanduser("~/Library/LaunchAgents/com.ghn.chat_service.plist")
             if os.path.exists(plist_path):
+                # Unload trước để đảm bảo refresh trạng thái nếu đang bị lỗi (status 78)
+                subprocess.run(["launchctl", "unload", plist_path], stderr=subprocess.DEVNULL)
                 subprocess.run(["launchctl", "load", plist_path], stderr=subprocess.DEVNULL)
-                time.sleep(1) # Đợi một lát
+                time.sleep(1)
             
-            # 2. Kiểm tra lại, nếu vẫn chưa chạy thì dùng fallback
+            # 2. Kiểm tra lại, nếu vẫn chưa chạy thì dùng fallback trực tiếp
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
                 s2.settimeout(0.5)
                 if s2.connect_ex(('127.0.0.1', 5005)) != 0:
@@ -30,7 +35,9 @@ def ensure_chat_service():
                                      cwd=base_dir,
                                      stdout=subprocess.DEVNULL, 
                                      stderr=subprocess.DEVNULL)
-                    print("🚀 Đã chạy fallback chat_service.py")
+                    print("🚀 Đã kích hoạt Ngọc Trinh (Fallback mode)")
+    except Exception as e:
+        print(f"❌ Lỗi khi khởi động Chat Service: {e}")
 
 # Kích hoạt dịch vụ
 ensure_chat_service()
@@ -43,8 +50,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
     def do_GET(self):
-        if self.path.endswith('dashboard.html') or self.path == '/':
-            ensure_chat_service()
+        # Mọi truy cập đều kích hoạt kiểm tra dịch vụ chat
+        ensure_chat_service()
         super().do_GET()
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:

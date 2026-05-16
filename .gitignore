@@ -3,3 +3,15 @@ backups/
 *.log
 __pycache__/
 .DS_Store
+
+# SECRETS - KHÔNG ĐẨY LÊN GITHUB
+GOOGLE_API_KEY.txt
+response_cache.json
+data.json
+data.js
+history.json
+gtc_prov_history.json
+weather.json
+tunnel_public.log
+bot_url.js
+*.plist

@@ -43,7 +43,7 @@ Hệ thống được chia thành 3 lớp chính:
 2.  Nếu vẫn lỗi, Sếp chạy file `start_tunnel.py` để làm mới đường truyền.
 
 #### 🌐 Cập nhật link Online:
-*   Mỗi khi Sếp thay đổi cấu hình hoặc dữ liệu, hãy chạy script `sync_to_github.py` để đẩy thay đổi lên link: [https://lecuongkd1.github.io/TNG-Dashboard/](https://lecuongkd1.github.io/TNG-Dashboard/)
+*   Mỗi khi Sếp thay đổi cấu hình hoặc dữ liệu, hãy chạy script `sync_to_github.py` để đẩy thay đổi lên link: [https://Ghn-tng.github.io/TNG/](https://Ghn-tng.github.io/TNG/)
 
 ---
 
