@@ -1,1 +1,1 @@
-window.BOT_URL = "https://lanka-enhance-erik-reliable.trycloudflare.com";
+window.BOT_URL = "https://auckland-strikes-amp-conclusions.trycloudflare.com";
