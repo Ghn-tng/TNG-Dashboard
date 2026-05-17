@@ -33,6 +33,9 @@ except:
 with open('data.json','r',encoding='utf-8') as f:
     data = json.load(f)
 
+# Global mapping for AM columns
+bc_to_am = {str(x.get('bc','')).strip(): str(x.get('am','')).strip() for x in data.get('gtc_bc', [])}
+
 def safe_num(v):
     try: return float(v) if v else 0
     except: return 0
@@ -281,8 +284,16 @@ for d in kd_dates_raw[-7:]:
     kd_header_cells += f'<th colspan="2">{d_short}</th>'
 
 # Build full DT LẤY rows with all 7 days
+valid_ams = [x['am'] for x in data.get('gtc_am', []) if x.get('am') and x['am'] not in ('Grand Total', 'Vùng TNG')]
+filtered_kd = []
+for x in data.get('bc_kd_lay', []):
+    am_full = x.get('am', '')
+    am_name = am_full.split('-')[-1].strip() if '-' in am_full else am_full
+    if am_name in valid_ams:
+        filtered_kd.append(x)
+
 kd_rows = ''
-for x in data.get('bc_kd_lay',[]):
+for x in filtered_kd:
     days_dt = x.get('dt_days',[0]*7)
     days_vol = x.get('vol_days',[0]*7)
     n1 = safe_num(x.get('n1_dt',0))
@@ -313,6 +324,12 @@ kd_total_row = f'<tr style="font-weight:700;background:var(--card2)"><td class="
 def clean_name(n): return " ".join(str(n).split()).lower()
 am_names = {clean_name(x['am']) for x in data.get('gtc_am', []) if 'am' in x}
 
+# ODR TTS Headers
+odr_dates = data.get('ontime_dates', ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'Hôm nay'])
+if len(odr_dates) < 8:
+    odr_dates = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'Hôm nay', 'N/A']
+ontime_header_html = f"<th>{odr_dates[-8]}</th><th>{odr_dates[-7]}</th><th>{odr_dates[-6]}</th><th>{odr_dates[-5]}</th><th>{odr_dates[-4]}</th><th>{odr_dates[-3]}</th><th>{odr_dates[-2]}</th>"
+
 ontime_am_rows = ''
 ontime_bc_rows = ''
 
@@ -330,7 +347,10 @@ for x in sorted(data.get('ontime_tts',[]), key=lambda a: safe_num(a.get('today',
     if clean_name(name) in am_names:
         ontime_am_rows += row_html
     else:
-        ontime_bc_rows += row_html
+        # Add AM column for BC table
+        am_name = bc_to_am.get(name, '-')
+        row_html_bc = f"<tr><td class='text-left'>{am_name}</td><td class='text-left'>{name}</td><td>{pct(x.get('day2',0))}</td><td>{pct(x.get('day3',0))}</td><td>{pct(x.get('day4',0))}</td><td>{pct(x.get('day5',0))}</td><td>{pct(x.get('day6',0))}</td><td>{pct(x.get('day7',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
+        ontime_bc_rows += row_html_bc
 
 # Add Vùng TNG total row for ODR TTS
 gt_ot = next((x for x in data.get('ontime_tts',[]) if x.get('am') in ['Grand Total', 'Vùng TNG']), None)
@@ -342,13 +362,14 @@ if gt_ot:
     color = "color:#ef4444" if t < 0.95 else "color:#22c55e"
     ontime_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{pct(gt_ot.get('day2',0))}</td><td>{pct(gt_ot.get('day3',0))}</td><td>{pct(gt_ot.get('day4',0))}</td><td>{pct(gt_ot.get('day5',0))}</td><td>{pct(gt_ot.get('day6',0))}</td><td>{pct(gt_ot.get('day7',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
 
-cb_rows = ''.join(f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:#ef4444;font-weight:600">{pct(safe_num(x.get("n1",0)))}</td><td>{pct(safe_num(x.get("n2",0)))}</td><td>{pct(safe_num(x.get("n3",0)))}</td></tr>' for x in data.get('canh_bao',[]))
+cb_rows = ''.join(f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{bc_to_am.get(x.get("bc","").strip(), "-")}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:#ef4444;font-weight:600">{pct(safe_num(x.get("n1",0)))}</td><td>{pct(safe_num(x.get("n2",0)))}</td><td>{pct(safe_num(x.get("n3",0)))}</td></tr>' for x in data.get('canh_bao',[]))
 
 cb_vung_rows = ''
 for x in data.get('canh_bao_vung',[]):
     gap = safe_num(x.get("gap",0))
     gap_color = "#10b981" if gap >= 0 else "#ef4444"
-    cb_vung_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:{gap_color};font-weight:600">{pct(gap)}</td><td>{x.get("nhom","")}</td></tr>\n'
+    am_name = bc_to_am.get(x.get("bc", "").strip(), "-")
+    cb_vung_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{am_name}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:{gap_color};font-weight:600">{pct(gap)}</td><td>{x.get("nhom","")}</td></tr>\n'
 
 tts_rows = ''
 for i,x in enumerate(sorted(data['gtc_tts'], key=lambda a: safe_num(a.get('total_gtc',0)))):
@@ -437,258 +458,284 @@ sorted_ns_bc = sorted(data.get('ns_bc',[]), key=lambda x: (x.get('tinh',''), x.g
 for x in sorted_ns_bc:
     thieu = safe_num(x.get('thieu',0))
     cls = 'status-danger' if thieu > 3 else ('status-warn' if thieu > 0 else '')
-    ns_detail_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="bc-name text-left">{x.get("bc","")}</td><td class="text-left">{x.get("am","")}</td><td>{int(safe_num(x.get("can",0)))}</td><td>{int(safe_num(x.get("co",0)))}</td><td class="{cls}">{int(thieu)}</td><td>{int(safe_num(x.get("yctd",0)))}</td><td>{int(safe_num(x.get("da_tuyen",0)))}</td><td>{int(safe_num(x.get("con_lam",0)))}</td><td>{int(safe_num(x.get("dk_ob",0)))}</td><td>{int(safe_num(x.get("can_tuyen",0)))}</td></tr>\n'
+    ns_detail_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{x.get("am","")}</td><td class="bc-name text-left">{x.get("bc","")}</td><td>{int(safe_num(x.get("can",0)))}</td><td>{int(safe_num(x.get("co",0)))}</td><td class="{cls}">{int(thieu)}</td><td>{int(safe_num(x.get("yctd",0)))}</td><td>{int(safe_num(x.get("da_tuyen",0)))}</td><td>{int(safe_num(x.get("con_lam",0)))}</td><td>{int(safe_num(x.get("dk_ob",0)))}</td><td>{int(safe_num(x.get("can_tuyen",0)))}</td></tr>\n'
 
 # HR chart data
 ns_chart_labels = json.dumps([x['am'] for x in data.get('ns_am',[])], ensure_ascii=False)
 ns_chart_can = json.dumps([int(x.get('ptt_can',0)) for x in data.get('ns_am',[])])
 ns_chart_co = json.dumps([int(x.get('ptt_co',0)) for x in data.get('ns_am',[])])
 
-# === Hotspot Analysis (Multi-metric) ===
-# 1. AM Hotspots
-am_hotspots = []
-# Worst GTC AM
-for x in sorted(data['gtc_am'], key=lambda a: safe_num(a.get('total_gtc',0)))[:2]:
-    g = safe_num(x['total_gtc'])*100
-    if g < 70:
-        ca1 = safe_num(x.get('ca1_gtc',0))*100
-        ton = safe_num(x.get('ton_gtc',0))*100
-        am_hotspots.append(f'🔴 <b>{x["am"]}</b>: GTC thấp <b>{g:.1f}%</b> (Ca1: {ca1:.1f}%, Tồn: {ton:.1f}%)')
+# === MULTI-METRIC RISK SCORING & HOTSPOTS ===
+bc_metrics = {}
 
-# NS Shortage AM
-for x in sorted(data.get('ns_am', []), key=lambda a: safe_num(a.get('so_thieu',0)), reverse=True)[:2]:
-    st = safe_num(x.get('so_thieu',0))
-    if st >= 5:
-        can = int(safe_num(x.get('ptt_can',0)))
-        co = int(safe_num(x.get('ptt_co',0)))
-        am_hotspots.append(f'👥 <b>{x["am"]}</b>: Thiếu <b>{int(st)}</b> NS (Cần {can}, Có {co})')
+# GTC Hôm nay
+for x in data.get('gtc_bc', []):
+    bc = x.get('bc', '')
+    if not bc or 'Tổng' in bc or bc == 'Grand Total': continue
+    bc_metrics[bc] = {
+        'am': x.get('am', 'N/A'),
+        'gtc': safe_num(x.get('total_gtc', 1)),
+        'ca1': safe_num(x.get('ca1_gtc', 0)),
+        'ton': safe_num(x.get('ton_gtc', 0)),
+        'odr': 1.0,
+        'ns_thieu': 0,
+        'gap': 0,
+        'gtc_7d': 0,
+        'tinh': '-',
+        'risk_score': 0,
+        'issues': []
+    }
 
-# Ontime AM
-am_ontime = [x for x in data.get('ontime_tts', []) if not x.get('am','').startswith('BC ') and x.get('am') not in ['Grand Total', 'Vùng TNG']]
-for x in sorted(am_ontime, key=lambda a: safe_num(a.get('today',0)))[:2]:
-    ot = safe_num(x.get('today',0))*100
-    if ot < 92:
-        chg = safe_num(x.get('n_change',0))*100
-        chg_str = f"giảm {abs(chg):.1f}%" if chg < 0 else f"tăng {chg:.1f}%"
-        am_hotspots.append(f'⏱️ <b>{x["am"]}</b>: ODR thấp <b>{ot:.1f}%</b> ({chg_str})')
+# ODR Hôm nay
+for x in data.get('ontime_tts', []):
+    bc = x.get('am', '')
+    if bc in bc_metrics:
+        bc_metrics[bc]['odr'] = safe_num(x.get('today', 1))
 
-# KD Growth AM
-for x in sorted(data.get('bc_kd_lay', []), key=lambda a: safe_num(a.get('gr',0)))[:2]:
-    gr = safe_num(x.get('gr',0))
-    am_name = x['am'].split('-')[-1].strip() if '-' in x['am'] else x['am']
-    if gr < -5 and am_name != '-':
-        luyke = safe_num(x.get('luyke',0))/1e6
-        am_hotspots.append(f'📈 <b>{am_name}</b>: Tăng trưởng KD âm <b>{gr:.1f}%</b> (Đạt {luyke:.1f}M)')
+# NS (Nhân sự)
+for x in data.get('ns_bc', []):
+    raw_bc = x.get('bc', '')
+    bc = raw_bc.replace('Bưu Cục ', 'BC ').replace('Bưu cục ', 'BC ').strip()
+    if bc in bc_metrics:
+        bc_metrics[bc]['ns_thieu'] = int(safe_num(x.get('thieu', 0)))
 
-# 2. BC Hotspots
-bc_hotspots = []
+# Cảnh báo vùng (7D vs 30D Gap)
+for x in data.get('canh_bao_vung', []):
+    bc = x.get('bc', '')
+    if bc in bc_metrics:
+        bc_metrics[bc]['gap'] = safe_num(x.get('gap', 0))
+        bc_metrics[bc]['gtc_7d'] = safe_num(x.get('gtc_7d', 0))
+        bc_metrics[bc]['tinh'] = x.get('tinh', '-')
 
-# Worst GTC BC (Top 2)
-if 'gtc_bc' in data:
-    for x in sorted(data['gtc_bc'], key=lambda a: safe_num(a.get('total_gtc',1)))[:2]:
-        g = safe_num(x.get('total_gtc',0))*100
-        if g < 75: # Threshold for GTC
-            am = x.get('am', 'N/A')
-            bc_hotspots.append(f'📍 <b>{x["bc"]}</b>: GTC <b>{g:.1f}%</b> (AM: {am})')
-
-# Worst Personnel (Top 2)
-if 'ns_bc' in data:
-    for x in sorted(data['ns_bc'], key=lambda a: safe_num(a.get('thieu',0)), reverse=True)[:2]:
-        thieu = safe_num(x.get('thieu', 0))
-        if thieu >= 2: # At least 2 people missing
-            am = x.get('am', 'N/A')
-            bc_hotspots.append(f'👥 <b>{x["bc"]}</b>: Thiếu <b>{int(thieu)} NS</b> (AM: {am})')
-
-# Worst ODR (Top 1)
-bc_ontime = [x for x in data.get('ontime_tts', []) if 'BC ' in str(x.get('am',''))]
-if bc_ontime:
-    for x in sorted(bc_ontime, key=lambda a: safe_num(a.get('today',1)))[:1]:
-        ot = safe_num(x.get('today',0))*100
-        if ot < 90:
-            bc_hotspots.append(f'⏱️ <b>{x["am"]}</b>: ODR <b>{ot:.1f}%</b>')
-
-def render_hs(h_list):
-    if not h_list: return '<div style="color:var(--green); font-size:13px; font-weight:600; padding:10px">✅ Không có cảnh báo</div>'
-    
-    # Identify duplicates
-    names = []
-    for h in h_list:
-        m = re.search(r'<b>(.*?)</b>', h)
-        if m: names.append(m.group(1))
-    
-    from collections import Counter
-    counts = Counter(names)
-    
-    html = ""
-    for h in h_list:
-        m = re.search(r'<b>(.*?)</b>', h)
-        name = m.group(1) if m else None
-        is_dup = name and counts.get(name, 0) > 1
+# Calculate Risk Score
+for bc, m in bc_metrics.items():
+    if m['gtc'] < 0.75:
+        m['risk_score'] += 3
+        m['issues'].append(f"GTC cực thấp (<b>{pct(m['gtc'])}</b>)")
+    elif m['gtc'] < 0.80:
+        m['risk_score'] += 1
+        m['issues'].append(f"GTC thấp (<b>{pct(m['gtc'])}</b>)")
         
-        # Style logic
-        bg = "#fee2e2" if is_dup else "var(--card2)"
-        border_clr = "#ef4444"
-        border_width = "4px" if is_dup else "3px"
+    if m['odr'] < 0.90:
+        m['risk_score'] += 2
+        m['issues'].append(f"ODR trễ (<b>{pct(m['odr'])}</b>)")
         
-        html += f'<div style="padding:8px 12px;background:{bg};border-radius:8px;margin-bottom:6px;font-size:13px;line-height:1.4;border-left:{border_width} solid {border_clr}">{h}</div>'
+    if m['ns_thieu'] > 0:
+        m['issues'].append(f"Thiếu <b>{m['ns_thieu']}</b> NS")
+        
+    if m['gap'] < -0.05:
+        m['risk_score'] += 3
+        m['issues'].append(f"Trend giảm sâu (<b>{pct(m['gap'])}</b>)")
+    elif m['gap'] < 0:
+        m['risk_score'] += 1
+        m['issues'].append(f"Trend giảm (<b>{pct(m['gap'])}</b>)")
+
+sorted_bcs = sorted(bc_metrics.items(), key=lambda item: (-item[1]['risk_score'], item[1]['gtc']))
+
+# AM Metrics for AM Hotspots
+am_metrics = {}
+for x in data.get('gtc_am', []):
+    am = x.get('am', '')
+    if not am or am == 'Grand Total' or am == 'Vùng TNG': continue
+    am_metrics[am] = {
+        'gtc': safe_num(x.get('total_gtc', 1)),
+        'ca1': safe_num(x.get('ca1_gtc', 0)),
+        'ton': safe_num(x.get('ton_gtc', 0)),
+        'odr': 1.0,
+        'odr_chg': 0.0,
+        'ns_thieu': 0,
+        'ns_can': 0,
+        'ns_co': 0,
+        'gr': 0,
+        'luyke': 0,
+        'risk_score': 0,
+        'issues': []
+    }
+
+for x in data.get('ontime_tts', []):
+    am = x.get('am', '')
+    if not am.startswith('BC ') and am in am_metrics:
+        am_metrics[am]['odr'] = safe_num(x.get('today', 1))
+        am_metrics[am]['odr_chg'] = safe_num(x.get('n_change', 0))
+
+for x in data.get('ns_am', []):
+    am = x.get('am', '')
+    if am in am_metrics:
+        am_metrics[am]['ns_thieu'] = int(safe_num(x.get('so_thieu', 0)))
+        am_metrics[am]['ns_can'] = int(safe_num(x.get('ptt_can', 0)))
+        am_metrics[am]['ns_co'] = int(safe_num(x.get('ptt_co', 0)))
+
+for x in data.get('bc_kd_lay', []):
+    am_full = x.get('am', '')
+    am_name = am_full.split('-')[-1].strip() if '-' in am_full else am_full
+    if am_name in am_metrics:
+        am_metrics[am_name]['gr'] = safe_num(x.get('gr', 0))
+        am_metrics[am_name]['luyke'] = safe_num(x.get('luyke', 0))
+
+for am, m in am_metrics.items():
+    if m['gtc'] < 0.75:
+        m['risk_score'] += 3
+        m['issues'].append(f"GTC <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])}, Tồn: {pct(m['ton'])})")
+    elif m['gtc'] < 0.80:
+        m['risk_score'] += 1
+        m['issues'].append(f"GTC <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])})")
+        
+    if m['odr'] < 0.90:
+        chg_str = f"giảm {abs(m['odr_chg'])*100:.1f}%" if m['odr_chg'] < 0 else f"tăng {m['odr_chg']*100:.1f}%"
+        m['risk_score'] += 2
+        m['issues'].append(f"ODR trễ <b>{pct(m['odr'])}</b> ({chg_str})")
+        
+    if m['ns_thieu'] >= 2: # Reduce threshold to 2 to show more HR issues
+        m['risk_score'] += 3
+        m['issues'].append(f"Thiếu <b>{m['ns_thieu']} NS</b> (Cần {m['ns_can']}, Có {m['ns_co']})")
+        
+    if m['gr'] < -5:
+        m['risk_score'] += 2
+        m['issues'].append(f"KD Tăng trưởng âm <b>{m['gr']:.1f}%</b> (Đạt {m['luyke']/1e6:.1f}M)")
+
+sorted_ams = sorted(am_metrics.items(), key=lambda item: (-item[1]['risk_score'], item[1]['gtc']))
+
+# 1. Điểm Nóng Hôm Nay HTML
+def render_hs_list(sorted_list, is_am=False, limit=5):
+    html = '<div style="display:flex; flex-direction:column; gap:8px;">'
+    has_hotspots = False
+    for name, m in sorted_list[:limit]:
+        if m['risk_score'] > 0:
+            has_hotspots = True
+            issues_str = " | ".join(m['issues'])
+            color = "#ef4444" if m['risk_score'] >= 5 else "#f59e0b"
+            html += f'<div style="padding:10px 12px;background:var(--card2);border-radius:8px;font-size:13px;line-height:1.4;border-left:4px solid {color}">'
+            if is_am:
+                html += f'<div style="font-weight:700; color:var(--text); margin-bottom:4px">👤 AM {name}</div>'
+            else:
+                html += f'<div style="font-weight:700; color:var(--text); margin-bottom:4px">📍 {name} <span style="font-weight:500; color:var(--dim)">(AM: {m.get("am", "N/A")})</span></div>'
+            html += f'<div style="color:var(--text); font-size:12px">⚠️ Vấn đề: {issues_str}</div>'
+            html += f'</div>'
+    if not has_hotspots:
+        html += '<div style="color:var(--green); font-size:13px; font-weight:600; padding:10px">✅ Hoạt động ổn định</div>'
+    html += '</div>'
     return html
 
-am_hs_html = render_hs(am_hotspots)
-bc_hs_html = render_hs(bc_hotspots)
+am_hs_html = render_hs_list(sorted_ams, is_am=True, limit=3)
+bc_hs_html = render_hs_list(sorted_bcs, is_am=False, limit=5)
 
-# --- DỰ BÁO RỦI RO (Risk Forecast for 5 BCs) ---
+# Build OPR Map by Province for Risk Forecast
+prov_opr_map = {}
+rep = data.get('opr_report', {})
+rep_dates = rep.get('dates', [])
+last_date = rep_dates[-1] if rep_dates else None
+for p in rep.get('procs', []):
+    p_name = p.get('name')
+    for f in p.get('frames', []):
+        if f.get('name') == 'Total' and last_date:
+            prov_opr_map[p_name] = safe_num(f.get('vals', {}).get(last_date, {}).get('opr', 1.0))
+
+# 2. Dự Báo Rủi Ro Rows
 risk_forecast_list = sorted(data.get('canh_bao_vung', []), key=lambda x: safe_num(x.get('gap', 0)))[:5]
 risk_rows = ''
 for x in risk_forecast_list:
+    bc_name = x.get("bc","")
     gap = safe_num(x.get('gap', 0))
     trend = '▼ Giảm' if gap < 0 else '▲ Tăng'
     trend_cls = 'trend-down' if gap < 0 else 'trend-up'
     risk_level = '🔴 Nguy cấp' if gap < -0.05 else ('🔴 Cảnh báo' if gap < 0 else '🟡 Theo dõi')
-    risk_rows += f'<tr><td class="text-left" style="font-weight:500">{x.get("bc","")}</td><td>{x.get("tinh","")}</td><td style="font-weight:700">{pct(x.get("gtc_7d",0))}</td><td class="{trend_cls}">{trend} ({abs(gap)*100:.1f}%)</td><td style="font-weight:600">{risk_level}</td></tr>'
+    
+    m = bc_metrics.get(bc_name, {})
+    am_name = m.get('am', bc_to_am.get(bc_name.strip(), "-"))
+    tinh = x.get('tinh', '-')
+    
+    # Other issues
+    other_issues = []
+    if m.get('odr', 1.0) < 0.9: other_issues.append(f"ODR {pct(m['odr'])}")
+    opr_val = prov_opr_map.get(tinh, 1.0)
+    if opr_val < 0.85: other_issues.append(f"OPR {pct(opr_val)}")
+    if m.get('ns_thieu', 0) > 0: other_issues.append(f"Thiếu {m['ns_thieu']} NS")
+    other_issues_str = ", ".join(other_issues) if other_issues else "Không"
+    
+    risk_rows += f'<tr><td class="text-left" style="font-weight:500">{am_name}</td><td class="text-left" style="font-weight:500">{bc_name}</td><td>{x.get("tinh","")}</td><td style="font-weight:700">{pct(x.get("gtc_7d",0))}</td><td class="{trend_cls}">{trend} ({abs(gap)*100:.1f}%)</td><td style="font-size:12px; color:var(--dim); font-weight:500">{other_issues_str}</td><td style="font-weight:600">{risk_level}</td></tr>'
 
-# --- GENERATE 3 SPECIFIC ACTION PROPOSALS (Hotspot-Driven) ---
+# 3. Đề Xuất Hành Động
 proposals = []
+worst_bc_tuple = sorted_bcs[0] if sorted_bcs and sorted_bcs[0][1]['risk_score'] > 0 else None
 
-# Helper to find worst BC for an AM
-def get_worst_entity(dataset, am_name, metric='total_gtc'):
-    entities = [x for x in dataset if x.get('am') == am_name]
-    if not entities: return None
-    return sorted(entities, key=lambda x: safe_num(x.get(metric, 1)))[0]
-
-# 1. Priority 1: Xử lý GTC (Focus on worst AMs/BCs)
-worst_gtc_ams = sorted(data.get('gtc_am', []), key=lambda x: safe_num(x.get('total_gtc', 0)))[:2]
-if worst_gtc_ams:
-    targets = []
+if worst_bc_tuple:
+    bc_name, m = worst_bc_tuple
+    am_name = m['am']
     actions = []
-    for am in worst_gtc_ams:
-        am_name = am.get('am', 'N/A')
-        worst_bc = get_worst_entity(data.get('gtc_bc', []), am_name)
-        bc_name = worst_bc.get('bc', 'Các BC trực thuộc') if worst_bc else 'Các BC trực thuộc'
-        targets.append(f"AM {am_name} ({bc_name})")
-        
-        # Specific action based on metric
-        g_val = safe_num(am.get('total_gtc', 0))
-        if safe_num(am.get('ton_gtc', 0)) < 0.5:
-            actions.append(f"Yêu cầu {am_name} tập trung giải phóng hàng tồn tại {bc_name} (hiện chỉ đạt {pct(am.get('ton_gtc',0))})")
-        else:
-            actions.append(f"Tăng cường kiểm soát ca 1 tại {bc_name} để nâng tỷ lệ GTC chung từ {pct(g_val)} lên >75%")
-
+    if m['gtc'] < 0.75: actions.append(f"1. Giải quyết triệt để đơn tồn (hiện đạt {pct(m['ton'])}) để cứu vãn tỷ lệ GTC trong ca tiếp theo.")
+    if m['odr'] < 0.90: actions.append(f"2. Giám sát gắt gao lộ trình của shipper để chống trễ hẹn ODR (hiện tại {pct(m['odr'])}).")
+    if m['ns_thieu'] >= 2: actions.append(f"3. Bổ sung ngay {m['ns_thieu']} nhân sự part-time hoặc điều chuyển từ tuyến khác sang chi viện.")
+    
+    if len(actions) < 1: actions.append("1. Rà soát ngay quy trình phân tuyến tại Bưu cục để tối ưu hóa năng suất.")
+    if len(actions) < 2: actions.append(f"{len(actions)+1}. Họp nhanh (stand-up meeting) đầu ca với 100% shipper để quán triệt chỉ tiêu.")
+    if len(actions) < 3: actions.append("3. Phân công nhân sự theo dõi sát sao bảng tổng sắp đơn hàng, xử lý ngay đơn có nguy cơ rớt.")
+    
     p1 = {
-        'icon': '🔴', 'title': 'ƯU TIÊN 1: XỬ LÝ ĐIỂM NÓNG GTC',
-        'target': ", ".join(targets),
-        'how': " • " + " <br> • ".join(actions) + "<br>Kiểm tra danh sách đơn tồn trên hệ thống và yêu cầu shipper đi giao lại ngay trong ca.",
+        'icon': '🔴', 'title': 'ƯU TIÊN 1: CHỮA CHÁY ĐIỂM NÓNG',
+        'target': f"AM {am_name} ({bc_name})",
+        'how': "<br>".join(actions),
         'when': 'Hoàn thành xử lý trong ngày, báo cáo kết quả trước 20:00.',
-        'resource': 'Giám Đốc Vùng trực tiếp đôn đốc, AM giám sát 1:1 tại bưu cục.'
+        'resource': 'Giám Đốc Vùng đôn đốc trực tiếp, BP Tuyển Dụng hỗ trợ NS gấp.'
     }
 else:
-    p1 = {'icon': '🟢', 'title': 'ƯU TIÊN 1: DUY TRÌ GTC', 'target': 'Toàn vùng', 'how': 'Duy trì phong độ GTC > 80%.', 'when': 'Hàng ngày', 'resource': 'Đội ngũ hiện tại'}
+    p1 = {'icon': '🟢', 'title': 'ƯU TIÊN 1: DUY TRÌ ỔN ĐỊNH', 'target': 'Toàn vùng', 'how': '1. Duy trì phong độ GTC > 80%.<br>2. Đảm bảo ODR > 95%.<br>3. Rà soát sức khỏe nhân sự.', 'when': 'Hàng ngày', 'resource': 'Đội ngũ hiện tại'}
 proposals.append(p1)
 
-# 2. Priority 2: Dự báo rủi ro (Risk Mitigation)
 if risk_forecast_list:
     top_risk = risk_forecast_list[0]
     tr_bc = top_risk.get('bc','-')
     tr_gap = safe_num(top_risk.get('gap',0))
-    tr_tinh = top_risk.get('tinh','-')
+    m = bc_metrics.get(tr_bc, {})
+    tr_am = m.get('am', bc_to_am.get(tr_bc.strip(), "-"))
     
     p2 = {
         'icon': '📉', 'title': 'ƯU TIÊN 2: NGĂN CHẶN RỦI RO PHÁT SINH',
-        'target': f"Bưu cục {tr_bc} ({tr_tinh})",
-        'how': f"Cảnh báo: Bưu cục đang có xu hướng giảm sút <b>{abs(tr_gap)*100:.1f}%</b> so với mục tiêu tháng. <br>Yêu cầu AM rà soát ngay quy trình tại bưu cục, kiểm tra năng suất shipper và hỗ trợ xử lý các vướng mắc tại địa phương để kéo chỉ số GTC lên lại mức an toàn.",
-        'when': 'Báo cáo phương án khắc phục chi tiết trong 24h tới.',
+        'target': f"AM {tr_am} ({tr_bc})",
+        'how': f"Cảnh báo: Bưu cục đang có xu hướng giảm sút <b>{abs(tr_gap)*100:.1f}%</b> so với mục tiêu tháng.<br>1. AM xuống trực tiếp Bưu cục để rà soát năng suất thực tế của từng shipper.<br>2. Phân tích dữ liệu 7 ngày qua để tìm ra tuyến đường giao hàng kém hiệu quả nhất.<br>3. Điều chỉnh lại định mức đơn hàng cho các tuyến bị quá tải.",
+        'when': 'Báo cáo nguyên nhân và phương án khắc phục chi tiết trong 24h.',
         'resource': 'AM khu vực phối hợp cùng BP. Vận hành Vùng.'
     }
 else:
-    p2 = {'icon': '🔵', 'title': 'ƯU TIÊN 2: TỐI ƯU GIAO HÀNG', 'target': 'Toàn vùng', 'how': 'Duy trì kỷ luật giao hàng đúng hẹn.', 'when': 'Hàng ngày', 'resource': 'Đội ngũ Shipper'}
+    p2 = {'icon': '🔵', 'title': 'ƯU TIÊN 2: TỐI ƯU GIAO HÀNG', 'target': 'Toàn vùng', 'how': '1. Duy trì kỷ luật giao hàng đúng hẹn.<br>2. Kiểm soát tồn kho.<br>3. Giám sát lộ trình.', 'when': 'Hàng ngày', 'resource': 'Đội ngũ Shipper'}
 proposals.append(p2)
 
-# 3. Priority 3: Xử lý ODR/Nhân sự (Operational Excellence)
-# ... [Keeping current logic but shifting to Priority 3/4]
+# Find Systemic Issue for Priority 3
+sys_odr_low = sum(1 for _, m in bc_metrics.items() if m['odr'] < 0.90)
+sys_ns_thieu = sum(m['ns_thieu'] for _, m in bc_metrics.items())
 
-# 3. Priority 3: Nhân sự hoặc Các chỉ số thấp khác (Focus on hotspots)
-worst_ns_ams = sorted(data.get('ns_am', []), key=lambda x: safe_num(x.get('so_thieu', 0)), reverse=True)
-has_ns_issue = worst_ns_ams and safe_num(worst_ns_ams[0].get('so_thieu', 0)) > 0
-
-if has_ns_issue:
-    targets = []
-    actions = []
-    for am in worst_ns_ams[:2]:
-        am_name = am.get('am', 'N/A')
-        thieu = int(safe_num(am.get('so_thieu', 0)))
-        if thieu <= 0: continue
-        worst_bc_ns = sorted([b for b in data.get('ns_bc', []) if b['am'] == am_name], key=lambda b: safe_num(b.get('thieu', 0)), reverse=True)[0]
-        bc_name = worst_bc_ns.get('bc', 'BC trọng điểm')
-        targets.append(f"AM {am_name} ({bc_name})")
-        actions.append(f"Bổ sung gấp {thieu} nhân sự cho {am_name}. Đặc biệt là {bc_name} đang thiếu hụt nghiêm trọng.")
-
+if sys_ns_thieu >= 15:
     p3 = {
-        'icon': '🟡', 'title': 'ƯU TIÊN 3: BỔ SUNG NHÂN SỰ',
-        'target': ", ".join(targets),
-        'how': " • " + " <br> • ".join(actions) + "<br>Đẩy mạnh tuyển dụng qua các kênh Local và điều chuyển nhân sự tạm thời từ các khu vực ổn định sang hỗ trợ.",
+        'icon': '🟡', 'title': 'ƯU TIÊN 3: GIẢI QUYẾT BÀI TOÁN NHÂN SỰ VÙNG',
+        'target': f"Toàn vùng (Đang thiếu tổng cộng {sys_ns_thieu} NS)",
+        'how': "1. Đẩy mạnh chạy quảng cáo tuyển dụng qua kênh Local và các hội nhóm khu vực.<br>2. Tạm thời điều chuyển nhân sự từ các Bưu cục đang ổn định sang chi viện vùng nóng.<br>3. Liên hệ lại danh sách ứng viên cũ để mời đi làm ngay trong tuần.",
         'when': 'Hoàn tất phỏng vấn và Onboarding trong 3 ngày tới.',
-        'resource': 'AM phối hợp cùng BP. Tuyển dụng Vùng.'
+        'resource': 'BP. Tuyển dụng Vùng phối hợp cùng GĐV.'
+    }
+elif sys_odr_low >= 5:
+    p3 = {
+        'icon': '⏱️', 'title': 'ƯU TIÊN 3: CẢI THIỆN ODR TOÀN VÙNG',
+        'target': f"{sys_odr_low} Bưu cục có ODR < 90%",
+        'how': "1. Chấn chỉnh kỷ luật lấy/giao hàng đúng khung giờ tại các bưu cục vi phạm.<br>2. Rà soát lại hệ thống cảnh báo đơn sắp trễ giờ (Near-miss) để xử lý ngay.<br>3. Tổ chức training nhanh lại quy trình giao hàng chuẩn cho nhóm shipper mới.",
+        'when': 'Áp dụng ngay cho các ca tiếp theo.',
+        'resource': 'Quản lý Bưu cục và Đội ngũ Shipper.'
     }
 else:
-    # Fallback to OPR or Leadtime if no NS issue
-    rep = data.get('opr_report', {})
-    dates = rep.get('dates', [])
-    target_date = dates[-1] if dates else None
-    
-    worst_opr_proc = None
-    worst_opr_val = 1.0
-    if target_date:
-        for p in rep.get('procs', []):
-            if p['name'] in ['Grand Total', 'Vùng TNG']: continue
-            # Find Total frame for this proc on target_date
-            total_frame = next((f for f in p['frames'] if f['name'] == 'Total'), None)
-            if total_frame:
-                val = safe_num(total_frame['vals'].get(target_date, {}).get('opr', 1))
-                if val < worst_opr_val:
-                    worst_opr_val = val
-                    worst_opr_proc = p
-
-    if worst_opr_proc and worst_opr_val < 0.98:
-        p_name = worst_opr_proc['name']
-        # Find worst frame
-        worst_frame = None
-        wf_val = 1.0
-        for f in worst_opr_proc['frames']:
-            if f['name'] == 'Total': continue
-            v = safe_num(f['vals'].get(target_date, {}).get('opr', 1))
-            vol = safe_num(f['vals'].get(target_date, {}).get('vol_ltc', 0))
-            if v < wf_val and vol > 10:
-                wf_val = v
-                worst_frame = f['name']
-        
-        frame_msg = f" tại khung giờ {worst_frame}" if worst_frame else ""
-        p3 = {
-            'icon': '🚀', 'title': 'ƯU TIÊN 3: CẢI THIỆN OPR LẤY HÀNG',
-            'target': f"Tỉnh {p_name}",
-            'how': f"Chấn chỉnh tỷ lệ OPR đang thấp: <b>{pct(worst_opr_val)}</b>{frame_msg}. <br>Hành động: Điều phối vùng yêu cầu các BC có lượng đơn LTC lớn thực hiện quét lấy hàng đúng quy trình, tuyệt đối không để rớt đơn đã có tín hiệu lấy.",
-            'when': 'Áp dụng ngay cho các ca lấy hàng tiếp theo trong ngày.',
-            'resource': 'Quản lý Bưu cục và Đội ngũ Điều phối (Fleet).'
-        }
-    else:
-        p3 = {
-            'icon': '📈', 'title': 'ƯU TIÊN 3: THÚC ĐẨY TĂNG TRƯỞNG KD',
-            'target': 'Toàn vùng',
-            'how': 'Tập trung chăm sóc các khách hàng Key có sản lượng giảm trong tuần. Tìm kiếm nguồn khách hàng mới để bù đắp sản lượng.',
-            'when': 'Liên tục trong tuần.',
-            'resource': 'Đội ngũ AM và Sale khu vực.'
-        }
-
+    p3 = {
+        'icon': '🚀', 'title': 'ƯU TIÊN 3: CẢI THIỆN OPR',
+        'target': "Các Tỉnh/BC trọng điểm",
+        'how': "1. Yêu cầu các BC có lượng đơn LTC lớn thực hiện quét lấy hàng ngay khi tiếp nhận.<br>2. Đội ngũ Điều phối phải theo dõi sát sao lộ trình lấy hàng của xe tải.<br>3. Tuyệt đối không để rớt đơn đã có tín hiệu lấy trên hệ thống.",
+        'when': 'Trong ca vận hành tiếp theo.',
+        'resource': 'Đội ngũ Điều phối (Fleet).'
+    }
 proposals.append(p3)
 
 action_proposals_html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:15px; margin-top:5px;">'
 for p in proposals:
-    # Set color based on priority
+    color = "#3b82f6"
     if "1" in p['title']: color = "#ef4444"
     elif "2" in p['title']: color = "#f59e0b"
-    else: color = "#3b82f6" # Priority 3 is blue/cyan
-    
-    # Override for specific icons if needed
     if "🟢" in p['icon']: color = "#22c55e"
-    if "🟣" in p['icon']: color = "#a855f7"
+    if "🟡" in p['icon']: color = "#eab308"
     
     action_proposals_html += f'''
     <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; position:relative; overflow:hidden; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); display:flex; flex-direction:column; justify-content:space-between;">
@@ -698,7 +745,7 @@ for p in proposals:
             <span style="font-weight:800; font-size:14px; color:{color}; letter-spacing:0.5px;">{p['title']}</span>
         </div>
         <div style="display:flex; flex-direction:column; gap:10px; flex:1;">
-            <div style="font-size:13px;"><span style="font-weight:700; color:var(--text);">👤 Điểm Nóng:</span> <span style="color:var(--dim); font-weight:600;">{p['target']}</span></div>
+            <div style="font-size:13px;"><span style="font-weight:700; color:var(--text);">👤 Trọng tâm:</span> <span style="color:var(--dim); font-weight:600;">{p['target']}</span></div>
             <div style="font-size:13px;"><span style="font-weight:700; color:var(--text);">🛠️ Triển khai:</span> <span style="color:var(--dim); line-height:1.6;">{p['how']}</span></div>
             <div style="font-size:13px;"><span style="font-weight:700; color:var(--text);">⏱️ Thời gian:</span> <span style="color:var(--dim);">{p['when']}</span></div>
             <div style="font-size:13px;"><span style="font-weight:700; color:var(--text);">🔋 Nguồn lực:</span> <span style="color:var(--dim);">{p['resource']}</span></div>
@@ -780,9 +827,9 @@ kd_trend_dates_js = json.dumps(kd_trend_dates[-7:])
 kd_trend_data_js = json.dumps(kd_trend_data[-7:])
 
 # KD bar chart - lũy kế vs cùng kỳ
-kd_am_labels = json.dumps([x['am'] if x['am']!='-' else 'Chưa gán' for x in data.get('bc_kd_lay',[])], ensure_ascii=False)
-kd_luyke = json.dumps([round(safe_num(x.get('luyke',0))/1e6,1) for x in data.get('bc_kd_lay',[])])
-kd_cungky = json.dumps([round(safe_num(x.get('cungky',0))/1e6,1) for x in data.get('bc_kd_lay',[])])
+kd_am_labels = json.dumps([x['am'].split('-')[-1].strip() if '-' in x['am'] else x['am'] for x in filtered_kd], ensure_ascii=False)
+kd_luyke = json.dumps([round(safe_num(x.get('luyke',0))/1e6,1) for x in filtered_kd])
+kd_cungky = json.dumps([round(safe_num(x.get('cungky',0))/1e6,1) for x in filtered_kd])
 
 
 # OPR MATRIX
@@ -809,6 +856,21 @@ if vung_procs:
     
     # Update rep['procs'] to have Vùng TNG at the end
     rep['procs'] = vung_procs + [vung_total]
+
+opr_trend_data = {}
+for p in rep.get('procs', []):
+    p_name = p['name']
+    if p_name == 'Grand Total': continue
+    opr_trend_data[p_name] = []
+    total_frame = next((f for f in p['frames'] if f['name'] == 'Total'), None)
+    for d in dates:
+        if total_frame:
+            val = safe_num(total_frame['vals'].get(d, {}).get('opr', 0)) * 100
+            opr_trend_data[p_name].append(round(val, 1))
+        else:
+            opr_trend_data[p_name].append(0)
+
+opr_trend_labels_js = json.dumps([datetime.strptime(d, '%Y-%m-%d').strftime('%d/%m') for d in dates])
 
 opr_header_1 = f'<tr><th rowspan="2" class="sticky-col-1" style="z-index:20; border:none !important; top:0">Quản lý</th><th rowspan="2" class="sticky-col-2" style="z-index:20; border:none !important; top:0">Khung giờ tạo đơn</th>'
 opr_header_2 = '<tr>'
@@ -919,9 +981,11 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .header{{background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%);padding:15px 25px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);flex-wrap:wrap;gap:15px; position: sticky; top: 0; z-index: 1000;}}
 .header h1{{font-size:20px;font-weight:800;color:#ffffff}}
 .header .date{{color:#ffffff;font-size:13px;font-weight:500;opacity:0.9}}
+.btn-quick {{ padding:6px 14px; color:#fff; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; white-space:nowrap; transition:all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 4px; }}
+.btn-quick:hover {{ transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); filter: brightness(1.1); }}
 .kpi-grid{{display:grid;grid-template-columns:repeat(auto-fit, minmax(145px, 1fr));gap:10px;padding:16px 20px}}
-.kpi-card{{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;display:flex;flex-direction:column;justify-content:center;min-height:90px; transition: all 0.2s ease;}}
-.kpi-card:hover {{ transform: translateY(-2px); }}
+.kpi-card{{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;display:flex;flex-direction:column;justify-content:center;min-height:90px; transition: all 0.2s ease; cursor: pointer;}}
+.kpi-card:hover {{ transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); border-color: #0ea5e9; }}
 .kpi-card::before{{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:12px 12px 0 0}}
 .kpi-card:nth-child(1)::before{{background:var(--accent)}}
 .kpi-card:nth-child(2)::before{{background:var(--cyan)}}
@@ -1080,7 +1144,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 .trinh-header-info h3 {{ font-size: 18px; font-weight: 800; margin: 0; color: #db2777; }}
 .trinh-header-info p {{ font-size: 13px; color: #64748b; margin: 2px 0 0; display: flex; align-items: center; gap: 6px; }}
 .trinh-status-dot {{ width: 10px; height: 10px; background: #22c55e; border-radius: 50%; }}
-.trinh-msg div[style*="color:#db2777"] {{ margin-top: 12px !important; margin-bottom: 10px !important; padding: 0 !important; }}
+.trinh-msg div[style*="color:#db2777"] {{ margin-top: 10px !important; margin-bottom: 2.5px !important; padding: 0 !important; }}
 
 .trinh-messages {{ flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #fff; }}
 .trinh-msg {{ max-width: 90%; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.6; position: relative; color: #000; }}
@@ -1137,23 +1201,23 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <div class="header">
 <div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: {datetime.now().strftime('%H:%M %d/%m/%Y')} • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
-<a href="https://noibo.ghn.vn/eform/form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📋 Duyệt EF</a>
-<a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">👥 QLNS</a>
-<a href="https://noibo.ghn.vn/crm/policy-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">💰 Duyệt Giá</a>
-<a href="tg://" style="padding:6px 14px;background:linear-gradient(135deg,#0088cc,#006699);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">✈️ Telegram</a>
-<a href="https://ic.haraworks.vn/internal_mail/inbox" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📧 Email</a>
+<a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
+<a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
+<a href="https://noibo.ghn.vn/crm/policy-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#f59e0b,#d97706)">💰 Duyệt Giá</a>
+<a href="tg://" class="btn-quick" style="background:linear-gradient(135deg,#0088cc,#006699)">✈️ Telegram</a>
+<a href="https://ic.haraworks.vn/internal_mail/inbox" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📧 Email</a>
 </div>
 </div>
 
 <div class="kpi-grid">
-<div class="kpi-card"><div class="kpi-label">VOLUME GIAO</div><div class="kpi-value">{num(vol_giao)}</div>{delta_vol}</div>
-<div class="kpi-card"><div class="kpi-label">GTC Tổng</div><div class="kpi-value">{pct(avg_gtc)}</div>{delta_gtc_v}</div>
-<div class="kpi-card"><div class="kpi-label">% GTC TTS</div><div class="kpi-value">{pct(avg_gtc_tts)}</div>{delta_gtc_t}</div>
-<div class="kpi-card"><div class="kpi-label">% ODR TTS</div><div class="kpi-value">{pct(avg_ontime)}</div>{delta_ontime}</div>
-<div class="kpi-card"><div class="kpi-label">OPR TTS</div><div class="kpi-value" style="color:{'#ef4444' if opr_total_val < 0.95 else '#22c55e'}">{pct(opr_total_val)}</div>{delta_opr}</div>
-<div class="kpi-card"><div class="kpi-label">DT LẤY LŨY KẾ</div><div class="kpi-value">{money(total_rev_lay)}</div>{delta_rev}</div>
-<div class="kpi-card"><div class="kpi-label">NS THIẾU / ĐỊNH BIÊN</div><div class="kpi-value" style="color:#ef4444">{int(safe_num(ns_total.get('so_thieu',0)))} / {int(safe_num(ns_total.get('ptt_can',0)))}</div>{delta_ns}</div>
-<div class="kpi-card"><div class="kpi-label">BC CẢNH BÁO</div><div class="kpi-value">{n_warn}</div>{delta_warn}</div>
+<div class="kpi-card" onclick="showTab(1, true)"><div class="kpi-label">VOLUME GIAO</div><div class="kpi-value">{num(vol_giao)}</div>{delta_vol}</div>
+<div class="kpi-card" onclick="showTab(1, true)"><div class="kpi-label">GTC Tổng</div><div class="kpi-value">{pct(avg_gtc)}</div>{delta_gtc_v}</div>
+<div class="kpi-card" onclick="showTab(2, true)"><div class="kpi-label">% GTC TTS</div><div class="kpi-value">{pct(avg_gtc_tts)}</div>{delta_gtc_t}</div>
+<div class="kpi-card" onclick="showTab(3, true)"><div class="kpi-label">% ODR TTS</div><div class="kpi-value">{pct(avg_ontime)}</div>{delta_ontime}</div>
+<div class="kpi-card" onclick="showTab(4, true)"><div class="kpi-label">OPR TTS</div><div class="kpi-value" style="color:{'#ef4444' if opr_total_val < 0.95 else '#22c55e'}">{pct(opr_total_val)}</div>{delta_opr}</div>
+<div class="kpi-card" onclick="showTab(6, true)"><div class="kpi-label">DT LẤY LŨY KẾ</div><div class="kpi-value">{money(total_rev_lay)}</div>{delta_rev}</div>
+<div class="kpi-card" onclick="showTab(7, true)"><div class="kpi-label">NS THIẾU / ĐỊNH BIÊN</div><div class="kpi-value" style="color:#ef4444">{int(safe_num(ns_total.get('so_thieu',0)))} / {int(safe_num(ns_total.get('ptt_can',0)))}</div>{delta_ns}</div>
+<div class="kpi-card" onclick="showTab(8, true)"><div class="kpi-label">BC CẢNH BÁO</div><div class="kpi-value">{n_warn}</div>{delta_warn}</div>
 </div>
 
 <div class="tabs">
@@ -1186,6 +1250,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 
 <div class="card" style="margin-top:16px">
   <div class="section-title"><span></span>🔥 Điểm Nóng Hôm Nay</div>
+  <div style="font-size:13px; color:var(--dim); margin-bottom:12px">Được cảnh báo tự động dựa trên mức độ rủi ro tổng hợp đa chiều (GTC, ODR, Nhân sự, Cảnh báo 7 ngày).</div>
   <div class="grid-2">
     <div>
       <div style="font-size:13px; font-weight:700; color:var(--dim); margin-bottom:8px; display:flex; align-items:center; gap:6px">👤 CẢNH BÁO THEO AM</div>
@@ -1205,10 +1270,12 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
     <table class="table-compact">
       <thead>
         <tr>
+          <th class="text-left">AM</th>
           <th class="text-left">Bưu cục</th>
           <th>Tỉnh</th>
           <th>% GTC 7 Ngày</th>
           <th>Xu Hướng (vs 30d)</th>
+          <th>Các chỉ số khác</th>
           <th>Mức độ rủi ro</th>
         </tr>
       </thead>
@@ -1321,15 +1388,17 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <!-- TAB 3: ODR TTS -->
 <div class="panel" id="p3">
 <div class="card"><div class="section-title"><span></span>⏱️ % ODR TTS Theo AM (7 ngày gần nhất)</div>
-<div class="table-scroll"><table id="tblOntimeAM"><thead><tr><th class="text-left">AM</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>Hôm nay</th><th>So N-1</th></tr></thead><tbody>{ontime_am_rows}</tbody></table></div></div>
+<div class="table-scroll"><table id="tblOntimeAM"><thead><tr><th class="text-left">AM</th>{ontime_header_html}<th>So N-1</th></tr></thead><tbody>{ontime_am_rows}</tbody></table></div></div>
 
 <div class="card" style="margin-top:16px"><div class="section-title"><span></span>⏱️ % ODR TTS Theo Bưu Cục (7 ngày gần nhất)</div>
 <input class="search" placeholder="🔍 Tìm Bưu Cục..." oninput="filterTable(this,'tblOntimeBC')">
-<div class="table-scroll"><table id="tblOntimeBC"><thead><tr><th class="text-left">Bưu Cục</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>Hôm nay</th><th>So N-1</th></tr></thead><tbody>{ontime_bc_rows}</tbody></table></div></div>
+<div class="table-scroll"><table id="tblOntimeBC"><thead><tr><th class="text-left">AM</th><th class="text-left">Bưu Cục</th>{ontime_header_html}<th>So N-1</th></tr></thead><tbody>{ontime_bc_rows}</tbody></table></div></div>
 </div>
 
 <!-- TAB 4: OPR Tỉnh -->
 <div class="panel" id="p4">
+<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Xu Hướng OPR TTS 7 Ngày Gần Nhất</div>
+<div class="chart-container" style="height:350px"><canvas id="chartOPRTrend"></canvas></div></div>
 <div class="card"><div class="section-title"><span></span>🚀 OPR TTS</div>
 <div class="table-scroll"><table id="tblOPR" class="no-interactive"><thead>{opr_header_1}{opr_header_2}</thead><tbody>{opr_matrix_rows}</tbody></table></div></div>
 </div>
@@ -1391,27 +1460,35 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <tr><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th><th>Định biên</th><th>Có</th></tr>
 </thead><tbody>{ns_am_rows}</tbody></table></div></div>
 <div class="card"><div class="section-title"><span></span>Chi Tiết Theo Bưu Cục</div>
-<div class="table-scroll"><table id="tblNS"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">Bưu Cục</th><th class="text-left">AM</th><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th></tr></thead><tbody>{ns_detail_rows}</tbody></table></div></div>
+<div class="table-scroll"><table id="tblNS"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">AM</th><th class="text-left">Bưu Cục</th><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th></tr></thead><tbody>{ns_detail_rows}</tbody></table></div></div>
 </div>
 
 <!-- TAB 8: BC Cảnh Báo -->
 <div class="panel" id="p8">
 <div class="card"><div class="section-title"><span></span>⚠️ Bưu Cục Cảnh Báo</div>
-<div class="table-scroll"><table id="tblCB"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">Bưu Cục</th><th>% GTC 7 NGÀY</th><th>GTC LỊCH SỬ</th><th>CẦN ĐẠT</th><th>GTC NGÀY N-1</th><th>GTC NGÀY N-2</th><th>GTC NGÀY N-3</th></tr></thead><tbody>{cb_rows}</tbody></table></div></div>
+<div class="table-scroll"><table id="tblCB"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">AM</th><th class="text-left">Bưu Cục</th><th>% GTC 7 NGÀY</th><th>GTC LỊCH SỬ</th><th>CẦN ĐẠT</th><th>GTC NGÀY N-1</th><th>GTC NGÀY N-2</th><th>GTC NGÀY N-3</th></tr></thead><tbody>{cb_rows}</tbody></table></div></div>
 
 <div class="card" style="margin-top:16px"><div class="section-title"><span></span>⚠️ Bưu Cục Cảnh Báo Vùng</div>
-<div class="table-scroll"><table id="tblCBVung"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">Bưu Cục</th><th>% GTC 7 NGÀY</th><th>GTC TỐT NHẤT</th><th>CẦN ĐẠT</th><th>CHÊNH LỆCH</th><th>NHÓM</th></tr></thead><tbody>{cb_vung_rows}</tbody></table></div></div>
+<div class="table-scroll"><table id="tblCBVung"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">AM</th><th class="text-left">Bưu Cục</th><th>% GTC 7 NGÀY</th><th>GTC TỐT NHẤT</th><th>CẦN ĐẠT</th><th>CHÊNH LỆCH</th><th>NHÓM</th></tr></thead><tbody>{cb_vung_rows}</tbody></table></div></div>
 </div>
 </div>
 
 <script>
 Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-function showTab(i){{
+function showTab(i, scroll=false){{
   document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
   document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
   if(i===0&&!window._c1){{window._c1=true;initGtcChart()}}
+  if(i===4&&!window._c4){{window._c4=true;initOPRTrendChart()}}
   if(i===6&&!window._c3){{window._c3=true;initKDChart();initKDTrendChart()}}
   if(i===7&&!window._c7){{window._c7=true;initNSChart()}}
+  if(scroll){{
+    const tabsEl = document.querySelector('.tabs');
+    if(tabsEl){{
+      const y = tabsEl.getBoundingClientRect().top + window.scrollY - 65;
+      window.scrollTo({{top: y, behavior: 'smooth'}});
+    }}
+  }}
 }}
 
 function sortTable(th){{
@@ -1444,7 +1521,6 @@ function toggleFilter(e, thIcon){{
   const table = th.closest('table');
   const colIdx = Array.from(th.parentNode.cells).indexOf(th);
   
-  // Close all other dropdowns
   document.querySelectorAll('.filter-dropdown').forEach(d => d.remove());
   
   const dd = document.createElement('div');
@@ -1453,12 +1529,15 @@ function toggleFilter(e, thIcon){{
   dd.dataset.col = colIdx;
   document.body.appendChild(dd);
   
-  // Position it
   const rect = thIcon.getBoundingClientRect();
-  dd.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-  dd.style.left = (rect.left + window.scrollX) + 'px';
+  dd.style.position = 'fixed';
+  dd.style.top = (rect.bottom + 5) + 'px';
+  let leftPos = rect.left;
+  if (leftPos + 220 > window.innerWidth) {{
+    leftPos = window.innerWidth - 230;
+  }}
+  dd.style.left = leftPos + 'px';
   
-  // Collect unique values from ALL rows (use textContent to get hidden values)
   const rows = Array.from(table.tBodies[0].rows);
   const vals = [...new Set(rows.map(r => r.cells[colIdx].textContent.trim()))].sort();
   const activeFilters = _filters[table.id]?.[colIdx];
@@ -1497,13 +1576,26 @@ function filterDropdownItems(input){{
   items.forEach(item => {{
     item.style.display = item.innerText.toLowerCase().includes(v) ? 'flex' : 'none';
   }});
+  
+  const dd = input.closest('.filter-dropdown');
+  const allCb = dd.querySelector('.filter-list input:not([value])');
+  const visibleItems = Array.from(dd.querySelectorAll('.filter-item:not(:first-child)')).filter(i => i.style.display !== 'none');
+  const visibleChecked = visibleItems.every(item => item.querySelector('input').checked);
+  if (visibleItems.length > 0) {{
+    allCb.checked = visibleChecked;
+  }}
 }}
 
 function toggleAllFilters(div, e){{
   const cb = div.querySelector('input');
   if(e.target !== cb) cb.checked = !cb.checked;
-  const list = div.closest('.filter-dropdown').querySelectorAll('.filter-list input');
-  list.forEach(i => i.checked = cb.checked);
+  const list = div.closest('.filter-dropdown').querySelectorAll('.filter-item');
+  list.forEach(item => {{
+    if (item.style.display !== 'none') {{
+      const i = item.querySelector('input');
+      if (i) i.checked = cb.checked;
+    }}
+  }});
 }}
 
 function toggleFilterItem(div, e){{
@@ -1657,6 +1749,39 @@ function initGtcChart(){{
         {{ label: 'Gia Lai', data: {trend_data['Gia Lai']}, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
         {{ label: 'Phú Yên', data: {trend_data['Phú Yên']}, borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
         {{ label: 'Vùng TNG', data: {trend_data['Vùng TNG']}, borderColor: '#ef4444', backgroundColor: '#ef4444', borderDash: [5, 5], tension: 0.3, fill: false, borderWidth: 3, datalabels: {{ align: 'bottom', offset: 4, font: {{ weight: 'bold' }} }} }}
+      ]
+    }},
+    options: {{ 
+      responsive: true, maintainAspectRatio: false, 
+      plugins: {{ 
+        legend: {{ position: 'bottom' }},
+        datalabels: {{ 
+          display: true,
+          color: (ctx) => ctx.dataset.borderColor,
+          font: {{ size: 10, weight: '700' }},
+          formatter: v => v + '%'
+        }}
+      }},
+      scales: {{ 
+        y: {{ beginAtZero: false, ticks: {{ callback: v => v + '%' }} }},
+        x: {{ ticks: {{ }} }}
+      }}
+    }}
+  }});
+}}
+
+function initOPRTrendChart(){{
+  new Chart(document.getElementById('chartOPRTrend'), {{
+    type: 'line',
+    plugins: [ChartDataLabels],
+    data: {{ 
+      labels: {opr_trend_labels_js},
+      datasets: [
+        {{ label: 'Bình Định', data: {opr_trend_data.get('Bình Định', [])}, borderColor: '#3b82f6', backgroundColor: '#3b82f6', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
+        {{ label: 'Đắk Lắk', data: {opr_trend_data.get('Đắk Lắk', [])}, borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
+        {{ label: 'Gia Lai', data: {opr_trend_data.get('Gia Lai', [])}, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
+        {{ label: 'Phú Yên', data: {opr_trend_data.get('Phú Yên', [])}, borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', tension: 0.3, fill: false, datalabels: {{ align: 'top', offset: 2 }} }},
+        {{ label: 'Vùng TNG', data: {opr_trend_data.get('Vùng TNG', [])}, borderColor: '#ef4444', backgroundColor: '#ef4444', borderDash: [5, 5], tension: 0.3, fill: false, borderWidth: 3, datalabels: {{ align: 'bottom', offset: 4, font: {{ weight: 'bold' }} }} }}
       ]
     }},
     options: {{ 
@@ -1979,6 +2104,8 @@ lucide.createIcons();
 </html>'''
 
     with open('dashboard.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    with open('app.html', 'w', encoding='utf-8') as f:
         f.write(html)
 print(f"Dashboard created! Size: {len(html)} bytes")
 
