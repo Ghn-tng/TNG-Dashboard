@@ -15,6 +15,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
 .header{background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%);padding:15px 25px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);flex-wrap:wrap;gap:15px; position: sticky; top: 0; z-index: 1000;}
 .header h1{font-size:20px;font-weight:800;color:#ffffff}
 .header .date{color:#ffffff;font-size:13px;font-weight:500;opacity:0.9}
+.btn-quick { padding:6px 14px; color:#fff; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; white-space:nowrap; transition:all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 4px; }
+.btn-quick:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); filter: brightness(1.1); }
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(145px, 1fr));gap:10px;padding:16px 20px}
 .kpi-card{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;display:flex;flex-direction:column;justify-content:center;min-height:90px; transition: all 0.2s ease; cursor: pointer;}
 .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); border-color: #0ea5e9; }
@@ -231,13 +233,13 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 10:55 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 11:01 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
-<a href="https://noibo.ghn.vn/eform/form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📋 Duyệt EF</a>
-<a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">👥 QLNS</a>
-<a href="https://noibo.ghn.vn/crm/policy-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">💰 Duyệt Giá</a>
-<a href="tg://" style="padding:6px 14px;background:linear-gradient(135deg,#0088cc,#006699);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">✈️ Telegram</a>
-<a href="https://ic.haraworks.vn/internal_mail/inbox" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📧 Email</a>
+<a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
+<a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
+<a href="https://noibo.ghn.vn/crm/policy-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#f59e0b,#d97706)">💰 Duyệt Giá</a>
+<a href="tg://" class="btn-quick" style="background:linear-gradient(135deg,#0088cc,#006699)">✈️ Telegram</a>
+<a href="https://ic.haraworks.vn/internal_mail/inbox" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📧 Email</a>
 </div>
 </div>
 
