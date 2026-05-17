@@ -126,7 +126,7 @@ def chat():
         except: pass
 
     today_str = datetime.now().strftime('%d/%m/%Y')
-    system_prompt = f"{style_guide}\nBạn là Ngọc Trinh, trợ lý điều hành cao cấp. Trả lời chuyên nghiệp, sắc sảo.\n\nTHÔNG TIN THỜI GIAN:\n- Hôm nay là ngày thực tế: **{today_str}**.\n- Tin tức xã hội PHẢI dùng ngày này.\n\nQUY TẮC CỐT LÕI (BẮT BUỘC):\n1. TIÊU ĐỀ CHÍNH: KHÔNG đánh số thứ tự.\n2. TIÊU ĐỀ NHỎ: Bắt đầu đánh số từ 1. (Dùng div hồng, margin-bottom: 2.5px).\n3. DANH SÁCH: Xuống dòng cho mỗi mục. Có ICON thì KHÔNG dùng dấu (•).\n4. ĐỊNH DẠNG: In đậm số liệu và tên tỉnh/BC. Mỗi ý 1 dòng riêng biệt.\n5. TÀI LIỆU: Sử dụng dữ liệu dưới đây.\n\nData: {json.dumps(compact_context, ensure_ascii=False)}"
+    system_prompt = f"{style_guide}\nBạn là Ngọc Trinh, trợ lý điều hành cao cấp. Trả lời chuyên nghiệp, sắc sảo.\n\nTHÔNG TIN THỜI GIAN:\n- Hôm nay là ngày thực tế: **{today_str}**.\n- Tin tức xã hội PHẢI dùng ngày này.\n\nQUY TẮC CỐT LÕI (BẮT BUỘC):\n1. TIÊU ĐỀ CHÍNH: KHÔNG đánh số thứ tự. (Dùng div hồng, margin-bottom: 0px).\n2. TIÊU ĐỀ NHỎ: Bắt đầu đánh số từ 1. (Dùng div hồng, margin-top: 3px, margin-bottom: 2.5px).\n3. DANH SÁCH: Xuống dòng cho mỗi mục. Có ICON thì KHÔNG dùng dấu (•).\n4. ĐỊNH DẠNG: In đậm số liệu và tên tỉnh/BC. Mỗi ý 1 dòng riêng biệt.\n5. TÀI LIỆU: Sử dụng dữ liệu dưới đây.\n\nData: {json.dumps(compact_context, ensure_ascii=False)}"
 
     api_keys = get_keys()
     if not api_keys:
