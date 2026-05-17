@@ -233,7 +233,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 11:01 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 14:46 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1037,7 +1037,6 @@ function toggleFilter(e, thIcon){
   const table = th.closest('table');
   const colIdx = Array.from(th.parentNode.cells).indexOf(th);
   
-  // Close all other dropdowns
   document.querySelectorAll('.filter-dropdown').forEach(d => d.remove());
   
   const dd = document.createElement('div');
@@ -1046,12 +1045,10 @@ function toggleFilter(e, thIcon){
   dd.dataset.col = colIdx;
   document.body.appendChild(dd);
   
-  // Position it
   const rect = thIcon.getBoundingClientRect();
   dd.style.top = (rect.bottom + window.scrollY + 5) + 'px';
   dd.style.left = (rect.left + window.scrollX) + 'px';
   
-  // Collect unique values from ALL rows (use textContent to get hidden values)
   const rows = Array.from(table.tBodies[0].rows);
   const vals = [...new Set(rows.map(r => r.cells[colIdx].textContent.trim()))].sort();
   const activeFilters = _filters[table.id]?.[colIdx];
@@ -1090,13 +1087,26 @@ function filterDropdownItems(input){
   items.forEach(item => {
     item.style.display = item.innerText.toLowerCase().includes(v) ? 'flex' : 'none';
   });
+  
+  const dd = input.closest('.filter-dropdown');
+  const allCb = dd.querySelector('.filter-list input:not([value])');
+  const visibleItems = Array.from(dd.querySelectorAll('.filter-item:not(:first-child)')).filter(i => i.style.display !== 'none');
+  const visibleChecked = visibleItems.every(item => item.querySelector('input').checked);
+  if (visibleItems.length > 0) {
+    allCb.checked = visibleChecked;
+  }
 }
 
 function toggleAllFilters(div, e){
   const cb = div.querySelector('input');
   if(e.target !== cb) cb.checked = !cb.checked;
-  const list = div.closest('.filter-dropdown').querySelectorAll('.filter-list input');
-  list.forEach(i => i.checked = cb.checked);
+  const list = div.closest('.filter-dropdown').querySelectorAll('.filter-item');
+  list.forEach(item => {
+    if (item.style.display !== 'none') {
+      const i = item.querySelector('input');
+      if (i) i.checked = cb.checked;
+    }
+  });
 }
 
 function toggleFilterItem(div, e){
