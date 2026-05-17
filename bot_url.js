@@ -1,1 +1,1 @@
-window.BOT_URL = "https://auckland-strikes-amp-conclusions.trycloudflare.com";
+window.BOT_URL = "https://soap-besides-cons-hosting.trycloudflare.com";
