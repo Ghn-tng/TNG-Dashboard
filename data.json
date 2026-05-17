@@ -79,7 +79,7 @@
       "total_gtc": 0.5632438417
     },
     {
-      "am": "Nguyễn Ngọc Hà",
+      "am": "Nguyễn  Ngọc Hà",
       "ca1_vol": 764.0,
       "ca1_gan": 0.9568062827,
       "ca1_gtc": 0.7657068063,
@@ -139,7 +139,7 @@
       "total_gtc": 0.6723416132
     },
     {
-      "am": "Nguyễn Hoàng Anh",
+      "am": "Nguyễn  Hoàng Anh",
       "ca1_vol": 2330.0,
       "ca1_gan": 0.9832618026,
       "ca1_gtc": 0.7811158798,
@@ -169,7 +169,7 @@
       "total_gtc": 0.7386893337
     },
     {
-      "am": "Ngô Thị Bích Trâm",
+      "am": "Ngô  Thị Bích Trâm",
       "ca1_vol": 2115.0,
       "ca1_gan": 0.9976359338,
       "ca1_gtc": 0.8486997636,
@@ -599,9 +599,9 @@
     "gtc": 0.7191840362
   },
   "grand_total_gtc_tts": {
-    "vol": 22140.0,
-    "gan": 0.9636856368745438,
-    "gtc": 0.7443541101974751
+    "vol": 0,
+    "gan": 0,
+    "gtc": 0
   },
   "ltc_am": [
     {
@@ -1099,7 +1099,7 @@
       "leadtime": 17.9
     },
     {
-      "am": "Nguyễn Ngọc Hà",
+      "am": "Nguyễn  Ngọc Hà",
       "bc": "BC 01 An Bình-Ea KNốp-Ea Kar-Đắk Lắk",
       "ca1_gtc": 0.622754491,
       "ton_gtc": 0.5614457831,
@@ -1129,7 +1129,7 @@
       "leadtime": 19.7721519
     },
     {
-      "am": "Nguyễn Ngọc Hà",
+      "am": "Nguyễn  Ngọc Hà",
       "bc": "BC 125 Lý Chính Thắng-Buôn Ma Thuột-Đắk Lắk",
       "ca1_gtc": 0.7771084337,
       "ton_gtc": 0.5691906005,
@@ -1169,7 +1169,7 @@
       "leadtime": 23.34383202
     },
     {
-      "am": "Nguyễn Hoàng Anh",
+      "am": "Nguyễn  Hoàng Anh",
       "bc": "BC Ngã Ba Đắk Liêng-Huyện Lắk-Đắk Lắk",
       "ca1_gtc": 0.7258064516,
       "ton_gtc": 0.3596491228,
@@ -1219,7 +1219,7 @@
       "leadtime": 22.4627193
     },
     {
-      "am": "Ngô Thị Bích Trâm",
+      "am": "Ngô  Thị Bích Trâm",
       "bc": "BC 236A Nguyễn Huệ-Đak Đoa-Gia Lai",
       "ca1_gtc": 0.7751824818,
       "ton_gtc": 0.3783783784,
@@ -1259,7 +1259,7 @@
       "leadtime": 16.346875
     },
     {
-      "am": "Nguyễn Hoàng Anh",
+      "am": "Nguyễn  Hoàng Anh",
       "bc": "BC Km18-Cư Kuin-Đắk Lắk",
       "ca1_gtc": 0.7734487734,
       "ton_gtc": 0.515625,
@@ -1289,7 +1289,7 @@
       "leadtime": 22.64344262
     },
     {
-      "am": "Nguyễn Ngọc Hà",
+      "am": "Nguyễn  Ngọc Hà",
       "bc": "BC Thôn Tân Lập Quốc Lộ 26-Xã Cư M'ta-M'Đrắk-Đăk Lắk",
       "ca1_gtc": 0.841509434,
       "ton_gtc": 0.5153374233,
@@ -1309,7 +1309,7 @@
       "leadtime": 22.0
     },
     {
-      "am": "Nguyễn Hoàng Anh",
+      "am": "Nguyễn  Hoàng Anh",
       "bc": "BC 271 Nguyễn Văn Cừ-Tân Lập-Đắk Lắk",
       "ca1_gtc": 0.8,
       "ton_gtc": 0.6035087719,
@@ -1349,7 +1349,7 @@
       "leadtime": 16.13043478
     },
     {
-      "am": "Nguyễn Hoàng Anh",
+      "am": "Nguyễn  Hoàng Anh",
       "bc": "BC TDP3 Thị Trấn Krông Kmart-Krông Bông-Đắk Lắk",
       "ca1_gtc": 0.8136645963,
       "ton_gtc": 0.4047619048,
@@ -1519,7 +1519,7 @@
       "leadtime": 13.12086514
     },
     {
-      "am": "Ngô Thị Bích Trâm",
+      "am": "Ngô  Thị Bích Trâm",
       "bc": "BC 499 Phạm Văn Đồng-Pleiku-Gia Lai",
       "ca1_gtc": 0.8626560726,
       "ton_gtc": 0.3582887701,
@@ -1659,7 +1659,7 @@
       "leadtime": 9.299212598
     },
     {
-      "am": "Ngô Thị Bích Trâm",
+      "am": "Ngô  Thị Bích Trâm",
       "bc": "BC 172 Hùng Vương-Chư Prông-Gia Lai",
       "ca1_gtc": 0.9160636758,
       "ton_gtc": 0.3703703704,
