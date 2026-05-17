@@ -16,8 +16,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
 .header h1{font-size:20px;font-weight:800;color:#ffffff}
 .header .date{color:#ffffff;font-size:13px;font-weight:500;opacity:0.9}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(145px, 1fr));gap:10px;padding:16px 20px}
-.kpi-card{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;display:flex;flex-direction:column;justify-content:center;min-height:90px; transition: all 0.2s ease;}
-.kpi-card:hover { transform: translateY(-2px); }
+.kpi-card{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:12px 8px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;display:flex;flex-direction:column;justify-content:center;min-height:90px; transition: all 0.2s ease; cursor: pointer;}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); border-color: #0ea5e9; }
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:12px 12px 0 0}
 .kpi-card:nth-child(1)::before{background:var(--accent)}
 .kpi-card:nth-child(2)::before{background:var(--cyan)}
@@ -231,7 +231,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 10:46 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 10:55 17/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" style="padding:6px 14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap">👥 QLNS</a>
@@ -242,14 +242,14 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </div>
 
 <div class="kpi-grid">
-<div class="kpi-card"><div class="kpi-label">VOLUME GIAO</div><div class="kpi-value">51,767</div><div class="kpi-delta" style="color:#ef4444">▼ 1.117</div></div>
-<div class="kpi-card"><div class="kpi-label">GTC Tổng</div><div class="kpi-value">71.9%</div><div class="kpi-delta" style="color:#ef4444">▼ 0.2%</div></div>
-<div class="kpi-card"><div class="kpi-label">% GTC TTS</div><div class="kpi-value">74.4%</div><div class="kpi-delta" style="color:#10b981">▲ 2.4%</div></div>
-<div class="kpi-card"><div class="kpi-label">% ODR TTS</div><div class="kpi-value">94.9%</div><div class="kpi-delta" style="color:#ef4444">▼ 1.1%</div></div>
-<div class="kpi-card"><div class="kpi-label">OPR TTS</div><div class="kpi-value" style="color:#ef4444">77.6%</div><div class="kpi-delta" style="color:#ef4444">▼ 9.0%</div></div>
-<div class="kpi-card"><div class="kpi-label">DT LẤY LŨY KẾ</div><div class="kpi-value">2.208.060.562đ</div><div class="kpi-delta" style="color:#ef4444">▼ 211.516.151đ</div></div>
-<div class="kpi-card"><div class="kpi-label">NS THIẾU / ĐỊNH BIÊN</div><div class="kpi-value" style="color:#ef4444">45 / 721</div><div class="kpi-delta" style="color:#94a3b8">→ 0.0</div></div>
-<div class="kpi-card"><div class="kpi-label">BC CẢNH BÁO</div><div class="kpi-value">1</div><div class="kpi-delta" style="color:#ef4444">▲ 1</div></div>
+<div class="kpi-card" onclick="showTab(1, true)"><div class="kpi-label">VOLUME GIAO</div><div class="kpi-value">51,767</div><div class="kpi-delta" style="color:#ef4444">▼ 1.117</div></div>
+<div class="kpi-card" onclick="showTab(1, true)"><div class="kpi-label">GTC Tổng</div><div class="kpi-value">71.9%</div><div class="kpi-delta" style="color:#ef4444">▼ 0.2%</div></div>
+<div class="kpi-card" onclick="showTab(2, true)"><div class="kpi-label">% GTC TTS</div><div class="kpi-value">74.4%</div><div class="kpi-delta" style="color:#10b981">▲ 2.4%</div></div>
+<div class="kpi-card" onclick="showTab(3, true)"><div class="kpi-label">% ODR TTS</div><div class="kpi-value">94.9%</div><div class="kpi-delta" style="color:#ef4444">▼ 1.1%</div></div>
+<div class="kpi-card" onclick="showTab(4, true)"><div class="kpi-label">OPR TTS</div><div class="kpi-value" style="color:#ef4444">77.6%</div><div class="kpi-delta" style="color:#ef4444">▼ 9.0%</div></div>
+<div class="kpi-card" onclick="showTab(6, true)"><div class="kpi-label">DT LẤY LŨY KẾ</div><div class="kpi-value">2.208.060.562đ</div><div class="kpi-delta" style="color:#ef4444">▼ 211.516.151đ</div></div>
+<div class="kpi-card" onclick="showTab(7, true)"><div class="kpi-label">NS THIẾU / ĐỊNH BIÊN</div><div class="kpi-value" style="color:#ef4444">45 / 721</div><div class="kpi-delta" style="color:#94a3b8">→ 0.0</div></div>
+<div class="kpi-card" onclick="showTab(8, true)"><div class="kpi-label">BC CẢNH BÁO</div><div class="kpi-value">1</div><div class="kpi-delta" style="color:#ef4444">▲ 1</div></div>
 </div>
 
 <div class="tabs">
@@ -989,13 +989,20 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 
 <script>
 Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-function showTab(i){
+function showTab(i, scroll=false){
   document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
   document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
   if(i===0&&!window._c1){window._c1=true;initGtcChart()}
   if(i===4&&!window._c4){window._c4=true;initOPRTrendChart()}
   if(i===6&&!window._c3){window._c3=true;initKDChart();initKDTrendChart()}
   if(i===7&&!window._c7){window._c7=true;initNSChart()}
+  if(scroll){
+    const tabsEl = document.querySelector('.tabs');
+    if(tabsEl){
+      const y = tabsEl.getBoundingClientRect().top + window.scrollY - 65;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+  }
 }
 
 function sortTable(th){
