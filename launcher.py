@@ -13,7 +13,7 @@ def is_port_in_use(port):
 
 def setup_system_services(base_dir):
     """Thiết lập các dịch vụ chạy ngầm vĩnh viễn trên macOS."""
-    plist_files = ["com.ghn.chat_service.plist", "com.ghn.dashboard.refresh.plist"]
+    plist_files = ["com.ghn.chat_service.plist", "com.ghn.dashboard.refresh.plist", "com.ghn.dashboard.server.plist"]
     dest_dir = os.path.expanduser("~/Library/LaunchAgents")
     
     # Tạo thư mục nếu chưa có
@@ -89,12 +89,18 @@ def launch():
 
     # 2. Khởi động Dashboard Server (Cổng 5001)
     if not is_port_in_use(5001):
-        print("🌐 Đang khởi động Dashboard Server...")
-        server_script = os.path.join(base_dir, 'remote_server.py')
-        subprocess.Popen([sys.executable, server_script], 
-                         cwd=base_dir,
-                         stdout=subprocess.DEVNULL, 
-                         stderr=subprocess.DEVNULL)
+        print("🌐 Đang kích hoạt Dashboard Server...")
+        dest_plist = os.path.expanduser("~/Library/LaunchAgents/com.ghn.dashboard.server.plist")
+        if os.path.exists(dest_plist):
+            subprocess.run(["launchctl", "load", dest_plist], stderr=subprocess.DEVNULL)
+        
+        # Nếu vẫn chưa chạy, chạy fallback
+        if not is_port_in_use(5001):
+            server_script = os.path.join(base_dir, 'remote_server.py')
+            subprocess.Popen([sys.executable, server_script], 
+                             cwd=base_dir,
+                             stdout=subprocess.DEVNULL, 
+                             stderr=subprocess.DEVNULL)
         
         for _ in range(10):
             if is_port_in_use(5001):
