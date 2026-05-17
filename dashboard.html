@@ -1474,6 +1474,11 @@ const _db = {"report_date": "2026-05-16", "gtc_tinh": [{"tinh": "Đắk Lắk", 
 </div>
 
 <script>
+// Tự động gửi tín hiệu "giữ thức/đánh thức" đến Dashboard Server mỗi 3 phút
+setInterval(() => {
+    fetch('http://localhost:5001/', { mode: 'no-cors' }).catch(() => {});
+}, 180000);
+
 let trinhHistory = [];
 let selectedFiles = [];
 
@@ -1563,13 +1568,11 @@ async function sendToTrinh() {
     document.getElementById('trinhTyping').style.display = 'block';
 
     let chatApiUrl = 'http://localhost:5005/chat';
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        fetch('http://localhost:5001/', { mode: 'no-cors' }).catch(() => {});
-    } else {
-        if (typeof BOT_URL !== 'undefined' && BOT_URL) {
-            chatApiUrl = BOT_URL + '/chat';
-        }
+    if (typeof BOT_URL !== 'undefined' && BOT_URL) {
+        chatApiUrl = BOT_URL + '/chat';
     }
+    // Luôn gửi tín hiệu đánh thức qua cổng 5001 (Nếu đang dùng trên máy tính, nó sẽ kích hoạt Chat Service)
+    fetch('http://localhost:5001/', { mode: 'no-cors' }).catch(() => {});
 
     const maxRetries = 2;
     for (let i = 0; i <= maxRetries; i++) {
@@ -1610,7 +1613,10 @@ async function sendToTrinh() {
                 continue;
             }
             document.getElementById('trinhTyping').style.display = 'none';
-            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối. Sếp đợi 1 chút để em khởi động nhé! (Nhấn F5 nếu cần)</div>`;
+            box.innerHTML += `<div class="trinh-msg bot" style="color:#ef4444; border:1px solid #fca5a5; background:#fee2e2; padding:10px 14px; border-radius:12px; font-size:13.5px; line-height:1.6; margin-bottom: 8px;">
+                ⚠️ <b>Không thể kết nối đến Ngọc Trinh!</b><br>
+                Em đang cố gắng tự khởi động lại. Nếu vẫn không được, Sếp vui lòng click đúp vào file <b>Launch_Dashboard.command</b> trên máy tính để kích hoạt dịch vụ nhé! (F5 sau khi chạy)
+            </div>`;
             box.scrollTop = box.scrollHeight;
         }
     }
