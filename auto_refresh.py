@@ -265,6 +265,23 @@ def run_extraction():
 
     try:
         ws = wb['6.ONTIME TTS']
+        
+        # Extract ontime dates from row 2
+        ontime_dates = []
+        for c in [2, 3, 4, 5, 6, 7, 9]:
+            val = ws.cell(2, c).value
+            if val:
+                val_str = str(val).strip()
+                match = re.search(r'(\d{4})-(\d{2})-(\d{2})', val_str)
+                if match:
+                    y, m, d = match.groups()
+                    ontime_dates.append(f"{d}/{m}")
+                else:
+                    ontime_dates.append(val_str)
+            else:
+                ontime_dates.append("")
+        data['ontime_dates'] = ontime_dates
+
         ontime_tts = []
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,1).value

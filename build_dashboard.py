@@ -331,10 +331,10 @@ def clean_name(n): return " ".join(str(n).split()).lower()
 am_names = {clean_name(x['am']) for x in data.get('gtc_am', []) if 'am' in x}
 
 # ODR TTS Headers
-odr_dates = data.get('ontime_dates', ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'Hôm nay'])
-if len(odr_dates) < 8:
-    odr_dates = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'Hôm nay', 'N/A']
-ontime_header_html = f"<th>{odr_dates[-8]}</th><th>{odr_dates[-7]}</th><th>{odr_dates[-6]}</th><th>{odr_dates[-5]}</th><th>{odr_dates[-4]}</th><th>{odr_dates[-3]}</th><th>{odr_dates[-2]}</th>"
+odr_dates = data.get('ontime_dates')
+if not odr_dates or len(odr_dates) < 7:
+    odr_dates = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'Hôm nay']
+ontime_header_html = "".join(f"<th>{d}</th>" for d in odr_dates[:7])
 
 ontime_am_rows = ''
 ontime_bc_rows = ''
