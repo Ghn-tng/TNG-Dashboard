@@ -193,7 +193,7 @@ def chat():
             
             response = chat_session.send_message(
                 msg_parts,
-                generation_config={"max_output_tokens": 1000, "temperature": 0.7}
+                generation_config={"max_output_tokens": 8192, "temperature": 0.7}
             )
             
             LAST_WORKING_KEY_IDX = api_keys.index(key)

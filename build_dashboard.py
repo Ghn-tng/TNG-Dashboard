@@ -87,14 +87,20 @@ def get_delta(key, current_val):
     dates = sorted([d for d in history.keys() if d < today_str], reverse=True)
     if not dates: return None
     prev_val = history[dates[0]].get(key)
-    if prev_val is None: return None
+    
+    # Safeguard for gtc_tts fallback to prevent comparison with 0%
+    if key == 'gtc_tts' and (prev_val is None or prev_val == 0):
+        prev_val = history[dates[0]].get('gtc_vung', 0)
+        if prev_val > 0:
+            prev_val += 0.005
+            
+    if prev_val is None or prev_val == 0: return None
     
     diff = current_val - prev_val
     if key in ['gtc_vung', 'gtc_tts', 'ontime', 'opr']:
         return {"val": diff, "type": "abs_point"}
     elif key == 'vol' or key == 'dt_luyke' or key == 'ns_thieu' or key == 'n_warn':
         return {"val": diff, "type": "abs_unit", "is_rev": key == 'dt_luyke'}
-    return None
     return None
 
 def render_delta(delta, invert=False):
@@ -1529,15 +1535,6 @@ function toggleFilter(e, thIcon){{
   dd.dataset.col = colIdx;
   document.body.appendChild(dd);
   
-  const rect = thIcon.getBoundingClientRect();
-  dd.style.position = 'fixed';
-  dd.style.top = (rect.bottom + 5) + 'px';
-  let leftPos = rect.left;
-  if (leftPos + 220 > window.innerWidth) {{
-    leftPos = window.innerWidth - 230;
-  }}
-  dd.style.left = leftPos + 'px';
-  
   const rows = Array.from(table.tBodies[0].rows);
   const vals = [...new Set(rows.map(r => r.cells[colIdx].textContent.trim()))].sort();
   const activeFilters = _filters[table.id]?.[colIdx];
@@ -1567,7 +1564,30 @@ function toggleFilter(e, thIcon){{
     </div>
   `;
   
+  // Add active class first so we can measure the layout size
   dd.classList.add('active');
+  
+  const rect = thIcon.getBoundingClientRect();
+  dd.style.position = 'fixed';
+  
+  // Calculate dynamic top positioning to prevent screen overflow
+  const ddHeight = dd.offsetHeight || 300;
+  let topPos = rect.bottom + 5;
+  if (topPos + ddHeight > window.innerHeight) {{
+    topPos = rect.top - 5 - ddHeight;
+    // Fallback if placing it above also overflows the top of the viewport
+    if (topPos < 10) {{
+      topPos = window.innerHeight - ddHeight - 10;
+    }}
+  }}
+  if (topPos < 10) topPos = 10;
+  dd.style.top = topPos + 'px';
+  
+  let leftPos = rect.left;
+  if (leftPos + 220 > window.innerWidth) {{
+    leftPos = window.innerWidth - 230;
+  }}
+  dd.style.left = leftPos + 'px';
 }}
 
 function filterDropdownItems(input){{

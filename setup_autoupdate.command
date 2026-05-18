@@ -11,10 +11,10 @@ echo "🚀 Setting up GHN Dashboard Auto-refresh..."
 cp "$SOURCE_PATH" "$PLIST_PATH"
 
 # Unload if already running
-launchctl unload "$PLIST_PATH" 2>/dev/null
+launchctl bootout gui/$(id -u) "$PLIST_PATH" 2>/dev/null
 
 # Load and start
-launchctl load "$PLIST_PATH"
+launchctl bootstrap gui/$(id -u) "$PLIST_PATH"
 
 echo "✅ Auto-refresh service installed and started!"
 echo "📈 Data will update every hour on the hour (7h, 8h, 9h...)"

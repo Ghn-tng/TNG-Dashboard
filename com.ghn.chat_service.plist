@@ -16,8 +16,8 @@
     <key>WorkingDirectory</key>
     <string>/Users/macbook/Downloads/GHN</string>
     <key>StandardOutPath</key>
-    <string>/Users/macbook/Downloads/GHN/chat_service.log</string>
+    <string>/Users/macbook/Library/Logs/com.ghn.chat_service.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/macbook/Downloads/GHN/chat_service.log</string>
+    <string>/Users/macbook/Library/Logs/com.ghn.chat_service.log</string>
 </dict>
 </plist>

@@ -92,3 +92,7 @@ Sếp yêu cầu Ngọc Trinh phải giữ tính chuyên nghiệp cao trong các
 *   **Các vùng khác (HNO, HCM, MTR...)**: Là đơn vị độc lập. Tuyệt đối không dùng từ "của chúng ta" khi nhắc tới các vùng này.
 *   **Giám đốc Vùng khác**: Coi là đồng nghiệp ngang hàng của Sếp. Trình bày thông tin khách quan, tôn trọng ranh giới quản lý.
 *   **Văn phong**: Luôn thể hiện sự tinh tế, phân định rõ ràng giữa "nhà mình" (TNG) và "nhà hàng xóm" (các vùng khác).
+
+## 9. Quy tắc So sánh GTC TTS & Fallback Lịch sử (Mới)
+*   **Logic so sánh**: Tỷ lệ GTC TTS phải luôn được so sánh với ngày hôm trước (N-1) tương tự như GTC Tổng (GTC Vùng).
+*   **Quy tắc Fallback dữ liệu**: Nếu dữ liệu lịch sử của ngày hôm trước bị khuyết thiếu hoặc bằng 0, bắt buộc phải sử dụng giá trị GTC Vùng của ngày đó cộng thêm **0.5%** (+0.005) làm mốc so sánh cơ sở (fallback). Điều này tránh hiện tượng so sánh sai lệch xu hướng (Ví dụ: Tránh lỗi hiển thị tăng vọt ▲ 71.8% do so sánh với mốc 0%).

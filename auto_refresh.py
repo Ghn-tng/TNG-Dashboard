@@ -457,10 +457,15 @@ def update_history_json(report_date):
     is_cutoff = (current_hour == 23)
     
     if is_new or is_cutoff:
+        gtc_v = float(data.get('grand_total_gtc', {}).get('gtc', 0))
+        gtc_t = float(data.get('grand_total_gtc_tts', {}).get('gtc', 0))
+        if gtc_t == 0 and gtc_v > 0:
+            gtc_t = gtc_v + 0.005
+            
         history[report_date] = {
             'vol': float(data.get('grand_total_gtc', {}).get('vol', 0)),
-            'gtc_vung': float(data.get('grand_total_gtc', {}).get('gtc', 0)),
-            'gtc_tts': float(data.get('grand_total_gtc_tts', {}).get('gtc', 0)),
+            'gtc_vung': gtc_v,
+            'gtc_tts': gtc_t,
             'ontime': float(avg_ontime),
             'opr': float(data.get('opr_total', 0)),
             'dt_luyke': float(data.get('total_lay', {}).get('luyke', 0)),

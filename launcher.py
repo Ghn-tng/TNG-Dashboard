@@ -38,15 +38,19 @@ def setup_system_services(base_dir):
             print(f"🛠️  Đang thiết lập dịch vụ {plist_filename}...")
             try:
                 shutil.copy2(src_plist, dest_plist)
-                # Load service
-                subprocess.run(["launchctl", "unload", dest_plist], stderr=subprocess.DEVNULL)
-                subprocess.run(["launchctl", "load", dest_plist], check=True)
+                # Load service using modern launchctl bootstrap
+                uid = os.getuid()
+                domain = f"gui/{uid}"
+                subprocess.run(["launchctl", "bootout", domain, dest_plist], stderr=subprocess.DEVNULL)
+                subprocess.run(["launchctl", "bootstrap", domain, dest_plist], check=True)
                 print(f"✅ Đã lưu {plist_filename} vào hệ thống.")
             except Exception as e:
                 print(f"⚠️ Không thể thiết lập dịch vụ {plist_filename}: {e}")
         else:
             # Vẫn đảm bảo dịch vụ đã được load
-            subprocess.run(["launchctl", "load", dest_plist], stderr=subprocess.DEVNULL)
+            uid = os.getuid()
+            domain = f"gui/{uid}"
+            subprocess.run(["launchctl", "bootstrap", domain, dest_plist], stderr=subprocess.DEVNULL)
 
 
 def launch():
@@ -65,7 +69,9 @@ def launch():
         print("🚀 Đang kích hoạt Chat Service...")
         dest_plist = os.path.expanduser("~/Library/LaunchAgents/com.ghn.chat_service.plist")
         if os.path.exists(dest_plist):
-            subprocess.run(["launchctl", "load", dest_plist], stderr=subprocess.DEVNULL)
+            uid = os.getuid()
+            domain = f"gui/{uid}"
+            subprocess.run(["launchctl", "bootstrap", domain, dest_plist], stderr=subprocess.DEVNULL)
         
         # Nếu vẫn chưa chạy (có thể do load rồi nhưng đang start), đợi một chút
         # Hoặc chạy fallback nếu launchctl không khả dụng
@@ -86,13 +92,15 @@ def launch():
         print("✅ Ngọc Trinh Chat Service đã sẵn sàng (Port 5005).")
     else:
         print("❌ Lỗi: Không thể khởi động Chat Service.")
-
+ 
     # 2. Khởi động Dashboard Server (Cổng 5001)
     if not is_port_in_use(5001):
         print("🌐 Đang kích hoạt Dashboard Server...")
         dest_plist = os.path.expanduser("~/Library/LaunchAgents/com.ghn.dashboard.server.plist")
         if os.path.exists(dest_plist):
-            subprocess.run(["launchctl", "load", dest_plist], stderr=subprocess.DEVNULL)
+            uid = os.getuid()
+            domain = f"gui/{uid}"
+            subprocess.run(["launchctl", "bootstrap", domain, dest_plist], stderr=subprocess.DEVNULL)
         
         # Nếu vẫn chưa chạy, chạy fallback
         if not is_port_in_use(5001):
@@ -106,7 +114,7 @@ def launch():
             if is_port_in_use(5001):
                 break
             time.sleep(0.5)
-
+ 
     if is_port_in_use(5001):
         print("✅ Dashboard Server đã sẵn sàng (Port 5001).")
     else:
