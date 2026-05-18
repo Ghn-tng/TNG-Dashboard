@@ -348,14 +348,14 @@ for x in sorted(data.get('ontime_tts',[]), key=lambda a: safe_num(a.get('today',
     nc = safe_num(x.get('n_change',0))
     nc_cls = 'trend-up' if nc > 0 else 'trend-down'
     color = "color:#ef4444" if t < 0.95 else "color:#22c55e"
-    row_html = f"<tr><td class='text-left'>{name}</td><td>{pct(x.get('day2',0))}</td><td>{pct(x.get('day3',0))}</td><td>{pct(x.get('day4',0))}</td><td>{pct(x.get('day5',0))}</td><td>{pct(x.get('day6',0))}</td><td>{pct(x.get('day7',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
+    row_html = f"<tr><td class='text-left'>{name}</td><td>{pct(x.get('day3',0))}</td><td>{pct(x.get('day4',0))}</td><td>{pct(x.get('day5',0))}</td><td>{pct(x.get('day6',0))}</td><td>{pct(x.get('day7',0))}</td><td>{pct(x.get('day8',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
     
     if clean_name(name) in am_names:
         ontime_am_rows += row_html
     else:
         # Add AM column for BC table
         am_name = bc_to_am.get(name, '-')
-        row_html_bc = f"<tr><td class='text-left'>{am_name}</td><td class='text-left'>{name}</td><td>{pct(x.get('day2',0))}</td><td>{pct(x.get('day3',0))}</td><td>{pct(x.get('day4',0))}</td><td>{pct(x.get('day5',0))}</td><td>{pct(x.get('day6',0))}</td><td>{pct(x.get('day7',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
+        row_html_bc = f"<tr><td class='text-left'>{am_name}</td><td class='text-left'>{name}</td><td>{pct(x.get('day3',0))}</td><td>{pct(x.get('day4',0))}</td><td>{pct(x.get('day5',0))}</td><td>{pct(x.get('day6',0))}</td><td>{pct(x.get('day7',0))}</td><td>{pct(x.get('day8',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
         ontime_bc_rows += row_html_bc
 
 # Add Vùng TNG total row for ODR TTS
@@ -366,7 +366,7 @@ if gt_ot:
     nc = safe_num(gt_ot.get('n_change',0))
     nc_cls = 'trend-up' if nc > 0 else 'trend-down'
     color = "color:#ef4444" if t < 0.95 else "color:#22c55e"
-    ontime_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{pct(gt_ot.get('day2',0))}</td><td>{pct(gt_ot.get('day3',0))}</td><td>{pct(gt_ot.get('day4',0))}</td><td>{pct(gt_ot.get('day5',0))}</td><td>{pct(gt_ot.get('day6',0))}</td><td>{pct(gt_ot.get('day7',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
+    ontime_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{pct(gt_ot.get('day3',0))}</td><td>{pct(gt_ot.get('day4',0))}</td><td>{pct(gt_ot.get('day5',0))}</td><td>{pct(gt_ot.get('day6',0))}</td><td>{pct(gt_ot.get('day7',0))}</td><td>{pct(gt_ot.get('day8',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
 
 cb_rows = ''.join(f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{bc_to_am.get(x.get("bc","").strip(), "-")}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:#ef4444;font-weight:600">{pct(safe_num(x.get("n1",0)))}</td><td>{pct(safe_num(x.get("n2",0)))}</td><td>{pct(safe_num(x.get("n3",0)))}</td></tr>' for x in data.get('canh_bao',[]))
 

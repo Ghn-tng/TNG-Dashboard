@@ -268,7 +268,7 @@ def run_extraction():
         
         # Extract ontime dates from row 2
         ontime_dates = []
-        for c in [2, 3, 4, 5, 6, 7, 9]:
+        for c in [3, 4, 5, 6, 7, 8, 9]:
             val = ws.cell(2, c).value
             if val:
                 val_str = str(val).strip()
