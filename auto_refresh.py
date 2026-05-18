@@ -291,7 +291,7 @@ def run_extraction():
             ontime_tts.append({'am': str(am).strip(), 'day2': sn(ws.cell(r,2).value), 'day3': sn(ws.cell(r,3).value),
                                'day4': sn(ws.cell(r,4).value), 'day5': sn(ws.cell(r,5).value), 'day6': sn(ws.cell(r,6).value),
                                'day7': sn(ws.cell(r,7).value), 'day8': sn(ws.cell(r,8).value), 'today': today_val,
-                               'n_change': sn(ws.cell(r,10).value)})
+                               'n_change': sn(ws.cell(r,11).value)})
         data['ontime_tts'] = ontime_tts
     except Exception as e: log(f"⚠️ Error extracting Ontime TTS: {e}")
 
