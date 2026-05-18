@@ -233,7 +233,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 08:00 18/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 08:05 18/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1045,15 +1045,6 @@ function toggleFilter(e, thIcon){
   dd.dataset.col = colIdx;
   document.body.appendChild(dd);
   
-  const rect = thIcon.getBoundingClientRect();
-  dd.style.position = 'fixed';
-  dd.style.top = (rect.bottom + 5) + 'px';
-  let leftPos = rect.left;
-  if (leftPos + 220 > window.innerWidth) {
-    leftPos = window.innerWidth - 230;
-  }
-  dd.style.left = leftPos + 'px';
-  
   const rows = Array.from(table.tBodies[0].rows);
   const vals = [...new Set(rows.map(r => r.cells[colIdx].textContent.trim()))].sort();
   const activeFilters = _filters[table.id]?.[colIdx];
@@ -1083,7 +1074,30 @@ function toggleFilter(e, thIcon){
     </div>
   `;
   
+  // Add active class first so we can measure the layout size
   dd.classList.add('active');
+  
+  const rect = thIcon.getBoundingClientRect();
+  dd.style.position = 'fixed';
+  
+  // Calculate dynamic top positioning to prevent screen overflow
+  const ddHeight = dd.offsetHeight || 300;
+  let topPos = rect.bottom + 5;
+  if (topPos + ddHeight > window.innerHeight) {
+    topPos = rect.top - 5 - ddHeight;
+    // Fallback if placing it above also overflows the top of the viewport
+    if (topPos < 10) {
+      topPos = window.innerHeight - ddHeight - 10;
+    }
+  }
+  if (topPos < 10) topPos = 10;
+  dd.style.top = topPos + 'px';
+  
+  let leftPos = rect.left;
+  if (leftPos + 220 > window.innerWidth) {
+    leftPos = window.innerWidth - 230;
+  }
+  dd.style.left = leftPos + 'px';
 }
 
 function filterDropdownItems(input){
