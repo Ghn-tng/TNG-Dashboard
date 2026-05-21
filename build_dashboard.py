@@ -2602,7 +2602,7 @@ const provinceData = {{
     target: "{phuyen_gtc_avg}",
     staff: "{phuyen_ns}",
     volPct: "{phuyen_vol_pct}",
-    challenges: "Địa hình kết hợp núi-biển hiểm trước ở các huyện vùng sâu, khối lượng thấp hơn.",
+    challenges: "Địa hình kết hợp núi-biển hiểm trở ở các huyện vùng sâu, mật độ đơn hàng thấp.",
     focus: "Tăng tỷ lệ GTC và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
   }}
 }};
