@@ -1049,125 +1049,176 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .map-container {{
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 560px;
   margin: 0 auto;
   border-radius: 16px;
   border: 1px solid #cbd5e1;
   overflow: hidden;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), inset 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), inset 0 2px 4px rgba(0,0,0,0.02);
   background: #ffffff;
 }}
+/* === Province Glow Pins (center of each province) === */
 .map-pin {{
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 44px;
+  height: 44px;
   transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 10;
 }}
 .pin-dot {{
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   background: #0ea5e9;
-  border: 2.5px solid #fff;
+  border: 3px solid #fff;
   border-radius: 50%;
   position: absolute;
-  top: 4px;
-  left: 4px;
-  box-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 14px rgba(14, 165, 233, 0.9), 0 2px 6px rgba(0,0,0,0.25);
   transition: all 0.3s ease;
 }}
 .map-pin[data-id="daklak"] .pin-dot {{
   background: #ea580c;
-  box-shadow: 0 0 10px rgba(234, 88, 12, 0.8);
+  box-shadow: 0 0 14px rgba(234, 88, 12, 0.9), 0 2px 6px rgba(0,0,0,0.25);
 }}
 .map-pin[data-id="binhdinh"] .pin-dot {{
   background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.9), 0 2px 6px rgba(0,0,0,0.25);
 }}
 .map-pin[data-id="phuyen"] .pin-dot {{
   background: #c026d3;
-  box-shadow: 0 0 10px rgba(192, 38, 211, 0.8);
+  box-shadow: 0 0 14px rgba(192, 38, 211, 0.9), 0 2px 6px rgba(0,0,0,0.25);
 }}
 .pin-pulse {{
-  width: 28px;
-  height: 28px;
-  background: rgba(14, 165, 233, 0.35);
+  width: 44px;
+  height: 44px;
+  background: rgba(14, 165, 233, 0.3);
   border-radius: 50%;
   position: absolute;
-  top: -4px;
-  left: -4px;
-  animation: map-pulse 2s infinite ease-out;
+  top: 0;
+  left: 0;
+  animation: map-pulse 2.2s infinite ease-out;
   pointer-events: none;
 }}
-.map-pin[data-id="daklak"] .pin-pulse {{
-  background: rgba(234, 88, 12, 0.35);
+.pin-pulse2 {{
+  width: 44px;
+  height: 44px;
+  background: rgba(14, 165, 233, 0.18);
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: map-pulse 2.2s infinite ease-out 0.7s;
+  pointer-events: none;
 }}
-.map-pin[data-id="binhdinh"] .pin-pulse {{
-  background: rgba(16, 185, 129, 0.35);
+.map-pin[data-id="daklak"] .pin-pulse,
+.map-pin[data-id="daklak"] .pin-pulse2 {{
+  background: rgba(234, 88, 12, 0.28);
 }}
-.map-pin[data-id="phuyen"] .pin-pulse {{
-  background: rgba(192, 38, 211, 0.35);
+.map-pin[data-id="binhdinh"] .pin-pulse,
+.map-pin[data-id="binhdinh"] .pin-pulse2 {{
+  background: rgba(16, 185, 129, 0.28);
+}}
+.map-pin[data-id="phuyen"] .pin-pulse,
+.map-pin[data-id="phuyen"] .pin-pulse2 {{
+  background: rgba(192, 38, 211, 0.28);
 }}
 @keyframes map-pulse {{
   0% {{
-    transform: scale(0.6);
+    transform: scale(0.4);
     opacity: 1;
   }}
   100% {{
-    transform: scale(2.2);
+    transform: scale(2.8);
     opacity: 0;
   }}
 }}
 .pin-label {{
   position: absolute;
-  top: -28px;
+  top: -34px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(6px);
   color: #fff;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 5px 12px;
+  border-radius: 7px;
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  opacity: 0.85;
+  border: 1px solid rgba(255,255,255,0.18);
+  opacity: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  letter-spacing: 0.5px;
+  pointer-events: none;
 }}
 .map-pin:hover .pin-label, .map-pin.active-pin .pin-label {{
   background: #0284c7;
   opacity: 1;
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 10px 18px rgba(2, 132, 199, 0.35);
 }}
 .map-pin[data-id="daklak"]:hover .pin-label, .map-pin[data-id="daklak"].active-pin .pin-label {{
   background: #ea580c;
-  box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.3);
+  box-shadow: 0 10px 18px rgba(234, 88, 12, 0.35);
 }}
 .map-pin[data-id="binhdinh"]:hover .pin-label, .map-pin[data-id="binhdinh"].active-pin .pin-label {{
   background: #047857;
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 18px rgba(16, 185, 129, 0.35);
 }}
 .map-pin[data-id="phuyen"]:hover .pin-label, .map-pin[data-id="phuyen"].active-pin .pin-label {{
   background: #c026d3;
-  box-shadow: 0 10px 15px -3px rgba(192, 38, 211, 0.3);
+  box-shadow: 0 10px 18px rgba(192, 38, 211, 0.35);
 }}
 .map-pin.active-pin .pin-dot {{
-  transform: scale(1.3);
+  transform: translate(-50%, -50%) scale(1.4);
   border-color: #fff;
-  box-shadow: 0 0 16px rgba(14, 165, 233, 0.9);
+  box-shadow: 0 0 22px rgba(14, 165, 233, 1), 0 4px 8px rgba(0,0,0,0.3);
 }}
 .map-pin[data-id="daklak"].active-pin .pin-dot {{
-  box-shadow: 0 0 16px rgba(234, 88, 12, 0.9);
+  box-shadow: 0 0 22px rgba(234, 88, 12, 1), 0 4px 8px rgba(0,0,0,0.3);
 }}
 .map-pin[data-id="binhdinh"].active-pin .pin-dot {{
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.9);
+  box-shadow: 0 0 22px rgba(16, 185, 129, 1), 0 4px 8px rgba(0,0,0,0.3);
 }}
 .map-pin[data-id="phuyen"].active-pin .pin-dot {{
-  box-shadow: 0 0 16px rgba(192, 38, 211, 0.9);
+  box-shadow: 0 0 22px rgba(192, 38, 211, 1), 0 4px 8px rgba(0,0,0,0.3);
+}}
+/* === City Star Markers (red 3D) === */
+.city-star {{
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}}
+.city-star-icon {{
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)) drop-shadow(0 4px 6px rgba(200,0,0,0.5));
+  animation: star-float 3s ease-in-out infinite;
+}}
+.city-star-name {{
+  font-size: 9px;
+  font-weight: 700;
+  color: #7f1d1d;
+  background: rgba(255,255,255,0.88);
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  border: 1px solid rgba(239,68,68,0.3);
+  letter-spacing: 0.3px;
+}}
+@keyframes star-float {{
+  0%, 100% {{ transform: translateY(0px); }}
+  50% {{ transform: translateY(-2px); }}
 }}
 .section-title{{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
 .section-title span{{width:4px;height:20px;border-radius:2px;background:var(--accent)}}
@@ -1717,32 +1768,64 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
         <div class="map-container">
           <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: auto; display: block; pointer-events: none;">
           
-          <!-- Gia Lai Pin (Pleiku Star) -->
-          <div class="map-pin" style="top: 33%; left: 40%;" data-id="gialai" onclick="selectProvince('gialai')">
+          <!-- === Province Glow Pins (center of each province) === -->
+          
+          <!-- Gia Lai - center of blue province -->
+          <div class="map-pin" style="top: 28%; left: 30%;" data-id="gialai" onclick="selectProvince('gialai')">
             <div class="pin-pulse"></div>
+            <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
             <div class="pin-label">GIA LAI</div>
           </div>
           
-          <!-- Đắk Lắk Pin (Buôn Ma Thuột Star - Default Active) -->
-          <div class="map-pin active-pin" style="top: 64%; left: 44%;" data-id="daklak" onclick="selectProvince('daklak')">
+          <!-- Đắk Lắk - center of orange province (Default Active) -->
+          <div class="map-pin active-pin" style="top: 63%; left: 33%;" data-id="daklak" onclick="selectProvince('daklak')">
             <div class="pin-pulse"></div>
+            <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
             <div class="pin-label">ĐẮK LẮK</div>
           </div>
           
-          <!-- Bình Định Pin (Quy Nhơn Star) -->
-          <div class="map-pin" style="top: 36%; left: 72%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+          <!-- Bình Định - center of green province -->
+          <div class="map-pin" style="top: 22%; left: 68%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
             <div class="pin-pulse"></div>
+            <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
             <div class="pin-label">BÌNH ĐỊNH</div>
           </div>
           
-          <!-- Phú Yên Pin (Tuy Hòa Star) -->
-          <div class="map-pin" style="top: 57%; left: 74%;" data-id="phuyen" onclick="selectProvince('phuyen')">
+          <!-- Phú Yên - center of purple province -->
+          <div class="map-pin" style="top: 53%; left: 65%;" data-id="phuyen" onclick="selectProvince('phuyen')">
             <div class="pin-pulse"></div>
+            <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
             <div class="pin-label">PHÚ YÊN</div>
+          </div>
+
+          <!-- === City Stars (red 3D) at capital positions === -->
+          
+          <!-- Pleiku - Gia Lai capital -->
+          <div class="city-star" style="top: 33%; left: 41%;">
+            <div class="city-star-icon">⭐</div>
+            <div class="city-star-name">Pleiku</div>
+          </div>
+          
+          <!-- Buôn Ma Thuột - Đắk Lắk capital -->
+          <div class="city-star" style="top: 65%; left: 44%;">
+            <div class="city-star-icon">⭐</div>
+            <div class="city-star-name">Buôn Ma Thuột</div>
+          </div>
+          
+          <!-- Quy Nhơn - Bình Định capital -->
+          <div class="city-star" style="top: 35%; left: 76%;">
+            <div class="city-star-icon">⭐</div>
+            <div class="city-star-name">Quy Nhơn</div>
+          </div>
+          
+          <!-- Tuy Hòa - Phú Yên capital -->
+          <div class="city-star" style="top: 57%; left: 75%;">
+            <div class="city-star-icon">⭐</div>
+            <div class="city-star-name">Tuy Hòa</div>
           </div>
         </div>
       </div>
