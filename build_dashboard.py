@@ -1022,9 +1022,9 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .kpi-card:nth-child(6) .kpi-value{{color:var(--yellow)}}
 .kpi-card:nth-child(7) .kpi-value{{color:var(--red)}}
 .kpi-card:nth-child(8) .kpi-value{{color:var(--red)}}
-.tabs{{display:flex;gap:12px;padding:12px 24px;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto; position: sticky; top: 62px; z-index: 999; align-items: center;}}
-.tab{{padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:var(--dim);transition:all .2s;white-space:nowrap;border:1px solid transparent; position: relative; display: flex; align-items: center; gap: 8px; background: transparent; box-shadow: none;}}
-.tab svg{{width:18px;height:18px}}
+.tabs{{display:flex;gap:8px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto; position: sticky; top: 62px; z-index: 999; align-items: center;}}
+.tab{{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--dim);transition:all .2s;white-space:nowrap;border:1px solid transparent; position: relative; display: flex; align-items: center; gap: 6px; background: transparent; box-shadow: none;}}
+.tab svg{{width:16px;height:16px}}
 .tab:nth-child(1) svg{{color:#3b82f6}}
 .tab:nth-child(2) svg{{color:#06b6d4}}
 .tab:nth-child(3) svg{{color:#10b981}}
@@ -1036,7 +1036,7 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .tab:nth-child(9) svg{{color:#ef4444}}
 .tab:nth-child(10) svg{{color:#8b5cf6}}
 .tab:hover{{background:var(--card2); color:var(--accent);}}
-.tab:not(:last-child)::after{{content:''; position:absolute; right:-7px; height:20px; width:2px; background:#cbd5e1; box-shadow:1px 0 0 #fff;}}
+.tab:not(:last-child)::after{{content:''; position:absolute; right:-5px; height:16px; width:2px; background:#cbd5e1; box-shadow:1px 0 0 #fff;}}
 .tab.active{{background:var(--accent);color:#fff;border-color:#0369a1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}}
 .tab.active svg{{color:#fff !important}}
 .tab.active::after{{display:none}}
@@ -1416,16 +1416,16 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 </div>
 
 <div class="tabs">
-<div class="tab active" onclick="showTab(0)"><i data-lucide="layout-dashboard"></i> Tổng quan Vùng</div>
+<div class="tab active" onclick="showTab(0)"><i data-lucide="layout-dashboard"></i> Tổng quan</div>
 <div class="tab" onclick="showTab(1)"><i data-lucide="bar-chart-3"></i> GTC Tổng</div>
 <div class="tab" onclick="showTab(2)"><i data-lucide="target"></i> GTC TTS</div>
 <div class="tab" onclick="showTab(3)"><i data-lucide="clock"></i> % ODR TTS</div>
 <div class="tab" onclick="showTab(4)"><i data-lucide="zap"></i> OPR TTS</div>
-<div class="tab" onclick="showTab(5)"><i data-lucide="package"></i> Lấy Hàng (LTC)</div>
-<div class="tab" onclick="showTab(6)"><i data-lucide="briefcase"></i> Kinh Doanh</div>
-<div class="tab" onclick="showTab(7)"><i data-lucide="users"></i> Nhân Sự</div>
-<div class="tab" onclick="showTab(8)"><i data-lucide="alert-triangle"></i> BC Cảnh Báo</div>
-<div class="tab" onclick="showTab(9)"><i data-lucide="info"></i> Giới Thiệu</div>
+<div class="tab" onclick="showTab(5)"><i data-lucide="package"></i> Lấy hàng</div>
+<div class="tab" onclick="showTab(6)"><i data-lucide="briefcase"></i> Kinh doanh</div>
+<div class="tab" onclick="showTab(7)"><i data-lucide="users"></i> Nhân sự</div>
+<div class="tab" onclick="showTab(8)"><i data-lucide="alert-triangle"></i> Cảnh báo</div>
+<div class="tab" onclick="showTab(9)" title="Giới thiệu"><i data-lucide="info"></i></div>
 </div>
 
 <div class="content">
