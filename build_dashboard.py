@@ -1294,31 +1294,7 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
   0%, 100% {{ transform: translateY(0px); }}
   50% {{ transform: translateY(-2px); }}
 }}
-/* === 3D Blinking Red Stars Overlay === */
-@keyframes star-blink-3d {{
-  0%, 100% {{
-    opacity: 0.45;
-    transform: translate(-50%, -50%) scale(0.85);
-    filter: drop-shadow(0 1px 3px rgba(239, 68, 68, 0.45));
-  }}
-  50% {{
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.25);
-    filter: drop-shadow(0 4px 10px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 12px rgba(239, 68, 68, 0.65));
-  }}
-}}
-.city-star-3d {{
-  position: absolute;
-  transform: translate(-50%, -50%);
-  z-index: 15;
-  pointer-events: none;
-  width: 17px;
-  height: 17px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: star-blink-3d 1.8s infinite ease-in-out;
-}}
+
 .section-title{{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
 .section-title span{{width:4px;height:20px;border-radius:2px;background:var(--accent)}}
 .grid-2{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
@@ -1901,66 +1877,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
               <div class="pin-dot"></div>
               <div class="pin-label">PHÚ YÊN</div>
             </div>
-            <!-- === Blinking 3D Red Stars Overlay === -->
-            <!-- Pleiku - Gia Lai capital -->
-            <div class="city-star-3d" style="top: 32.5%; left: 37.6%; animation-delay: 0s;">
-              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
-                <defs>
-                  <radialGradient id="red3d-grad-pleiku" cx="35%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#ff9b9b" />
-                    <stop offset="40%" stop-color="#ef4444" />
-                    <stop offset="85%" stop-color="#b91c1c" />
-                    <stop offset="100%" stop-color="#7f1d1d" />
-                  </radialGradient>
-                </defs>
-                <path fill="url(#red3d-grad-pleiku)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
-              </svg>
-            </div>
-            
-            <!-- Buôn Ma Thuột - Đắk Lắk capital -->
-            <div class="city-star-3d" style="top: 60.5%; left: 39.8%; animation-delay: 0.8s;">
-              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
-                <defs>
-                  <radialGradient id="red3d-grad-bmt" cx="35%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#ff9b9b" />
-                    <stop offset="40%" stop-color="#ef4444" />
-                    <stop offset="85%" stop-color="#b91c1c" />
-                    <stop offset="100%" stop-color="#7f1d1d" />
-                  </radialGradient>
-                </defs>
-                <path fill="url(#red3d-grad-bmt)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
-              </svg>
-            </div>
-            
-            <!-- Quy Nhơn - Bình Định capital -->
-            <div class="city-star-3d" style="top: 33.5%; left: 70%; animation-delay: 0.4s;">
-              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
-                <defs>
-                  <radialGradient id="red3d-grad-qn" cx="35%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#ff9b9b" />
-                    <stop offset="40%" stop-color="#ef4444" />
-                    <stop offset="85%" stop-color="#b91c1c" />
-                    <stop offset="100%" stop-color="#7f1d1d" />
-                  </radialGradient>
-                </defs>
-                <path fill="url(#red3d-grad-qn)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
-              </svg>
-            </div>
-            
-            <!-- Tuy Hòa - Phú Yên capital -->
-            <div class="city-star-3d" style="top: 55%; left: 71.5%; animation-delay: 1.2s;">
-              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
-                <defs>
-                  <radialGradient id="red3d-grad-th" cx="35%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#ff9b9b" />
-                    <stop offset="40%" stop-color="#ef4444" />
-                    <stop offset="85%" stop-color="#b91c1c" />
-                    <stop offset="100%" stop-color="#7f1d1d" />
-                  </radialGradient>
-                </defs>
-                <path fill="url(#red3d-grad-th)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
-              </svg>
-            </div>
+            <!-- === Capital City Stars and Labels Removed === -->
           </div>
         </div>
       </div>
