@@ -116,6 +116,11 @@ def run_extraction():
         try: return float(v) if v else 0
         except: return 0
     
+    def is_closed_bc(v):
+        if not v: return False
+        s = str(v).strip()
+        return '225 Phạm Văn Đồng' in s or '225 Pham Van Dong' in s
+    
     wb = openpyxl.load_workbook(OUTPUT_FILE, data_only=True)
     
     # Extract actual report date from Excel (e.g. from '6.ONTIME TTS' cell I2)
@@ -241,6 +246,7 @@ def run_extraction():
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,2).value; bc = ws.cell(r,3).value
             if not am or not bc: continue
+            if is_closed_bc(bc): continue
             total_vol = sn(ws.cell(r,13).value)
             if total_vol == 0: continue
             gtc_bc.append({'am': str(am).strip(), 'bc': str(bc).strip(), 'ca1_gtc': sn(ws.cell(r,6).value),
@@ -255,6 +261,7 @@ def run_extraction():
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,2).value; bc = ws.cell(r,3).value
             if not am or not bc: continue
+            if is_closed_bc(bc): continue
             total_vol = sn(ws.cell(r,13).value)
             if total_vol == 0: continue
             gtc_tts.append({'am': str(am).strip(), 'bc': str(bc).strip(), 'ca1_gtc': sn(ws.cell(r,6).value),
@@ -286,6 +293,7 @@ def run_extraction():
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,1).value
             if not am or 'AM' in str(am) or 'Bưu' in str(am): continue
+            if is_closed_bc(am): continue
             try: today_val = float(ws.cell(r,9).value)
             except: continue
             ontime_tts.append({'am': str(am).strip(), 'day2': sn(ws.cell(r,2).value), 'day3': sn(ws.cell(r,3).value),
@@ -301,6 +309,7 @@ def run_extraction():
         for r in range(4, ws.max_row+1):
             bc = ws.cell(r,3).value
             if not bc: continue
+            if is_closed_bc(bc): continue
             canh_bao.append({
                 'tinh': str(ws.cell(r,2).value or '').strip(), 'bc': str(bc).strip(), 
                 'gtc_7d': sn(ws.cell(r,4).value), 'gtc_30d': sn(ws.cell(r,5).value), 
@@ -316,6 +325,7 @@ def run_extraction():
         for r in range(2, ws.max_row+1):
             bc = ws.cell(r,3).value
             if not bc: continue
+            if is_closed_bc(bc): continue
             canh_bao_vung.append({
                 'tinh': str(ws.cell(r,2).value or '').strip(), 'bc': str(bc).strip(), 
                 'gtc_7d': sn(ws.cell(r,4).value), 'gtc_30d': sn(ws.cell(r,5).value), 
@@ -356,6 +366,7 @@ def run_extraction():
             if not bc or 'Grand Total' in bc: continue
             am = str(ws_nv.cell(r,3).value or '').strip()
             if not am: continue
+            if is_closed_bc(bc): continue
             
             # Extract metrics
             db = sn(ws_nv.cell(r,11).value) # K: SL NVPTTT cần
@@ -438,6 +449,7 @@ def run_extraction():
         opr_total = grand_total[target_date]['vol']/grand_total[target_date]['vol_ltc'] if target_date in grand_total and grand_total[target_date]['vol_ltc'] > 0 else 0
         data['opr_report'] = opr_report
         data['opr_total'] = opr_total
+        data['opr_daily'] = {d: (grand_total[d]['vol']/grand_total[d]['vol_ltc'] if grand_total[d]['vol_ltc'] > 0 else 0) for d in sorted_dates}
     except Exception as e: log(f"⚠️ OPR Extraction failed: {e}")
 
     # Save data
@@ -466,6 +478,20 @@ def update_history_json(report_date):
         with open(hist_path, 'r', encoding='utf-8') as f:
             try: history = json.load(f)
             except: history = {}
+            
+    # Dynamic correction: Update history.json with actual daily OPR values
+    history_changed = False
+    for d, opr_val in data.get('opr_daily', {}).items():
+        if d in history:
+            old_opr = history[d].get('opr')
+            if old_opr is None or abs(old_opr - float(opr_val)) > 0.0001:
+                history[d]['opr'] = float(opr_val)
+                log(f"✍️ Corrected history OPR for {d}: {old_opr*100 if old_opr else 0:.2f}% -> {opr_val*100:.2f}%")
+                history_changed = True
+                
+    if history_changed:
+        with open(hist_path, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
     
     # CUTOFF LOGIC: Comparison base (N-1) is frozen at the 23:00 snapshot.
     now = datetime.now()
@@ -484,7 +510,7 @@ def update_history_json(report_date):
             'gtc_vung': gtc_v,
             'gtc_tts': gtc_t,
             'ontime': float(avg_ontime),
-            'opr': float(data.get('opr_total', 0)),
+            'opr': float(data.get('opr_daily', {}).get(report_date, data.get('opr_total', 0))),
             'dt_luyke': float(data.get('total_lay', {}).get('luyke', 0)),
             'ns_thieu': float(data.get('ns_total', {}).get('so_thieu', 0)),
             'n_warn': len(data.get('canh_bao', []))

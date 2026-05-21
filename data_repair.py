@@ -67,6 +67,12 @@ def validate_and_repair(data_path):
             log_fix(f"Corrected total_vol for {x['am']}: {x['total_vol']} -> {total_vol}")
             x['total_vol'] = total_vol
 
+    # Helper to check if a bưu cục is closed
+    def is_closed(bc_name):
+        if not bc_name: return False
+        s = str(bc_name).strip()
+        return '225 Phạm Văn Đồng' in s or '225 Pham Van Dong' in s
+
     # 4. Repair GTC BC Data
     valid_gtc_bc = []
     for x in data.get('gtc_bc', []):
@@ -76,6 +82,10 @@ def validate_and_repair(data_path):
         x['bc'] = normalize_name(x['bc'])
         x['am'] = normalize_name(x.get('am', ''))
         
+        if is_closed(x['bc']):
+            log_fix(f"Removed closed bưu cục from gtc_bc: {x['bc']}")
+            continue
+        
         # Ensure leadtime is positive
         if safe_num(x.get('leadtime', 0)) < 0:
             x['leadtime'] = 0
@@ -83,6 +93,37 @@ def validate_and_repair(data_path):
         
         valid_gtc_bc.append(x)
     data['gtc_bc'] = valid_gtc_bc
+
+    # Clean other lists of the closed bưu cục
+    if 'canh_bao_vung' in data:
+        orig_len = len(data['canh_bao_vung'])
+        data['canh_bao_vung'] = [x for x in data['canh_bao_vung'] if not is_closed(x.get('bc', ''))]
+        if len(data['canh_bao_vung']) < orig_len:
+            log_fix(f"Removed closed bưu cục from canh_bao_vung: {orig_len - len(data['canh_bao_vung'])} entries.")
+            
+    if 'ontime_tts' in data:
+        orig_len = len(data['ontime_tts'])
+        data['ontime_tts'] = [x for x in data['ontime_tts'] if not is_closed(x.get('am', ''))]
+        if len(data['ontime_tts']) < orig_len:
+            log_fix(f"Removed closed bưu cục from ontime_tts: {orig_len - len(data['ontime_tts'])} entries.")
+            
+    if 'gtc_tts' in data:
+        orig_len = len(data['gtc_tts'])
+        data['gtc_tts'] = [x for x in data['gtc_tts'] if not is_closed(x.get('bc', ''))]
+        if len(data['gtc_tts']) < orig_len:
+            log_fix(f"Removed closed bưu cục from gtc_tts: {orig_len - len(data['gtc_tts'])} entries.")
+            
+    if 'canh_bao' in data:
+        orig_len = len(data['canh_bao'])
+        data['canh_bao'] = [x for x in data['canh_bao'] if not is_closed(x.get('bc', ''))]
+        if len(data['canh_bao']) < orig_len:
+            log_fix(f"Removed closed bưu cục from canh_bao: {orig_len - len(data['canh_bao'])} entries.")
+            
+    if 'ns_bc' in data:
+        orig_len = len(data['ns_bc'])
+        data['ns_bc'] = [x for x in data['ns_bc'] if not is_closed(x.get('bc', ''))]
+        if len(data['ns_bc']) < orig_len:
+            log_fix(f"Removed closed bưu cục from ns_bc: {orig_len - len(data['ns_bc'])} entries.")
 
     # 5. Cross-Check consistency: GTC AM vs GTC BC
     # Sum of GTC BC volumes for an AM should roughly match GTC AM total_vol
