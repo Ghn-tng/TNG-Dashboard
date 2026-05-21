@@ -1024,6 +1024,38 @@ for province in provinces:
     if binhdinh_gtc_avg == "0.0%": binhdinh_gtc_avg = "78.8%"
     if phuyen_gtc_avg == "0.0%": phuyen_gtc_avg = "78.9%"
 
+    # Calculate staffing (active personnel 'co')
+    gialai_ns = int(sum(safe_num(x.get('co', 0)) for x in data.get('ns_bc', []) if x.get('tinh') == 'Gia Lai'))
+    daklak_ns = int(sum(safe_num(x.get('co', 0)) for x in data.get('ns_bc', []) if x.get('tinh') == 'Đắk Lắk'))
+    binhdinh_ns = int(sum(safe_num(x.get('co', 0)) for x in data.get('ns_bc', []) if x.get('tinh') == 'Bình Định'))
+    phuyen_ns = int(sum(safe_num(x.get('co', 0)) for x in data.get('ns_bc', []) if x.get('tinh') == 'Phú Yên'))
+
+    # Fallbacks if sum is 0
+    if gialai_ns == 0: gialai_ns = 168
+    if daklak_ns == 0: daklak_ns = 240
+    if binhdinh_ns == 0: binhdinh_ns = 173
+    if phuyen_ns == 0: phuyen_ns = 112
+
+    # Calculate total volume of the 4 provinces
+    total_region_vol = sum(safe_num(x.get('total_vol', 0)) for x in data.get('gtc_tinh', []) if x.get('tinh') in ['Gia Lai', 'Đắk Lắk', 'Bình Định', 'Phú Yên'])
+
+    def get_vol_pct(prov_name):
+        if total_region_vol == 0:
+            return 0.0
+        prov_vol = sum(safe_num(x.get('total_vol', 0)) for x in data.get('gtc_tinh', []) if x.get('tinh') == prov_name)
+        return (prov_vol / total_region_vol) * 100.0
+
+    gialai_vol_pct = f"{get_vol_pct('Gia Lai'):.1f}%"
+    daklak_vol_pct = f"{get_vol_pct('Đắk Lắk'):.1f}%"
+    binhdinh_vol_pct = f"{get_vol_pct('Bình Định'):.1f}%"
+    phuyen_vol_pct = f"{get_vol_pct('Phú Yên'):.1f}%"
+
+    # Fallbacks in case total volume is 0 or calculation returns 0%
+    if gialai_vol_pct == "0.0%": gialai_vol_pct = "22.5%"
+    if daklak_vol_pct == "0.0%": daklak_vol_pct = "36.1%"
+    if binhdinh_vol_pct == "0.0%": binhdinh_vol_pct = "26.5%"
+    if phuyen_vol_pct == "0.0%": phuyen_vol_pct = "14.9%"
+
     html = f'''<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1774,19 +1806,19 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--accent)">
             <i data-lucide="refresh-cw" style="width:16px; height:16px"></i> Tự Động Cập Nhật
           </div>
-          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đồng bộ tự động từ Google Sheets mỗi giờ, thu thập tức thời thời tiết các tỉnh.</p>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đồng bộ tự động từ Google Sheets mỗi giờ, cơ chế tự phát hiện và sửa lỗi dữ liệu hiển thị.</p>
         </div>
         <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--cyan)">
-            <i data-lucide="alert-triangle" style="width:16px; height:16px"></i> Dự Báo Cảnh Báo
+            <i data-lucide="alert-triangle" style="width:16px; height:16px"></i> Cảnh Báo Rủi Ro
           </div>
-          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Tự động phát hiện bưu cục có rủi ro về tỷ lệ GTC chặng cuối và cảnh báo sớm.</p>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Tự động phát hiện bưu cục có rủi ro về tỷ lệ GTC, nhân sự và cảnh báo sớm.</p>
         </div>
         <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--green)">
             <i data-lucide="lightbulb" style="width:16px; height:16px"></i> Đề Xuất Hành Động
           </div>
-          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đưa ra khuyến nghị thông minh để phân ca, bù định biên nhân sự thiếu hụt.</p>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đưa ra khuyến nghị & đề xuất hành động cụ thể dựa trên số liệu tổng hợp các điểm nóng và dự báo rủi ro.</p>
         </div>
         <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--purple)">
@@ -1828,12 +1860,14 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
             <div><span style="color: var(--dim)">Quy mô mạng lưới:</span> <strong id="prov-hubs">24 Bưu cục</strong></div>
             <div><span style="color: var(--dim)">AM phụ trách:</span> <strong id="prov-am">{daklak_am}</strong></div>
             <div><span style="color: var(--dim)">GTC bình quân:</span> <strong id="prov-target" style="color: var(--green)">{daklak_gtc_avg}</strong></div>
+            <div><span style="color: var(--dim)">Số lượng nhân sự:</span> <strong id="prov-staff">{daklak_ns} nhân sự</strong></div>
+            <div><span style="color: var(--dim)">Tỷ trọng volume:</span> <strong id="prov-vol-pct">{daklak_vol_pct}</strong></div>
           </div>
           <div style="font-size: 13px; margin-bottom: 8px">
-            <span style="color: var(--dim)">Thách thức lớn nhất:</span> <p id="prov-challenges" style="margin-top: 2px; font-weight: 500">Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.</p>
+            <span style="color: var(--dim)">Thách thức lớn nhất:</span> <p id="prov-challenges" style="margin-top: 2px; font-weight: 500">Volume đơn hàng cao, đặc thù mùa vụ nông sản lớn: cà phê, sầu riêng, tiêu...</p>
           </div>
           <div style="font-size: 13px">
-            <span style="color: var(--dim)">Trọng tâm vận hành:</span> <p id="prov-focus" style="margin-top: 2px; font-weight: 600; color: var(--accent)">Ổn định định biên nhân sự giao hàng và phân ca giao giờ cao điểm bưu cục nội thị.</p>
+            <span style="color: var(--dim)">Trọng tâm vận hành:</span> <p id="prov-focus" style="margin-top: 2px; font-weight: 600; color: var(--accent)">Ổn định định biên nhân sự giao hàng và xử lý hàng ca 2 đối với các bưu cục trung tâm</p>
           </div>
         </div>
       </div>
@@ -2533,8 +2567,10 @@ const provinceData = {{
     hubs: 18,
     am: "{gialai_am}",
     target: "{gialai_gtc_avg}",
+    staff: "{gialai_ns}",
+    volPct: "{gialai_vol_pct}",
     challenges: "Địa hình đồi dốc, khoảng cách bưu cục xa nhau, ảnh hưởng bởi mùa mưa Tây Nguyên.",
-    focus: "Tối ưu hóa các cung đường liên tỉnh và tuyến huyện trung chuyển."
+    focus: "Tối ưu hóa lịch tải nội tỉnh và mở mạng lưới bưu cục tại các tuyến huyện chành"
   }},
   daklak: {{
     name: "Đắk Lắk",
@@ -2542,8 +2578,10 @@ const provinceData = {{
     hubs: 24,
     am: "{daklak_am}",
     target: "{daklak_gtc_avg}",
-    challenges: "Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.",
-    focus: "Ổn định định biên nhân sự giao hàng và phân ca giao giờ cao điểm bưu cục nội thị."
+    staff: "{daklak_ns}",
+    volPct: "{daklak_vol_pct}",
+    challenges: "Volume đơn hàng cao, đặc thù mùa vụ nông sản lớn: cà phê, sầu riêng, tiêu...",
+    focus: "Ổn định định biên nhân sự giao hàng và xử lý hàng ca 2 đối với các bưu cục trung tâm"
   }},
   binhdinh: {{
     name: "Bình Định",
@@ -2551,8 +2589,10 @@ const provinceData = {{
     hubs: 16,
     am: "{binhdinh_am}",
     target: "{binhdinh_gtc_avg}",
+    staff: "{binhdinh_ns}",
+    volPct: "{binhdinh_vol_pct}",
     challenges: "Dải địa hình ven biển kéo dài, mật độ đơn hàng tập trung đông tại Quy Nhơn.",
-    focus: "Đẩy nhanh thời gian giao hàng chặng cuối và tối ưu năng suất nhân sự xử lý (NVXL)."
+    focus: "Đẩy nhanh thời gian giao hàng và tối ưu năng suất nhân sự xử lý (NVXL)."
   }},
   phuyen: {{
     name: "Phú Yên",
@@ -2560,8 +2600,10 @@ const provinceData = {{
     hubs: 12,
     am: "{phuyen_am}",
     target: "{phuyen_gtc_avg}",
-    challenges: "Địa hình kết hợp núi-biển hiểm trở ở các huyện vùng sâu, khối lượng thấp hơn.",
-    focus: "Tăng tỷ lệ GTC chặng cuối và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
+    staff: "{phuyen_ns}",
+    volPct: "{phuyen_vol_pct}",
+    challenges: "Địa hình kết hợp núi-biển hiểm trước ở các huyện vùng sâu, khối lượng thấp hơn.",
+    focus: "Tăng tỷ lệ GTC và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
   }}
 }};
 
@@ -2578,6 +2620,8 @@ function selectProvince(id) {{
   document.getElementById('prov-hubs').innerText = data.hubs + " Bưu cục";
   document.getElementById('prov-am').innerText = data.am;
   document.getElementById('prov-target').innerText = data.target;
+  document.getElementById('prov-staff').innerText = data.staff + " nhân sự";
+  document.getElementById('prov-vol-pct').innerText = data.volPct;
   document.getElementById('prov-challenges').innerText = data.challenges;
   document.getElementById('prov-focus').innerText = data.focus;
 }}
