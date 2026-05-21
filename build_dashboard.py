@@ -1774,7 +1774,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
       <!-- 3D Interactive Map Container -->
       <div style="width: 100%; margin-top: 8px;">
         <div class="map-container">
-          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="position: absolute; top: 50%; left: 50%; width: 115%; height: 115%; transform: translate(-50%, -50%); object-fit: cover; object-position: 48% 45%; display: block; pointer-events: none;">
+          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; pointer-events: none;">
           
           <!-- === Province Glow Pins (center of each province) === -->
           
