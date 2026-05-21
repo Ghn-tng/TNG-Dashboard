@@ -1049,13 +1049,12 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .map-container {{
   position: relative;
   width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  border-radius: 16px;
+  height: 320px;
+  border-radius: 14px;
   border: 1px solid #cbd5e1;
   overflow: hidden;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), inset 0 2px 4px rgba(0,0,0,0.02);
-  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+  background: #f1f5f9;
 }}
 /* === Province Glow Pins (center of each province) === */
 .map-pin {{
@@ -1764,9 +1763,9 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
       </div>
       
       <!-- 3D Interactive Map Container -->
-      <div style="display: flex; justify-content: center; align-items: center; width: 100%">
+      <div style="width: 100%; margin-top: 8px;">
         <div class="map-container">
-          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: auto; display: block; pointer-events: none;">
+          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; pointer-events: none;">
           
           <!-- === Province Glow Pins (center of each province) === -->
           
