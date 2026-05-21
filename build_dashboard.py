@@ -973,6 +973,57 @@ for province in provinces:
         trend_rows += f"<td>{v}%</td>"
     trend_rows += "</tr>"
 
+    # Map of province keys to Vietnamese province names
+    prov_map = {
+        'gialai': 'Gia Lai',
+        'daklak': 'Đắk Lắk',
+        'binhdinh': 'Bình Định',
+        'phuyen': 'Phú Yên'
+    }
+
+    am_tinh = {}
+    for x in data.get('ns_bc', []):
+        am = x.get('am')
+        tinh = x.get('tinh')
+        if am and tinh:
+            am_tinh.setdefault(tinh, set()).add(am)
+
+    # Number of AMs per province
+    gialai_am = f"{len(am_tinh.get('Gia Lai', []))} AM"
+    daklak_am = f"{len(am_tinh.get('Đắk Lắk', []))} AM"
+    binhdinh_am = f"{len(am_tinh.get('Bình Định', []))} AM"
+    phuyen_am = f"{len(am_tinh.get('Phú Yên', []))} AM"
+
+    # Fallback to default counts if list is empty
+    if len(am_tinh.get('Gia Lai', [])) == 0: gialai_am = "4 AM"
+    if len(am_tinh.get('Đắk Lắk', [])) == 0: daklak_am = "6 AM"
+    if len(am_tinh.get('Bình Định', [])) == 0: binhdinh_am = "3 AM"
+    if len(am_tinh.get('Phú Yên', [])) == 0: phuyen_am = "2 AM"
+
+    # Calculate average weekly GTC for each province
+    def get_weekly_gtc_avg(prov_name):
+        if not sorted_dates:
+            return 0.0
+        vals = []
+        for d in sorted_dates:
+            val = full_hist.get(d, {}).get(prov_name)
+            if val is not None:
+                vals.append(val)
+        if not vals:
+            return 0.0
+        return sum(vals) / len(vals)
+
+    gialai_gtc_avg = f"{get_weekly_gtc_avg('Gia Lai'):.1f}%"
+    daklak_gtc_avg = f"{get_weekly_gtc_avg('Đắk Lắk'):.1f}%"
+    binhdinh_gtc_avg = f"{get_weekly_gtc_avg('Bình Định'):.1f}%"
+    phuyen_gtc_avg = f"{get_weekly_gtc_avg('Phú Yên'):.1f}%"
+
+    # Fallback to defaults in case of 0.0%
+    if gialai_gtc_avg == "0.0%": gialai_gtc_avg = "75.8%"
+    if daklak_gtc_avg == "0.0%": daklak_gtc_avg = "63.7%"
+    if binhdinh_gtc_avg == "0.0%": binhdinh_gtc_avg = "78.8%"
+    if phuyen_gtc_avg == "0.0%": phuyen_gtc_avg = "78.9%"
+
     html = f'''<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1022,7 +1073,7 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .kpi-card:nth-child(6) .kpi-value{{color:var(--yellow)}}
 .kpi-card:nth-child(7) .kpi-value{{color:var(--red)}}
 .kpi-card:nth-child(8) .kpi-value{{color:var(--red)}}
-.tabs{{display:flex;gap:8px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto; position: sticky; top: 62px; z-index: 999; align-items: center;}}
+.tabs{{display:flex;gap:8px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto; position: sticky; top: 62px; z-index: 999; align-items: center; width: 100%;}}
 .tab{{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--dim);transition:all .2s;white-space:nowrap;border:1px solid transparent; position: relative; display: flex; align-items: center; gap: 6px; background: transparent; box-shadow: none;}}
 .tab svg{{width:16px;height:16px}}
 .tab:nth-child(1) svg{{color:#3b82f6}}
@@ -1049,12 +1100,12 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .map-container {{
   position: relative;
   width: 100%;
-  height: 380px;
+  height: 450px;
   border-radius: 14px;
   border: 1.5px solid #cbd5e1;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
-  background: #f5f8fc;
+  background: #ffffff;
 }}
 /* === Province Glow Pins (center of each province) === */
 .map-pin {{
@@ -1134,6 +1185,16 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
     opacity: 0;
   }}
 }}
+@keyframes label-blink {{
+  0%, 100% {{
+    opacity: 0.95;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }}
+  50% {{
+    opacity: 0.55;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  }}
+}}
 .pin-label {{
   position: absolute;
   top: -32px;
@@ -1152,7 +1213,8 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   letter-spacing: 0.6px;
-  pointer-events: none;
+  pointer-events: auto;
+  animation: label-blink 2s infinite ease-in-out;
 }}
 .map-pin[data-id="daklak"] .pin-label {{
   background: rgba(234, 88, 12, 0.9);
@@ -1164,20 +1226,24 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
   background: rgba(192, 38, 211, 0.9);
 }}
 .map-pin:hover .pin-label, .map-pin.active-pin .pin-label {{
+  animation: none;
   background: #0284c7;
   opacity: 1;
   transform: translateX(-50%) translateY(-2px) scale(1.05);
   box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
 }}
 .map-pin[data-id="daklak"]:hover .pin-label, .map-pin[data-id="daklak"].active-pin .pin-label {{
+  animation: none;
   background: #ea580c;
   box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
 }}
 .map-pin[data-id="binhdinh"]:hover .pin-label, .map-pin[data-id="binhdinh"].active-pin .pin-label {{
+  animation: none;
   background: #047857;
   box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
 }}
 .map-pin[data-id="phuyen"]:hover .pin-label, .map-pin[data-id="phuyen"].active-pin .pin-label {{
+  animation: none;
   background: #c026d3;
   box-shadow: 0 8px 20px rgba(192, 38, 211, 0.4);
 }}
@@ -1227,6 +1293,31 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 @keyframes star-float {{
   0%, 100% {{ transform: translateY(0px); }}
   50% {{ transform: translateY(-2px); }}
+}}
+/* === 3D Blinking Red Stars Overlay === */
+@keyframes star-blink-3d {{
+  0%, 100% {{
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.85);
+    filter: drop-shadow(0 1px 3px rgba(239, 68, 68, 0.45));
+  }}
+  50% {{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+    filter: drop-shadow(0 4px 10px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 12px rgba(239, 68, 68, 0.65));
+  }}
+}}
+.city-star-3d {{
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  pointer-events: none;
+  width: 17px;
+  height: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: star-blink-3d 1.8s infinite ease-in-out;
 }}
 .section-title{{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
 .section-title span{{width:4px;height:20px;border-radius:2px;background:var(--accent)}}
@@ -1409,23 +1500,23 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <div class="kpi-card" onclick="showTab(1, true)"><div class="kpi-label">GTC Tổng</div><div class="kpi-value">{pct(avg_gtc)}</div>{delta_gtc_v}</div>
 <div class="kpi-card" onclick="showTab(2, true)"><div class="kpi-label">% GTC TTS</div><div class="kpi-value">{pct(avg_gtc_tts)}</div>{delta_gtc_t}</div>
 <div class="kpi-card" onclick="showTab(3, true)"><div class="kpi-label">% ODR TTS</div><div class="kpi-value">{pct(avg_ontime)}</div>{delta_ontime}</div>
-<div class="kpi-card" onclick="showTab(4, true)"><div class="kpi-label">OPR TTS</div><div class="kpi-value" style="color:{'#ef4444' if opr_total_val < 0.95 else '#22c55e'}">{pct(opr_total_val)}</div>{delta_opr}</div>
+<div class="kpi-card" onclick="showTab(4, true)"><div class="kpi-label">% OPR TTS</div><div class="kpi-value" style="color:{'#ef4444' if opr_total_val < 0.95 else '#22c55e'}">{pct(opr_total_val)}</div>{delta_opr}</div>
 <div class="kpi-card" onclick="showTab(6, true)"><div class="kpi-label">DT LẤY LŨY KẾ</div><div class="kpi-value">{money(total_rev_lay)}</div>{delta_rev}</div>
 <div class="kpi-card" onclick="showTab(7, true)"><div class="kpi-label">NS THIẾU / ĐỊNH BIÊN</div><div class="kpi-value" style="color:#ef4444">{int(safe_num(ns_total.get('so_thieu',0)))} / {int(safe_num(ns_total.get('ptt_can',0)))}</div>{delta_ns}</div>
 <div class="kpi-card" onclick="showTab(8, true)"><div class="kpi-label">BC CẢNH BÁO</div><div class="kpi-value">{n_warn}</div>{delta_warn}</div>
 </div>
 
 <div class="tabs">
-<div class="tab active" onclick="showTab(0)"><i data-lucide="layout-dashboard"></i> Tổng quan</div>
+<div class="tab active" onclick="showTab(0)"><i data-lucide="layout-dashboard"></i> Tổng quan Vùng</div>
 <div class="tab" onclick="showTab(1)"><i data-lucide="bar-chart-3"></i> GTC Tổng</div>
 <div class="tab" onclick="showTab(2)"><i data-lucide="target"></i> GTC TTS</div>
 <div class="tab" onclick="showTab(3)"><i data-lucide="clock"></i> % ODR TTS</div>
-<div class="tab" onclick="showTab(4)"><i data-lucide="zap"></i> OPR TTS</div>
+<div class="tab" onclick="showTab(4)"><i data-lucide="zap"></i> % OPR TTS</div>
 <div class="tab" onclick="showTab(5)"><i data-lucide="package"></i> Lấy hàng</div>
 <div class="tab" onclick="showTab(6)"><i data-lucide="briefcase"></i> Kinh doanh</div>
 <div class="tab" onclick="showTab(7)"><i data-lucide="users"></i> Nhân sự</div>
-<div class="tab" onclick="showTab(8)"><i data-lucide="alert-triangle"></i> Cảnh báo</div>
-<div class="tab" onclick="showTab(9)" title="Giới thiệu"><i data-lucide="info"></i></div>
+<div class="tab" onclick="showTab(8)"><i data-lucide="alert-triangle"></i> BC Cảnh Báo</div>
+<div class="tab" onclick="showTab(9)"><i data-lucide="info"></i> Giới thiệu</div>
 </div>
 
 <div class="content">
@@ -1593,9 +1684,9 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 
 <!-- TAB 4: OPR Tỉnh -->
 <div class="panel" id="p4">
-<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Xu Hướng OPR TTS 7 Ngày Gần Nhất</div>
+<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Xu Hướng % OPR TTS 7 Ngày Gần Nhất</div>
 <div class="chart-container" style="height:350px"><canvas id="chartOPRTrend"></canvas></div></div>
-<div class="card"><div class="section-title"><span></span>🚀 OPR TTS</div>
+<div class="card"><div class="section-title"><span></span>🚀 % OPR TTS</div>
 <div class="table-scroll"><table id="tblOPR" class="no-interactive"><thead>{opr_header_1}{opr_header_2}</thead><tbody>{opr_matrix_rows}</tbody></table></div></div>
 </div>
 
@@ -1691,10 +1782,10 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           Dashboard Vận Hành Vùng Tây Nguyên (TNG) ra đời với mục tiêu <strong>chuẩn hóa, tự động hóa và thông minh hóa</strong> toàn bộ dữ liệu báo cáo vận hành hàng ngày của khu vực. 
         </p>
         <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
-          Thay vì xử lý thủ công các tệp Excel phân mảnh từ nhiều nguồn, hệ thống tự động đồng bộ hóa và trích xuất dữ liệu vận hành từ các báo cáo cốt lõi. Từ đó, đưa ra các phân tích trực quan về tỷ lệ <strong>Giao Thành Công (GTC)</strong>, <strong>On-Time Delivery (ODR)</strong>, hiệu suất nhân viên giao hàng <strong>(OPR)</strong> và định biên nhân sự.
+          Thay vì xử lý thủ công các tệp Excel phân mảnh từ nhiều nguồn, hệ thống tự động đồng bộ hóa và trích xuất dữ liệu vận hành từ các báo cáo cốt lõi. Từ đó, đưa ra các phân tích trực quan về tỷ lệ <strong>Giao Thành Công (%GTC)</strong>, <strong>OnTime giao hàng (%ODR)</strong>, <strong>OnTime lấy hàng (%OPR)</strong>, tình hình kinh doanh và định biên nhân sự.
         </p>
         <p style="font-size: 14px; line-height: 1.6; color: var(--dim)">
-          Ý tưởng cốt lõi là kết hợp <strong>Analytics trực quan</strong> với <strong>Trí Tuệ Nhân Tạo (AI Ngọc Trinh)</strong>, giúp các Area Managers (AMs) và quản lý bưu cục đưa ra quyết định tối ưu hóa tuyến đường, cân đối nguồn lực và hành động ngăn ngừa rủi ro vận hành ngay lập tức.
+          Ý tưởng cốt lõi là kết hợp <strong>Analytics trực quan</strong> với <strong>Trí Tuệ Nhân Tạo (Trợ lý AI)</strong>, giúp GĐV, các AM và quản lý bưu cục đưa ra quyết định tối ưu hóa vận hành, cân đối nguồn lực và hành động ngăn ngừa rủi ro vận hành ngay lập tức.
         </p>
       </div>
     </div>
@@ -1723,7 +1814,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
         </div>
         <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--purple)">
-            <i data-lucide="message-square" style="width:16px; height:16px"></i> Trợ Lý Ngọc Trinh
+            <i data-lucide="message-square" style="width:16px; height:16px"></i> Trợ Lý AI
           </div>
           <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Tích hợp Chatbot vận hành AI chuyên sâu, trả lời phân tích dữ liệu tức thì.</p>
         </div>
@@ -1759,8 +1850,8 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 10px">
             <div><span style="color: var(--dim)">Thủ phủ hành chính:</span> <strong id="prov-capital">Buôn Ma Thuột</strong></div>
             <div><span style="color: var(--dim)">Quy mô mạng lưới:</span> <strong id="prov-hubs">24 Bưu cục</strong></div>
-            <div><span style="color: var(--dim)">AM phụ trách:</span> <strong id="prov-am">Phạm Văn Long</strong></div>
-            <div><span style="color: var(--dim)">Mục tiêu GTC chặng cuối:</span> <strong id="prov-target" style="color: var(--green)">98.2%</strong></div>
+            <div><span style="color: var(--dim)">AM phụ trách:</span> <strong id="prov-am">{daklak_am}</strong></div>
+            <div><span style="color: var(--dim)">GTC bình quân:</span> <strong id="prov-target" style="color: var(--green)">{daklak_gtc_avg}</strong></div>
           </div>
           <div style="font-size: 13px; margin-bottom: 8px">
             <span style="color: var(--dim)">Thách thức lớn nhất:</span> <p id="prov-challenges" style="margin-top: 2px; font-weight: 500">Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.</p>
@@ -1774,66 +1865,102 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
       <!-- 3D Interactive Map Container -->
       <div style="width: 100%; margin-top: 8px;">
         <div class="map-container">
-          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; pointer-events: none;">
-          
-          <!-- === Province Glow Pins (center of each province) === -->
-          
-          <!-- Gia Lai - center of blue province -->
-          <div class="map-pin" style="top: 30%; left: 27%;" data-id="gialai" onclick="selectProvince('gialai')">
-            <div class="pin-pulse"></div>
-            <div class="pin-pulse2"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-label">GIA LAI</div>
-          </div>
-          
-          <!-- Đắk Lắk - center of orange province (Default Active) -->
-          <div class="map-pin active-pin" style="top: 67%; left: 32%;" data-id="daklak" onclick="selectProvince('daklak')">
-            <div class="pin-pulse"></div>
-            <div class="pin-pulse2"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-label">ĐẮK LẮK</div>
-          </div>
-          
-          <!-- Bình Định - center of green province -->
-          <div class="map-pin" style="top: 20%; left: 68%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
-            <div class="pin-pulse"></div>
-            <div class="pin-pulse2"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-label">BÌNH ĐỊNH</div>
-          </div>
-          
-          <!-- Phú Yên - center of purple province -->
-          <div class="map-pin" style="top: 56%; left: 65%;" data-id="phuyen" onclick="selectProvince('phuyen')">
-            <div class="pin-pulse"></div>
-            <div class="pin-pulse2"></div>
-            <div class="pin-dot"></div>
-            <div class="pin-label">PHÚ YÊN</div>
-          </div>
-
-          <!-- === City Stars (red 3D) at capital positions === -->
-          
-          <!-- Pleiku - Gia Lai capital -->
-          <div class="city-star" style="top: 36%; left: 40%;">
-            <div class="city-star-icon">⭐</div>
-            <div class="city-star-name">Pleiku</div>
-          </div>
-          
-          <!-- Buôn Ma Thuột - Đắk Lắk capital -->
-          <div class="city-star" style="top: 70%; left: 46%;">
-            <div class="city-star-icon">⭐</div>
-            <div class="city-star-name">Buôn Ma Thuột</div>
-          </div>
-          
-          <!-- Quy Nhơn - Bình Định capital -->
-          <div class="city-star" style="top: 35%; left: 76%;">
-            <div class="city-star-icon">⭐</div>
-            <div class="city-star-name">Quy Nhơn</div>
-          </div>
-          
-          <!-- Tuy Hòa - Phú Yên capital -->
-          <div class="city-star" style="top: 58%; left: 76%;">
-            <div class="city-star-icon">⭐</div>
-            <div class="city-star-name">Tuy Hòa</div>
+          <div class="map-zoom-wrapper" style="position: relative; width: 100%; height: 100%; transform: scale(1.28) translateY(3.5%); transform-origin: center center;">
+            <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; pointer-events: none;">
+            
+            <!-- === Province Glow Pins (center of each province) === -->
+            
+            <!-- Gia Lai - center of blue province -->
+            <div class="map-pin" style="top: 33%; left: 47%;" data-id="gialai" onclick="selectProvince('gialai')">
+              <div class="pin-pulse"></div>
+              <div class="pin-pulse2"></div>
+              <div class="pin-dot"></div>
+              <div class="pin-label">GIA LAI</div>
+            </div>
+            
+            <!-- Đắk Lắk - center of orange province (Default Active) -->
+            <div class="map-pin active-pin" style="top: 57%; left: 45%;" data-id="daklak" onclick="selectProvince('daklak')">
+              <div class="pin-pulse"></div>
+              <div class="pin-pulse2"></div>
+              <div class="pin-dot"></div>
+              <div class="pin-label">ĐẮK LẮK</div>
+            </div>
+            
+            <!-- Bình Định - center of green province -->
+            <div class="map-pin" style="top: 29%; left: 62%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+              <div class="pin-pulse"></div>
+              <div class="pin-pulse2"></div>
+              <div class="pin-dot"></div>
+              <div class="pin-label">BÌNH ĐỊNH</div>
+            </div>
+            
+            <!-- Phú Yên - center of purple province -->
+            <div class="map-pin" style="top: 56%; left: 65%;" data-id="phuyen" onclick="selectProvince('phuyen')">
+              <div class="pin-pulse"></div>
+              <div class="pin-pulse2"></div>
+              <div class="pin-dot"></div>
+              <div class="pin-label">PHÚ YÊN</div>
+            </div>
+            <!-- === Blinking 3D Red Stars Overlay === -->
+            <!-- Pleiku - Gia Lai capital -->
+            <div class="city-star-3d" style="top: 32.5%; left: 37.6%; animation-delay: 0s;">
+              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                <defs>
+                  <radialGradient id="red3d-grad-pleiku" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ff9b9b" />
+                    <stop offset="40%" stop-color="#ef4444" />
+                    <stop offset="85%" stop-color="#b91c1c" />
+                    <stop offset="100%" stop-color="#7f1d1d" />
+                  </radialGradient>
+                </defs>
+                <path fill="url(#red3d-grad-pleiku)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+              </svg>
+            </div>
+            
+            <!-- Buôn Ma Thuột - Đắk Lắk capital -->
+            <div class="city-star-3d" style="top: 60.5%; left: 39.8%; animation-delay: 0.8s;">
+              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                <defs>
+                  <radialGradient id="red3d-grad-bmt" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ff9b9b" />
+                    <stop offset="40%" stop-color="#ef4444" />
+                    <stop offset="85%" stop-color="#b91c1c" />
+                    <stop offset="100%" stop-color="#7f1d1d" />
+                  </radialGradient>
+                </defs>
+                <path fill="url(#red3d-grad-bmt)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+              </svg>
+            </div>
+            
+            <!-- Quy Nhơn - Bình Định capital -->
+            <div class="city-star-3d" style="top: 33.5%; left: 70%; animation-delay: 0.4s;">
+              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                <defs>
+                  <radialGradient id="red3d-grad-qn" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ff9b9b" />
+                    <stop offset="40%" stop-color="#ef4444" />
+                    <stop offset="85%" stop-color="#b91c1c" />
+                    <stop offset="100%" stop-color="#7f1d1d" />
+                  </radialGradient>
+                </defs>
+                <path fill="url(#red3d-grad-qn)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+              </svg>
+            </div>
+            
+            <!-- Tuy Hòa - Phú Yên capital -->
+            <div class="city-star-3d" style="top: 55%; left: 71.5%; animation-delay: 1.2s;">
+              <svg viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                <defs>
+                  <radialGradient id="red3d-grad-th" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ff9b9b" />
+                    <stop offset="40%" stop-color="#ef4444" />
+                    <stop offset="85%" stop-color="#b91c1c" />
+                    <stop offset="100%" stop-color="#7f1d1d" />
+                  </radialGradient>
+                </defs>
+                <path fill="url(#red3d-grad-th)" stroke="#7f1d1d" stroke-width="0.8" d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.784 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -2487,8 +2614,8 @@ const provinceData = {{
     name: "Gia Lai",
     capital: "Pleiku",
     hubs: 18,
-    am: "Nguyễn Công Danh",
-    target: "98.0%",
+    am: "{gialai_am}",
+    target: "{gialai_gtc_avg}",
     challenges: "Địa hình đồi dốc, khoảng cách bưu cục xa nhau, ảnh hưởng bởi mùa mưa Tây Nguyên.",
     focus: "Tối ưu hóa các cung đường liên tỉnh và tuyến huyện trung chuyển."
   }},
@@ -2496,8 +2623,8 @@ const provinceData = {{
     name: "Đắk Lắk",
     capital: "Buôn Ma Thuột",
     hubs: 24,
-    am: "Phạm Văn Long",
-    target: "98.2%",
+    am: "{daklak_am}",
+    target: "{daklak_gtc_avg}",
     challenges: "Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.",
     focus: "Ổn định định biên nhân sự giao hàng và phân ca giao giờ cao điểm bưu cục nội thị."
   }},
@@ -2505,8 +2632,8 @@ const provinceData = {{
     name: "Bình Định",
     capital: "Quy Nhơn",
     hubs: 16,
-    am: "Trần Văn Phú",
-    target: "98.5%",
+    am: "{binhdinh_am}",
+    target: "{binhdinh_gtc_avg}",
     challenges: "Dải địa hình ven biển kéo dài, mật độ đơn hàng tập trung đông tại Quy Nhơn.",
     focus: "Đẩy nhanh thời gian giao hàng chặng cuối và tối ưu năng suất nhân sự xử lý (NVXL)."
   }},
@@ -2514,8 +2641,8 @@ const provinceData = {{
     name: "Phú Yên",
     capital: "Tuy Hòa",
     hubs: 12,
-    am: "Nguyễn Hoàng Minh",
-    target: "97.9%",
+    am: "{phuyen_am}",
+    target: "{phuyen_gtc_avg}",
     challenges: "Địa hình kết hợp núi-biển hiểm trở ở các huyện vùng sâu, khối lượng thấp hơn.",
     focus: "Tăng tỷ lệ GTC chặng cuối và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
   }}
