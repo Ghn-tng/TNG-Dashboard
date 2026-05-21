@@ -298,6 +298,9 @@ for x in data.get('bc_kd_lay', []):
     if am_name in valid_ams:
         filtered_kd.append(x)
 
+# Sắp xếp theo thứ tự doanh thu tháng 5 (lũy kế) từ lớn đến bé
+filtered_kd = sorted(filtered_kd, key=lambda x: safe_num(x.get('luyke', 0)), reverse=True)
+
 kd_rows = ''
 for x in filtered_kd:
     days_dt = x.get('dt_days',[0]*7)
@@ -1031,6 +1034,7 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .tab:nth-child(7) svg{{color:#db2777}}
 .tab:nth-child(8) svg{{color:#6366f1}}
 .tab:nth-child(9) svg{{color:#ef4444}}
+.tab:nth-child(10) svg{{color:#8b5cf6}}
 .tab:hover{{background:var(--card2); color:var(--accent);}}
 .tab:not(:last-child)::after{{content:''; position:absolute; right:-7px; height:20px; width:2px; background:#cbd5e1; box-shadow:1px 0 0 #fff;}}
 .tab.active{{background:var(--accent);color:#fff;border-color:#0369a1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}}
@@ -1039,6 +1043,117 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .content{{padding:20px 24px}}
 .panel{{display:none}}
 .panel.active{{display:block}}
+.map-province {{ transition: all 0.3s ease; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }}
+.map-province:hover {{ filter: brightness(1.1) drop-shadow(0 4px 12px rgba(2, 132, 199, 0.4)); transform: translateY(-2px); }}
+.map-province.active-province {{ stroke: #ffffff; stroke-width: 4; filter: brightness(1.2) drop-shadow(0 4px 16px rgba(2, 132, 199, 0.6)); }}
+.map-container {{
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), inset 0 2px 4px rgba(0,0,0,0.02);
+}}
+.map-pin {{
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}}
+.pin-dot {{
+  width: 12px;
+  height: 12px;
+  background: #0ea5e9;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
+  transition: all 0.3s ease;
+}}
+.map-pin[data-id="binhdinh"] .pin-dot {{
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+}}
+.map-pin[data-id="phuyen"] .pin-dot {{
+  background: #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+}}
+.pin-pulse {{
+  width: 28px;
+  height: 28px;
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  animation: map-pulse 2s infinite ease-out;
+  pointer-events: none;
+}}
+.map-pin[data-id="binhdinh"] .pin-pulse {{
+  background: rgba(16, 185, 129, 0.35);
+}}
+.map-pin[data-id="phuyen"] .pin-pulse {{
+  background: rgba(6, 182, 212, 0.35);
+}}
+@keyframes map-pulse {{
+  0% {{
+    transform: scale(0.6);
+    opacity: 1;
+  }}
+  100% {{
+    transform: scale(2.2);
+    opacity: 0;
+  }}
+}}
+.pin-label {{
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  opacity: 0.85;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}}
+.map-pin:hover .pin-label, .map-pin.active-pin .pin-label {{
+  background: #0284c7;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3);
+}}
+.map-pin[data-id="binhdinh"]:hover .pin-label, .map-pin[data-id="binhdinh"].active-pin .pin-label {{
+  background: #047857;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}}
+.map-pin[data-id="phuyen"]:hover .pin-label, .map-pin[data-id="phuyen"].active-pin .pin-label {{
+  background: #0891b2;
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
+}}
+.map-pin.active-pin .pin-dot {{
+  transform: scale(1.3);
+  border-color: #fff;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.9);
+}}
+.map-pin[data-id="binhdinh"].active-pin .pin-dot {{
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.9);
+}}
+.map-pin[data-id="phuyen"].active-pin .pin-dot {{
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.9);
+}}
 .section-title{{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
 .section-title span{{width:4px;height:20px;border-radius:2px;background:var(--accent)}}
 .grid-2{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
@@ -1236,6 +1351,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <div class="tab" onclick="showTab(6)"><i data-lucide="briefcase"></i> Kinh Doanh</div>
 <div class="tab" onclick="showTab(7)"><i data-lucide="users"></i> Nhân Sự</div>
 <div class="tab" onclick="showTab(8)"><i data-lucide="alert-triangle"></i> BC Cảnh Báo</div>
+<div class="tab" onclick="showTab(9)"><i data-lucide="info"></i> Giới Thiệu</div>
 </div>
 
 <div class="content">
@@ -1476,6 +1592,147 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 
 <div class="card" style="margin-top:16px"><div class="section-title"><span></span>⚠️ Bưu Cục Cảnh Báo Vùng</div>
 <div class="table-scroll"><table id="tblCBVung"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">AM</th><th class="text-left">Bưu Cục</th><th>% GTC 7 NGÀY</th><th>GTC TỐT NHẤT</th><th>CẦN ĐẠT</th><th>CHÊNH LỆCH</th><th>NHÓM</th></tr></thead><tbody>{cb_vung_rows}</tbody></table></div></div>
+</div>
+
+<!-- TAB 9: Giới Thiệu -->
+<div class="panel" id="p9">
+  <div class="card" style="background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); color: white; padding: 28px 24px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1)">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 12px; backdrop-filter: blur(4px)">
+        <i data-lucide="info" style="width: 32px; height: 32px; color: white"></i>
+      </div>
+      <div>
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px">TNG OPERATIONAL INTELLIGENCE DASHBOARD</h2>
+        <p style="font-size: 14px; opacity: 0.9; font-weight: 500">Hệ thống Giám Sát và Quản Trị Vận Hành Vùng Tây Nguyên - Giao Hàng Nhanh (GHN)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 20px">
+    <!-- Purpose & Idea -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between">
+      <div>
+        <div class="section-title"><span></span>🎯 Mục Đích & Ý Tưởng</div>
+        <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
+          Dashboard Vận Hành Vùng Tây Nguyên (TNG) ra đời với mục tiêu <strong>chuẩn hóa, tự động hóa và thông minh hóa</strong> toàn bộ dữ liệu báo cáo vận hành hàng ngày của khu vực. 
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
+          Thay vì xử lý thủ công các tệp Excel phân mảnh từ nhiều nguồn, hệ thống tự động đồng bộ hóa và trích xuất dữ liệu vận hành từ các báo cáo cốt lõi. Từ đó, đưa ra các phân tích trực quan về tỷ lệ <strong>Giao Thành Công (GTC)</strong>, <strong>On-Time Delivery (ODR)</strong>, hiệu suất nhân viên giao hàng <strong>(OPR)</strong> và định biên nhân sự.
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; color: var(--dim)">
+          Ý tưởng cốt lõi là kết hợp <strong>Analytics trực quan</strong> với <strong>Trí Tuệ Nhân Tạo (AI Ngọc Trinh)</strong>, giúp các Area Managers (AMs) và quản lý bưu cục đưa ra quyết định tối ưu hóa tuyến đường, cân đối nguồn lực và hành động ngăn ngừa rủi ro vận hành ngay lập tức.
+        </p>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="card">
+      <div class="section-title"><span></span>⚡ Tính Năng Nổi Bật</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+        <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--accent)">
+            <i data-lucide="refresh-cw" style="width:16px; height:16px"></i> Tự Động Cập Nhật
+          </div>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đồng bộ tự động từ Google Sheets mỗi giờ, thu thập tức thời thời tiết các tỉnh.</p>
+        </div>
+        <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--cyan)">
+            <i data-lucide="alert-triangle" style="width:16px; height:16px"></i> Dự Báo Cảnh Báo
+          </div>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Tự động phát hiện bưu cục có rủi ro về tỷ lệ GTC chặng cuối và cảnh báo sớm.</p>
+        </div>
+        <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--green)">
+            <i data-lucide="lightbulb" style="width:16px; height:16px"></i> Đề Xuất Hành Động
+          </div>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Đưa ra khuyến nghị thông minh để phân ca, bù định biên nhân sự thiếu hụt.</p>
+        </div>
+        <div style="padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border)">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--purple)">
+            <i data-lucide="message-square" style="width:16px; height:16px"></i> Trợ Lý Ngọc Trinh
+          </div>
+          <p style="font-size: 12px; color: var(--dim); line-height: 1.4">Tích hợp Chatbot vận hành AI chuyên sâu, trả lời phân tích dữ liệu tức thì.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Central Highlands Region section -->
+  <div class="card" style="margin-bottom: 0">
+    <div class="section-title"><span></span>🗺️ Bản Đồ Vận Hành & Giới Thiệu Vùng Tây Nguyên</div>
+    <div class="grid-2">
+      <!-- Description -->
+      <div style="display: flex; flex-direction: column; justify-content: space-between">
+        <div>
+          <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
+            Vùng Tây Nguyên (TNG) trong bản đồ vận hành của Giao Hàng Nhanh bao gồm 4 tỉnh chiến lược: <strong>Đắk Lắk, Gia Lai, Phú Yên và Bình Định</strong>. Đây là khu vực có đặc thù địa lý vô cùng độc đáo, kết hợp giữa núi cao hiểm trở, cao nguyên đất đỏ trập trùng và dải duyên hải Nam Trung Bộ.
+          </p>
+          <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
+            Vận hành tại Tây Nguyên đòi hỏi sự linh hoạt tối đa do khoảng cách giữa các bưu cục huyện thị rất lớn, hạ tầng giao thông chịu ảnh hưởng nặng nề vào mùa mưa kéo dài, cùng sự biến động nhân sự lớn theo mùa vụ nông sản (cà phê, hồ tiêu).
+          </p>
+          <p style="font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; background: #e0f2fe; padding: 8px 12px; border-radius: 6px; display: inline-block">
+            👉 Nhấp chuột vào từng tỉnh trên bản đồ để xem chi tiết thông tin vận hành khu vực!
+          </p>
+        </div>
+        
+        <!-- Info Card of selected province -->
+        <div id="prov-info-card" style="padding: 16px; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; transition: all 0.3s ease">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px">
+            <h4 id="prov-name" style="font-size: 16px; font-weight: 800; color: var(--accent)">ĐẮK LẮK</h4>
+            <span style="font-size: 11px; font-weight: 700; color:#fff; background: var(--accent); padding: 2px 8px; border-radius: 12px">Active</span>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 10px">
+            <div><span style="color: var(--dim)">Thủ phủ hành chính:</span> <strong id="prov-capital">Buôn Ma Thuột</strong></div>
+            <div><span style="color: var(--dim)">Quy mô mạng lưới:</span> <strong id="prov-hubs">24 Bưu cục</strong></div>
+            <div><span style="color: var(--dim)">AM phụ trách:</span> <strong id="prov-am">Phạm Văn Long</strong></div>
+            <div><span style="color: var(--dim)">Mục tiêu GTC chặng cuối:</span> <strong id="prov-target" style="color: var(--green)">98.2%</strong></div>
+          </div>
+          <div style="font-size: 13px; margin-bottom: 8px">
+            <span style="color: var(--dim)">Thách thức lớn nhất:</span> <p id="prov-challenges" style="margin-top: 2px; font-weight: 500">Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.</p>
+          </div>
+          <div style="font-size: 13px">
+            <span style="color: var(--dim)">Trọng tâm vận hành:</span> <p id="prov-focus" style="margin-top: 2px; font-weight: 600; color: var(--accent)">Ổn định định biên nhân sự giao hàng và phân ca giao giờ cao điểm bưu cục nội thị.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 3D Interactive Map Container -->
+      <div style="display: flex; justify-content: center; align-items: center; width: 100%">
+        <div class="map-container">
+          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
+          
+          <!-- Gia Lai Pin -->
+          <div class="map-pin" style="top: 38%; left: 40%;" data-id="gialai" onclick="selectProvince('gialai')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">GIA LAI</div>
+          </div>
+          
+          <!-- Đắk Lắk Pin (Default Active) -->
+          <div class="map-pin active-pin" style="top: 58%; left: 35%;" data-id="daklak" onclick="selectProvince('daklak')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">ĐẮK LẮK</div>
+          </div>
+          
+          <!-- Bình Định Pin -->
+          <div class="map-pin" style="top: 30%; left: 60%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">BÌNH ĐỊNH</div>
+          </div>
+          
+          <!-- Phú Yên Pin -->
+          <div class="map-pin" style="top: 52%; left: 63%;" data-id="phuyen" onclick="selectProvince('phuyen')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">PHÚ YÊN</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -2118,6 +2375,63 @@ async function sendToTrinh() {{
         }}
     }}
 }}
+
+const provinceData = {{
+  gialai: {{
+    name: "Gia Lai",
+    capital: "Pleiku",
+    hubs: 18,
+    am: "Nguyễn Công Danh",
+    target: "98.0%",
+    challenges: "Địa hình đồi dốc, khoảng cách bưu cục xa nhau, ảnh hưởng bởi mùa mưa Tây Nguyên.",
+    focus: "Tối ưu hóa các cung đường liên tỉnh và tuyến huyện trung chuyển."
+  }},
+  daklak: {{
+    name: "Đắk Lắk",
+    capital: "Buôn Ma Thuột",
+    hubs: 24,
+    am: "Phạm Văn Long",
+    target: "98.2%",
+    challenges: "Mật độ bưu cục nội thành cao, đặc thù mùa logistics cà phê và nông sản lớn.",
+    focus: "Ổn định định biên nhân sự giao hàng và phân ca giao giờ cao điểm bưu cục nội thị."
+  }},
+  binhdinh: {{
+    name: "Bình Định",
+    capital: "Quy Nhơn",
+    hubs: 16,
+    am: "Trần Văn Phú",
+    target: "98.5%",
+    challenges: "Dải địa hình ven biển kéo dài, mật độ đơn hàng tập trung đông tại Quy Nhơn.",
+    focus: "Đẩy nhanh thời gian giao hàng chặng cuối và tối ưu năng suất nhân sự xử lý (NVXL)."
+  }},
+  phuyen: {{
+    name: "Phú Yên",
+    capital: "Tuy Hòa",
+    hubs: 12,
+    am: "Nguyễn Hoàng Minh",
+    target: "97.9%",
+    challenges: "Địa hình kết hợp núi-biển hiểm trở ở các huyện vùng sâu, khối lượng thấp hơn.",
+    focus: "Tăng tỷ lệ GTC chặng cuối và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
+  }}
+}};
+
+function selectProvince(id) {{
+  document.querySelectorAll('.map-pin').forEach(el => {{
+    el.classList.toggle('active-pin', el.getAttribute('data-id') === id);
+  }});
+  
+  const data = provinceData[id];
+  if (!data) return;
+  
+  document.getElementById('prov-name').innerText = data.name.toUpperCase();
+  document.getElementById('prov-capital').innerText = data.capital;
+  document.getElementById('prov-hubs').innerText = data.hubs + " Bưu cục";
+  document.getElementById('prov-am').innerText = data.am;
+  document.getElementById('prov-target').innerText = data.target;
+  document.getElementById('prov-challenges').innerText = data.challenges;
+  document.getElementById('prov-focus').innerText = data.focus;
+}}
+
 lucide.createIcons();
 </script>
 </body>

@@ -47,29 +47,127 @@ def get_keys():
     return []
 
 def get_compact_data(data, user_msg=""):
-    """Giảm dung lượng dữ liệu tối đa để tiết kiệm Quota."""
+    """Giảm dung lượng dữ liệu tối đa để tiết kiệm Quota nhưng vẫn đầy đủ các chỉ số cốt lõi."""
     if not data: return {}
     
-    # Chỉ lấy các thông tin thực sự cần thiết
-    compact = {
-        "report_date": data.get("report_date"),
+    report_date = data.get("report_date")
+    
+    # 1. Chỉ số tổng quan Vùng TNG
+    metrics_vung = {
         "gtc_vung": f"{data.get('grand_total_gtc', {}).get('gtc', 0)*100:.2f}%",
-        "hr_total": data.get("ns_total", {}).get("so_thieu", 0),
+        "gtc_tts_vung": f"{data.get('grand_total_gtc_tts', {}).get('gtc', 0)*100:.2f}%",
+        "opr_total": f"{data.get('opr_total', 0)*100:.2f}%",
+        "hr_total_thieu": data.get("ns_total", {}).get("so_thieu", 0),
+        "hr_total_can": data.get("ns_total", {}).get("ptt_can", 0),
+        "hr_total_co": data.get("ns_total", {}).get("ptt_co", 0),
+        "vol_total": data.get("grand_total_gtc", {}).get("vol", 0),
+        "doanh_thu_luy_ke": f"{data.get('total_lay', {}).get('luyke', 0):,.0f}đ" if data.get('total_lay', {}).get('luyke') else "0đ"
     }
-    
-    # Map BC to AM for specific action proposals
+
+    # Map BC to AM for hotspot resolution
     bc_to_am = {item.get('bc'): item.get('am') for item in data.get('gtc_bc', []) if item.get('bc')}
+
+    # 2. Chi tiết theo Tỉnh (Đắk Lắk, Gia Lai, Bình Định, Phú Yên)
+    gtc_tinh_details = {}
+    for item in data.get("gtc_tinh", []):
+        t_name = item.get("tinh")
+        if t_name:
+            gtc_tinh_details[t_name] = f"{item.get('total_gtc', 0)*100:.2f}%"
+
+    gtc_tts_tinh_details = {}
+    for item in data.get("gtc_tts_tinh", []):
+        t_name = item.get("tinh")
+        if t_name:
+            gtc_tts_tinh_details[t_name] = f"{item.get('total_gtc', 0)*100:.2f}%"
+
+    opr_tinh_details = {}
+    for proc in data.get("opr_report", {}).get("procs", []):
+        t_name = proc.get("name")
+        if t_name:
+            for frame in proc.get("frames", []):
+                if frame.get("name") == "Total":
+                    vals = frame.get("vals", {})
+                    val_data = vals.get(report_date) or {}
+                    if not val_data and vals:
+                        sorted_vals_dates = sorted(vals.keys())
+                        if sorted_vals_dates:
+                            val_data = vals.get(sorted_vals_dates[-1]) or {}
+                    opr_tinh_details[t_name] = f"{val_data.get('opr', 0)*100:.2f}%"
+
+    hr_tinh_details = {}
+    for item in data.get("ns_bc", []):
+        t_name = item.get("tinh")
+        if t_name:
+            if t_name not in hr_tinh_details:
+                hr_tinh_details[t_name] = {"can": 0, "co": 0, "thieu": 0}
+            hr_tinh_details[t_name]["can"] += item.get("can", 0)
+            hr_tinh_details[t_name]["co"] += item.get("co", 0)
+            hr_tinh_details[t_name]["thieu"] += item.get("thieu", 0)
+
+    hr_tinh_formatted = {}
+    for t_name, stats in hr_tinh_details.items():
+        hr_tinh_formatted[t_name] = f"Cần: {stats['can']}, Có: {stats['co']}, Thiếu: {stats['thieu']}"
+
+    tinh_details = {}
+    for t_name in ["Đắk Lắk", "Gia Lai", "Bình Định", "Phú Yên"]:
+        tinh_details[t_name] = {
+            "gtc": gtc_tinh_details.get(t_name, "0.00%"),
+            "gtc_tts": gtc_tts_tinh_details.get(t_name, "0.00%"),
+            "opr": opr_tinh_details.get(t_name, "0.00%"),
+            "hr": hr_tinh_formatted.get(t_name, "Cần: 0, Có: 0, Thiếu: 0")
+        }
+
+    # 3. Tổng hợp AM và mapping Tỉnh của từng AM
+    am_to_tinh = {}
+    for item in data.get("ns_bc", []):
+        am_name = item.get("am")
+        t_name = item.get("tinh")
+        if am_name and t_name:
+            am_to_tinh[am_name] = t_name
+
+    am_details = {}
+    for item in data.get("gtc_am", []):
+        am_name = item.get("am")
+        if am_name:
+            am_details[am_name] = {
+                "gtc": f"{item.get('total_gtc', 0)*100:.2f}%",
+                "vol": item.get("total_vol", 0)
+            }
     
+    for item in data.get("ns_am", []):
+        am_name = item.get("am")
+        if am_name and am_name in am_details:
+            am_details[am_name]["hr_thieu"] = item.get("so_thieu", 0)
+            
+    for item in data.get("ltc_am", []):
+        am_name = item.get("am")
+        if am_name and am_name in am_details:
+            am_details[am_name]["ltc"] = f"{item.get('total_ltc', 0)*100:.2f}%"
+
+    am_summary = [
+        {
+            "am": am_name,
+            "tinh": am_to_tinh.get(am_name, "Chưa rõ"),
+            "gtc": stats.get("gtc", "0.00%"),
+            "ltc": stats.get("ltc", "0.00%"),
+            "hr_thieu": stats.get("hr_thieu", 0)
+        }
+        for am_name, stats in am_details.items()
+    ]
+
+    # 4. Danh sách Hotspots
     raw_hotspots = sorted(data.get("canh_bao_vung", []), key=lambda x: x.get('gap', 0))[:7]
     enriched_hotspots = []
     for hs in raw_hotspots:
         hs_copy = hs.copy()
         hs_copy['am'] = bc_to_am.get(hs.get('bc'), "Chưa rõ AM")
+        if 'gtc_7d' in hs_copy: hs_copy['gtc_7d'] = f"{hs_copy['gtc_7d']*100:.2f}%"
+        if 'gtc_30d' in hs_copy: hs_copy['gtc_30d'] = f"{hs_copy['gtc_30d']*100:.2f}%"
+        if 'target' in hs_copy: hs_copy['target'] = f"{hs_copy['target']*100:.2f}%"
+        if 'gap' in hs_copy: hs_copy['gap'] = f"{hs_copy['gap']*100:.2f}%"
         enriched_hotspots.append(hs_copy)
 
-    compact["hotspots"] = enriched_hotspots
-    
-    # Load knowledge chỉ khi thực sự cần
+    # 5. External knowledge
     external_knowledge = ""
     if any(k in user_msg.lower() for k in ["ông", "anh", "chị", "liên hệ", "quy định"]):
         kb_path = 'Tai Lieu GHN/knowledge.json'
@@ -78,9 +176,15 @@ def get_compact_data(data, user_msg=""):
                 with open(kb_path, 'r') as f:
                     external_knowledge = f.read()[:1000]
             except: pass
-    
-    compact["kb"] = external_knowledge
-    return compact
+
+    return {
+        "report_date": report_date,
+        "metrics_vung": metrics_vung,
+        "tinh_details": tinh_details,
+        "am_summary": am_summary,
+        "hotspots": enriched_hotspots,
+        "kb": external_knowledge
+    }
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -126,7 +230,42 @@ def chat():
         except: pass
 
     today_str = datetime.now().strftime('%d/%m/%Y')
-    system_prompt = f"{style_guide}\nBạn là Ngọc Trinh, trợ lý điều hành cao cấp. Trả lời chuyên nghiệp, sắc sảo.\n\nTHÔNG TIN THỜI GIAN:\n- Hôm nay là ngày thực tế: **{today_str}**.\n- Tin tức xã hội PHẢI dùng ngày này.\n\nQUY TẮC CỐT LÕI (BẮT BUỘC):\n1. TIÊU ĐỀ CHÍNH: KHÔNG đánh số thứ tự. (Dùng div hồng, margin-bottom: 2.5px).\n2. TIÊU ĐỀ NHỎ: Bắt đầu đánh số từ 1. (Dùng div hồng, margin-top: 0.5px, margin-bottom: 2.5px).\n3. DANH SÁCH: Xuống dòng cho mỗi mục. Có ICON thì KHÔNG dùng dấu (•).\n4. ĐỊNH DẠNG: In đậm số liệu và tên tỉnh/BC. Mỗi ý 1 dòng riêng biệt.\n5. TÀI LIỆU: Sử dụng dữ liệu dưới đây.\n\nData: {json.dumps(compact_context, ensure_ascii=False)}"
+    system_prompt = f"""{style_guide}
+Bạn là Ngọc Trinh, trợ lý điều hành cao cấp của Sếp Lê Văn Cường. Trả lời chuyên nghiệp, sắc sảo, cực kỳ quyết liệt và khó tính về mặt thẩm mỹ.
+
+THÔNG TIN THỜI GIAN:
+- Hôm nay là ngày thực tế: **{today_str}**.
+- Tin tức xã hội PHẢI dùng ngày này.
+
+QUY TẮC PHÂN BỔ AM (BẮT BUỘC):
+- Mỗi AM chỉ thuộc quản lý của một Tỉnh duy nhất. Sếp yêu cầu tuyệt đối tuân thủ theo trường `tinh` được cung cấp trong `am_summary` để xác định tỉnh/khu vực của AM đó.
+- CẤM TUYỆT ĐỐI gán sai tỉnh cho AM! Ví dụ: AM **Nguyễn Công Luận** thuộc tỉnh **Gia Lai**, AM **Nguyễn Văn Sáng** thuộc tỉnh **Đắk Lắk**, AM **Lê Văn Tài** thuộc tỉnh **Đắk Lắk**. Tuyệt đối không được nhầm lẫn!
+
+QUY TẮC PHÂN BIỆT VÀ BÁO CÁO CÁC CHỈ SỐ (BẮT BUỘC):
+1. **BÁO CÁO OPR (Báo cáo OPR TTS)**:
+   - Khi Sếp hỏi về OPR, click "Báo cáo OPR", hoặc hỏi chỉ số OPR: Bạn PHẢI trả lời về chỉ số OPR, tuyệt đối KHÔNG trả lời GTC!
+   - Sử dụng `metrics_vung.opr_total` làm chỉ số OPR Vùng TNG.
+   - Sử dụng `tinh_details[Tỉnh].opr` làm chỉ số OPR của từng tỉnh (Đắk Lắk, Gia Lai, Bình Định, Phú Yên).
+   - Giải thích OPR là Tỷ lệ Đúng giờ tạo đơn / On-time Processing Rate.
+
+2. **BÁO CÁO NHÂN SỰ (HR)**:
+   - Sử dụng `metrics_vung.hr_total_thieu` làm Số thiếu nhân sự, `metrics_vung.hr_total_can` làm Số cần, và `metrics_vung.hr_total_co` làm Số đang có.
+   - Sử dụng `tinh_details[Tỉnh].hr` làm chỉ số nhân sự từng tỉnh.
+   - TUYỆT ĐỐI KHÔNG báo cáo "Số thiếu" thành "Tổng nhân sự hiện tại". Tổng nhân sự hiện tại phải là số "Đang có" (Co). Ví dụ: "Tổng nhân sự đang có của vùng là {compact_context.get('metrics_vung', {}).get('hr_total_co', 0)} nhân sự, hiện đang thiếu hụt {compact_context.get('metrics_vung', {}).get('hr_total_thieu', 0)} nhân sự".
+   - LƯU Ý ĐẶC BIỆT QUAN TRỌNG: Chỉ số `metrics_vung.hr_total_thieu` (ví dụ: 50) là số thiếu của TOÀN VÙNG (gồm cả 4 tỉnh: Đắk Lắk, Gia Lai, Bình Định, Phú Yên). Khi đưa ra đề xuất hay báo cáo liên quan đến số thiếu này, TUYỆT ĐỐI KHÔNG ĐƯỢC gán hoặc quy kết số thiếu này là riêng của Đắk Lắk và Gia Lai (hoặc bất kỳ tỉnh lẻ nào). Phải nêu rõ đây là "nhân sự còn thiếu của toàn vùng" hoặc "nhân sự còn thiếu trên toàn vùng TNG".
+
+3. **BÁO CÁO GTC VÀ GTC TTS**:
+   - GTC Vùng (Giao thành công Vùng): Sử dụng `metrics_vung.gtc_vung` và `tinh_details[Tỉnh].gtc`.
+   - GTC TTS Vùng (Giao tự tuyển Vùng): Sử dụng `metrics_vung.gtc_tts_vung` và `tinh_details[Tỉnh].gtc_tts`.
+
+QUY TẮC CỐT LÕI VỀ TRÌNH BÀY (BẮT BUỘC):
+1. TIÊU ĐỀ CHÍNH: KHÔNG đánh số thứ tự. Viết HOA TOÀN BỘ, IN ĐẬM, dùng mã màu hồng và margin-bottom: 2.5px. Mẫu code: `<div style="color:#db2777; font-weight:bold; margin-top:10px; margin-bottom:2.5px; font-size:16px;">TIÊU ĐỀ CHÍNH</div>`.
+2. TIÊU ĐỀ NHỎ: Đánh số từ 1. Viết HOA, IN ĐẬM, màu hồng và margin-bottom: 2.5px. Mẫu code: `<div style="color:#db2777; font-weight:bold; margin-top:0.5px; margin-bottom:2.5px; font-size:15px;">1. TIÊU ĐỀ NHỎ</div>`.
+3. DANH SÁCH: Xuống dòng cho mỗi mục. Nếu có ICON thì CẤM DÙNG dấu (•). Nếu KHÔNG có icon mới dùng dấu (•).
+4. ĐỊNH DẠNG: In đậm tất cả số liệu (phần trăm %, số lượng) và tên Tỉnh/Bưu cục.
+5. CẤU TRÚC 4 PHẦN CHO BÁO CÁO VẬN HÀNH: 1. ĐÁNH GIÁ CHUNG, 2. TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG, 3. DỰ BÁO RỦI RO, 4. PHƯƠNG ÁN & ĐỀ XUẤT HÀNH ĐỘNG. Luôn liệt kê đủ 4 tỉnh: Đắk Lắk, Gia Lai, Bình Định, Phú Yên trong Đánh giá chung.
+
+Data: {json.dumps(compact_context, ensure_ascii=False)}"""
 
     api_keys = get_keys()
     if not api_keys:

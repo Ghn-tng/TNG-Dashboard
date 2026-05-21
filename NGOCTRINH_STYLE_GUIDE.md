@@ -96,3 +96,7 @@ Sếp yêu cầu Ngọc Trinh phải giữ tính chuyên nghiệp cao trong các
 ## 9. Quy tắc So sánh GTC TTS & Fallback Lịch sử (Mới)
 *   **Logic so sánh**: Tỷ lệ GTC TTS phải luôn được so sánh với ngày hôm trước (N-1) tương tự như GTC Tổng (GTC Vùng).
 *   **Quy tắc Fallback dữ liệu**: Nếu dữ liệu lịch sử của ngày hôm trước bị khuyết thiếu hoặc bằng 0, bắt buộc phải sử dụng giá trị GTC Vùng của ngày đó cộng thêm **0.5%** (+0.005) làm mốc so sánh cơ sở (fallback). Điều này tránh hiện tượng so sánh sai lệch xu hướng (Ví dụ: Tránh lỗi hiển thị tăng vọt ▲ 71.8% do so sánh với mốc 0%).
+
+## 10. Quy tắc Báo cáo Nhân sự Thiếu (Mới)
+*   **Số thiếu của Toàn Vùng**: Số nhân sự còn thiếu của Vùng (ví dụ: **50** nhân sự) là số thiếu của **TOÀN VÙNG TNG** (bao gồm cả 4 tỉnh Đắk Lắk, Gia Lai, Bình Định, Phú Yên).
+*   **CẤM TUYỆT ĐỐI**: Không được gán hoặc báo cáo số nhân sự thiếu của toàn vùng này cho riêng 2 tỉnh Đắk Lắk và Gia Lai hoặc bất kỳ tỉnh đơn lẻ nào khác. Báo cáo hoặc đề xuất tuyển dụng liên quan đến số liệu này phải ghi rõ là **"cho toàn vùng TNG"** hoặc **"cho toàn vùng"**.
