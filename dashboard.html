@@ -71,6 +71,114 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
 .map-province { transition: all 0.3s ease; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
 .map-province:hover { filter: brightness(1.1) drop-shadow(0 4px 12px rgba(2, 132, 199, 0.4)); transform: translateY(-2px); }
 .map-province.active-province { stroke: #ffffff; stroke-width: 4; filter: brightness(1.2) drop-shadow(0 4px 16px rgba(2, 132, 199, 0.6)); }
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), inset 0 2px 4px rgba(0,0,0,0.02);
+}
+.map-pin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+.pin-dot {
+  width: 12px;
+  height: 12px;
+  background: #0ea5e9;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
+  transition: all 0.3s ease;
+}
+.map-pin[data-id="binhdinh"] .pin-dot {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+}
+.map-pin[data-id="phuyen"] .pin-dot {
+  background: #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+}
+.pin-pulse {
+  width: 28px;
+  height: 28px;
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  animation: map-pulse 2s infinite ease-out;
+  pointer-events: none;
+}
+.map-pin[data-id="binhdinh"] .pin-pulse {
+  background: rgba(16, 185, 129, 0.35);
+}
+.map-pin[data-id="phuyen"] .pin-pulse {
+  background: rgba(6, 182, 212, 0.35);
+}
+@keyframes map-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.pin-label {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  opacity: 0.85;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.map-pin:hover .pin-label, .map-pin.active-pin .pin-label {
+  background: #0284c7;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3);
+}
+.map-pin[data-id="binhdinh"]:hover .pin-label, .map-pin[data-id="binhdinh"].active-pin .pin-label {
+  background: #047857;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+.map-pin[data-id="phuyen"]:hover .pin-label, .map-pin[data-id="phuyen"].active-pin .pin-label {
+  background: #0891b2;
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
+}
+.map-pin.active-pin .pin-dot {
+  transform: scale(1.3);
+  border-color: #fff;
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.9);
+}
+.map-pin[data-id="binhdinh"].active-pin .pin-dot {
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.9);
+}
+.map-pin[data-id="phuyen"].active-pin .pin-dot {
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.9);
+}
 .section-title{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-title span{width:4px;height:20px;border-radius:2px;background:var(--accent)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -237,7 +345,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 08:15 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 08:26 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1095,52 +1203,39 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
         </div>
       </div>
       
-      <!-- Interactive SVG Map -->
-      <div style="display: flex; justify-content: center; align-items: center">
-        <svg viewBox="0 0 400 350" width="100%" height="320px" style="background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02)">
-          <!-- Gradients -->
-          <defs>
-            <linearGradient id="grad-gialai" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0284c7" />
-              <stop offset="100%" stop-color="#0369a1" />
-            </linearGradient>
-            <linearGradient id="grad-daklak" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0ea5e9" />
-              <stop offset="100%" stop-color="#0284c7" />
-            </linearGradient>
-            <linearGradient id="grad-binhdinh" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#10b981" />
-              <stop offset="100%" stop-color="#047857" />
-            </linearGradient>
-            <linearGradient id="grad-phuyen" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#06b6d4" />
-              <stop offset="100%" stop-color="#0891b2" />
-            </linearGradient>
-          </defs>
+      <!-- 3D Interactive Map Container -->
+      <div style="display: flex; justify-content: center; align-items: center; width: 100%">
+        <div class="map-container">
+          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
           
-          <!-- Outer border/decoration of Tay Nguyen region -->
-          <!-- Gia Lai (Northwest) -->
-          <path d="M 50,40 C 90,30 180,45 200,60 C 210,80 200,140 180,150 C 140,165 70,150 60,130 C 50,110 40,60 50,40 Z" 
-                fill="url(#grad-gialai)" stroke="#fff" stroke-width="3" class="map-province" data-id="gialai" onclick="selectProvince('gialai')"/>
+          <!-- Gia Lai Pin -->
+          <div class="map-pin" style="top: 38%; left: 40%;" data-id="gialai" onclick="selectProvince('gialai')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">GIA LAI</div>
+          </div>
           
-          <!-- Dak Lak (Southwest) -->
-          <path d="M 60,135 C 70,155 140,170 180,155 C 200,165 190,240 170,260 C 140,280 60,270 50,230 C 40,190 50,150 60,135 Z" 
-                fill="url(#grad-daklak)" stroke="#fff" stroke-width="3" class="map-province active-province" data-id="daklak" onclick="selectProvince('daklak')"/>
+          <!-- Đắk Lắk Pin (Default Active) -->
+          <div class="map-pin active-pin" style="top: 58%; left: 35%;" data-id="daklak" onclick="selectProvince('daklak')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">ĐẮK LẮK</div>
+          </div>
           
-          <!-- Binh Dinh (Northeast Coastal) -->
-          <path d="M 205,58 C 240,40 280,30 295,45 C 310,65 300,120 280,130 C 260,140 220,135 210,125 C 200,110 200,70 205,58 Z" 
-                fill="url(#grad-binhdinh)" stroke="#fff" stroke-width="3" class="map-province" data-id="binhdinh" onclick="selectProvince('binhdinh')"/>
+          <!-- Bình Định Pin -->
+          <div class="map-pin" style="top: 30%; left: 60%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">BÌNH ĐỊNH</div>
+          </div>
           
-          <!-- Phu Yen (Southeast Coastal) -->
-          <path d="M 213,130 C 225,138 265,143 283,133 C 295,145 290,210 275,230 C 255,250 210,235 195,215 C 185,190 200,145 213,130 Z" 
-                fill="url(#grad-phuyen)" stroke="#fff" stroke-width="3" class="map-province" data-id="phuyen" onclick="selectProvince('phuyen')"/>
-
-          <!-- Texts inside provinces -->
-          <text x="125" y="95" fill="#fff" font-weight="700" font-size="12" text-anchor="middle" pointer-events="none" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))">GIA LAI</text>
-          <text x="120" y="205" fill="#fff" font-weight="700" font-size="12" text-anchor="middle" pointer-events="none" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))">ĐẮK LẮK</text>
-          <text x="250" y="90" fill="#fff" font-weight="700" font-size="11" text-anchor="middle" pointer-events="none" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))">BÌNH ĐỊNH</text>
-          <text x="240" y="185" fill="#fff" font-weight="700" font-size="11" text-anchor="middle" pointer-events="none" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))">PHÚ YÊN</text>
-        </svg>
+          <!-- Phú Yên Pin -->
+          <div class="map-pin" style="top: 52%; left: 63%;" data-id="phuyen" onclick="selectProvince('phuyen')">
+            <div class="pin-pulse"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-label">PHÚ YÊN</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1827,8 +1922,8 @@ const provinceData = {
 };
 
 function selectProvince(id) {
-  document.querySelectorAll('.map-province').forEach(el => {
-    el.classList.toggle('active-province', el.getAttribute('data-id') === id);
+  document.querySelectorAll('.map-pin').forEach(el => {
+    el.classList.toggle('active-pin', el.getAttribute('data-id') === id);
   });
   
   const data = provinceData[id];
