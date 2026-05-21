@@ -435,7 +435,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 19:15 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 19:18 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1283,6 +1283,8 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
             <div><span style="color: var(--dim)">Quy mô mạng lưới:</span> <strong id="prov-hubs">24 Bưu cục</strong></div>
             <div><span style="color: var(--dim)">AM phụ trách:</span> <strong id="prov-am">6 AM</strong></div>
             <div><span style="color: var(--dim)">GTC bình quân:</span> <strong id="prov-target" style="color: var(--green)">63.7%</strong></div>
+            <div><span style="color: var(--dim)">Số lượng nhân sự:</span> <strong id="prov-staff">240 nhân sự</strong></div>
+            <div><span style="color: var(--dim)">Tỷ trọng volume:</span> <strong id="prov-vol-pct">36.1%</strong></div>
           </div>
           <div style="font-size: 13px; margin-bottom: 8px">
             <span style="color: var(--dim)">Thách thức lớn nhất:</span> <p id="prov-challenges" style="margin-top: 2px; font-weight: 500">Volume đơn hàng cao, đặc thù mùa vụ nông sản lớn: cà phê, sầu riêng, tiêu...</p>
@@ -1988,6 +1990,8 @@ const provinceData = {
     hubs: 18,
     am: "4 AM",
     target: "75.8%",
+    staff: "168",
+    volPct: "22.5%",
     challenges: "Địa hình đồi dốc, khoảng cách bưu cục xa nhau, ảnh hưởng bởi mùa mưa Tây Nguyên.",
     focus: "Tối ưu hóa lịch tải nội tỉnh và mở mạng lưới bưu cục tại các tuyến huyện chành"
   },
@@ -1997,6 +2001,8 @@ const provinceData = {
     hubs: 24,
     am: "6 AM",
     target: "63.7%",
+    staff: "240",
+    volPct: "36.1%",
     challenges: "Volume đơn hàng cao, đặc thù mùa vụ nông sản lớn: cà phê, sầu riêng, tiêu...",
     focus: "Ổn định định biên nhân sự giao hàng và xử lý hàng ca 2 đối với các bưu cục trung tâm"
   },
@@ -2006,6 +2012,8 @@ const provinceData = {
     hubs: 16,
     am: "3 AM",
     target: "78.8%",
+    staff: "173",
+    volPct: "26.5%",
     challenges: "Dải địa hình ven biển kéo dài, mật độ đơn hàng tập trung đông tại Quy Nhơn.",
     focus: "Đẩy nhanh thời gian giao hàng và tối ưu năng suất nhân sự xử lý (NVXL)."
   },
@@ -2015,7 +2023,9 @@ const provinceData = {
     hubs: 12,
     am: "2 AM",
     target: "78.9%",
-    challenges: "Địa hình kết hợp núi-biển hiểm trở ở các huyện vùng sâu, khối lượng thấp hơn.",
+    staff: "112",
+    volPct: "14.8%",
+    challenges: "Địa hình kết hợp núi-biển hiểm trước ở các huyện vùng sâu, khối lượng thấp hơn.",
     focus: "Tăng tỷ lệ GTC và cải thiện chỉ số thời gian giao hàng (ODR) khu vực ngoại vi."
   }
 };
@@ -2033,6 +2043,8 @@ function selectProvince(id) {
   document.getElementById('prov-hubs').innerText = data.hubs + " Bưu cục";
   document.getElementById('prov-am').innerText = data.am;
   document.getElementById('prov-target').innerText = data.target;
+  document.getElementById('prov-staff').innerText = data.staff + " nhân sự";
+  document.getElementById('prov-vol-pct').innerText = data.volPct;
   document.getElementById('prov-challenges').innerText = data.challenges;
   document.getElementById('prov-focus').innerText = data.focus;
 }
