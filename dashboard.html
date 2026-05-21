@@ -74,12 +74,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
 .map-container {
   position: relative;
   width: 100%;
-  height: 380px;
+  height: 450px;
   border-radius: 14px;
   border: 1.5px solid #cbd5e1;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
-  background: #f5f8fc;
+  background: #ffffff;
 }
 /* === Province Glow Pins (center of each province) === */
 .map-pin {
@@ -159,6 +159,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
     opacity: 0;
   }
 }
+@keyframes label-blink {
+  0%, 100% {
+    opacity: 0.95;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  }
+}
 .pin-label {
   position: absolute;
   top: -32px;
@@ -177,7 +187,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
   letter-spacing: 0.6px;
-  pointer-events: none;
+  pointer-events: auto;
+  animation: label-blink 2s infinite ease-in-out;
 }
 .map-pin[data-id="daklak"] .pin-label {
   background: rgba(234, 88, 12, 0.9);
@@ -189,20 +200,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-
   background: rgba(192, 38, 211, 0.9);
 }
 .map-pin:hover .pin-label, .map-pin.active-pin .pin-label {
+  animation: none;
   background: #0284c7;
   opacity: 1;
   transform: translateX(-50%) translateY(-2px) scale(1.05);
   box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
 }
 .map-pin[data-id="daklak"]:hover .pin-label, .map-pin[data-id="daklak"].active-pin .pin-label {
+  animation: none;
   background: #ea580c;
   box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
 }
 .map-pin[data-id="binhdinh"]:hover .pin-label, .map-pin[data-id="binhdinh"].active-pin .pin-label {
+  animation: none;
   background: #047857;
   box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
 }
 .map-pin[data-id="phuyen"]:hover .pin-label, .map-pin[data-id="phuyen"].active-pin .pin-label {
+  animation: none;
   background: #c026d3;
   box-shadow: 0 8px 20px rgba(192, 38, 211, 0.4);
 }
@@ -419,7 +434,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 18:14 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 18:20 21/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1285,7 +1300,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
           <!-- === Province Glow Pins (center of each province) === -->
           
           <!-- Gia Lai - center of blue province -->
-          <div class="map-pin" style="top: 30%; left: 27%;" data-id="gialai" onclick="selectProvince('gialai')">
+          <div class="map-pin" style="top: 33%; left: 47%;" data-id="gialai" onclick="selectProvince('gialai')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1293,7 +1308,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
           </div>
           
           <!-- Đắk Lắk - center of orange province (Default Active) -->
-          <div class="map-pin active-pin" style="top: 67%; left: 32%;" data-id="daklak" onclick="selectProvince('daklak')">
+          <div class="map-pin active-pin" style="top: 57%; left: 45%;" data-id="daklak" onclick="selectProvince('daklak')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1301,7 +1316,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
           </div>
           
           <!-- Bình Định - center of green province -->
-          <div class="map-pin" style="top: 20%; left: 68%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+          <div class="map-pin" style="top: 29%; left: 62%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
