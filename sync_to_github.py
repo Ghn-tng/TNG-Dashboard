@@ -25,7 +25,7 @@ def sync():
     # 2. Check if there are changes to commit
     try:
         # Add files (chỉ add các file giao diện công khai và file cấu hình bot_url)
-        files_to_sync = ['index.html', 'dashboard.html', 'bot_url.js']
+        files_to_sync = ['index.html', 'dashboard.html', 'bot_url.js', 'tay_nguyen_3d_map.png']
         # Filter only existing files
         existing_files = [f for f in files_to_sync if os.path.exists(f)]
         
@@ -41,9 +41,9 @@ def sync():
         commit_msg = f"Auto-update Dashboard: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
         
-        # Force push to gh-pages branch
-        log("🚀 Pushing to GitHub (gh-pages)...")
-        result = subprocess.run(['git', 'push', 'origin', 'gh-pages'], capture_output=True, text=True)
+        # Force push to main branch
+        log("🚀 Pushing to GitHub (main)...")
+        result = subprocess.run(['git', 'push', 'origin', 'HEAD:main'], capture_output=True, text=True)
         
         if result.returncode == 0:
             log("✅ Successfully synced to GitHub Pages!")

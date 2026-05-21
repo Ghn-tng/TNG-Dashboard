@@ -1071,7 +1071,7 @@ for province in provinces:
 :root{{--bg:linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);--card:#ffffff;--card2:#f1f5f9;--border:#cbd5e1;--text:#0f172a;--dim:#475569;--accent:#0284c7;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--cyan:#0ea5e9}}
 body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background-attachment:fixed;color:var(--text);min-height:100vh; -webkit-font-smoothing: antialiased;}}
 .header{{background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%);padding:15px 25px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);flex-wrap:wrap;gap:15px; position: sticky; top: 0; z-index: 1000;}}
-.header h1{{font-size:20px;font-weight:800;color:#ffffff}}
+.header h1{{font-size:23px;font-weight:800;color:#ffffff}}
 .header .date{{color:#ffffff;font-size:13px;font-weight:500;opacity:0.9}}
 .btn-quick {{ padding:6px 14px; color:#fff; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; white-space:nowrap; transition:all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 4px; }}
 .btn-quick:hover {{ transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.15); filter: brightness(1.1); }}
@@ -1106,7 +1106,7 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .kpi-card:nth-child(7) .kpi-value{{color:var(--red)}}
 .kpi-card:nth-child(8) .kpi-value{{color:var(--red)}}
 .tabs{{display:flex;gap:8px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto; position: sticky; top: 62px; z-index: 999; align-items: center; width: 100%;}}
-.tab{{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--dim);transition:all .2s;white-space:nowrap;border:1px solid transparent; position: relative; display: flex; align-items: center; gap: 6px; background: transparent; box-shadow: none;}}
+.tab{{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:14.5px;font-weight:700;color:var(--dim);transition:all .2s;white-space:nowrap;border:1px solid transparent; position: relative; display: flex; align-items: center; gap: 6px; background: transparent; box-shadow: none;}}
 .tab svg{{width:16px;height:16px}}
 .tab:nth-child(1) svg{{color:#3b82f6}}
 .tab:nth-child(2) svg{{color:#06b6d4}}
@@ -1327,8 +1327,8 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
   50% {{ transform: translateY(-2px); }}
 }}
 
-.section-title{{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
-.section-title span{{width:4px;height:20px;border-radius:2px;background:var(--accent)}}
+.section-title{{font-size:19px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
+.section-title span{{width:4px;height:22px;border-radius:2px;background:var(--accent)}}
 .grid-2{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
 .card{{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:16px;margin-bottom:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;}}
 table{{width:100%;border-collapse:collapse;font-size:13px}}
@@ -1775,7 +1775,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
         <i data-lucide="info" style="width: 32px; height: 32px; color: white"></i>
       </div>
       <div>
-        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px">TNG OPERATIONAL INTELLIGENCE DASHBOARD</h2>
+        <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px">TNG OPERATIONAL INTELLIGENCE DASHBOARD</h2>
         <p style="font-size: 14px; opacity: 0.9; font-weight: 500">Hệ thống Giám Sát và Quản Trị Vận Hành Vùng Tây Nguyên - Giao Hàng Nhanh (GHN)</p>
       </div>
     </div>
@@ -1785,15 +1785,15 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
     <!-- Purpose & Idea -->
     <div class="card" style="display: flex; flex-direction: column; justify-content: space-between">
       <div>
-        <div class="section-title"><span></span>🎯 Mục Đích & Ý Tưởng</div>
+        <div class="section-title"><span></span>🎯 Giới Thiệu</div>
         <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
           Dashboard Vận Hành Vùng Tây Nguyên (TNG) ra đời với mục tiêu <strong>chuẩn hóa, tự động hóa và thông minh hóa</strong> toàn bộ dữ liệu báo cáo vận hành hàng ngày của khu vực. 
         </p>
         <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
-          Thay vì xử lý thủ công các tệp Excel phân mảnh từ nhiều nguồn, hệ thống tự động đồng bộ hóa và trích xuất dữ liệu vận hành từ các báo cáo cốt lõi. Từ đó, đưa ra các phân tích trực quan về tỷ lệ <strong>Giao Thành Công (%GTC)</strong>, <strong>OnTime giao hàng (%ODR)</strong>, <strong>OnTime lấy hàng (%OPR)</strong>, tình hình kinh doanh và định biên nhân sự.
+          Thay vì xử lý thủ công các tệp Excel phân mảnh từ nhiều nguồn, hệ thống tự động đồng bộ hóa và trích xuất dữ liệu vận hành từ các báo cáo cốt lõi. Từ đó, đưa ra các phân tích trực quan về tỷ lệ <strong>Giao Thành Công (%GTC)</strong>, <strong>OnTime giao hàng (%ODR)</strong>, <strong>OnTime lấy hàng (%OPR)</strong>, tình hình kinh doanh và định biên nhân sự...
         </p>
         <p style="font-size: 14px; line-height: 1.6; color: var(--dim)">
-          Ý tưởng cốt lõi là kết hợp <strong>Analytics trực quan</strong> với <strong>Trí Tuệ Nhân Tạo (Trợ lý AI)</strong>, giúp GĐV, các AM và quản lý bưu cục đưa ra quyết định tối ưu hóa vận hành, cân đối nguồn lực và hành động ngăn ngừa rủi ro vận hành ngay lập tức.
+          Ý tưởng cốt lõi là kết hợp <strong>Analytics trực quan</strong> với <strong>Trí Tuệ Nhân Tạo (Trợ lý AI)</strong> giúp: GĐV, AM và quản lý bưu cục đưa ra quyết định tối ưu hóa vận hành, cân đối nguồn lực và hành động ngăn ngừa rủi ro vận hành ngay lập tức.
         </p>
       </div>
     </div>
@@ -1832,7 +1832,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 
   <!-- Central Highlands Region section -->
   <div class="card" style="margin-bottom: 0">
-    <div class="section-title"><span></span>🗺️ Bản Đồ Vận Hành & Giới Thiệu Vùng Tây Nguyên</div>
+    <div class="section-title"><span></span>🗺️ Bản Đồ Vận Hành Vùng Tây Nguyên</div>
     <div class="grid-2">
       <!-- Description -->
       <div style="display: flex; flex-direction: column; justify-content: space-between">
@@ -1851,7 +1851,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
         <!-- Info Card of selected province -->
         <div id="prov-info-card" style="padding: 16px; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; transition: all 0.3s ease">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px">
-            <h4 id="prov-name" style="font-size: 16px; font-weight: 800; color: var(--accent)">ĐẮK LẮK</h4>
+            <h4 id="prov-name" style="font-size: 18px; font-weight: 800; color: var(--accent)">ĐẮK LẮK</h4>
             <span style="font-size: 11px; font-weight: 700; color:#fff; background: var(--accent); padding: 2px 8px; border-radius: 12px">Active</span>
           </div>
           
