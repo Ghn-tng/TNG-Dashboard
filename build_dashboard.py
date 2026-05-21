@@ -1049,12 +1049,12 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .map-container {{
   position: relative;
   width: 100%;
-  height: 300px;
+  height: 380px;
   border-radius: 14px;
-  border: 1px solid #cbd5e1;
+  border: 1.5px solid #cbd5e1;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
-  background: #eef2f7;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+  background: #f5f8fc;
 }}
 /* === Province Glow Pins (center of each province) === */
 .map-pin {{
@@ -1774,12 +1774,12 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
       <!-- 3D Interactive Map Container -->
       <div style="width: 100%; margin-top: 8px;">
         <div class="map-container">
-          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; pointer-events: none;">
+          <img src="./tay_nguyen_3d_map.png" alt="Bản đồ 3D Vùng Tây Nguyên" style="position: absolute; top: 50%; left: 50%; width: 115%; height: 115%; transform: translate(-50%, -50%); object-fit: cover; object-position: 48% 45%; display: block; pointer-events: none;">
           
           <!-- === Province Glow Pins (center of each province) === -->
           
           <!-- Gia Lai - center of blue province -->
-          <div class="map-pin" style="top: 28%; left: 30%;" data-id="gialai" onclick="selectProvince('gialai')">
+          <div class="map-pin" style="top: 30%; left: 27%;" data-id="gialai" onclick="selectProvince('gialai')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1787,7 +1787,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           </div>
           
           <!-- Đắk Lắk - center of orange province (Default Active) -->
-          <div class="map-pin active-pin" style="top: 63%; left: 33%;" data-id="daklak" onclick="selectProvince('daklak')">
+          <div class="map-pin active-pin" style="top: 67%; left: 32%;" data-id="daklak" onclick="selectProvince('daklak')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1795,7 +1795,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           </div>
           
           <!-- Bình Định - center of green province -->
-          <div class="map-pin" style="top: 22%; left: 68%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
+          <div class="map-pin" style="top: 20%; left: 68%;" data-id="binhdinh" onclick="selectProvince('binhdinh')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1803,7 +1803,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           </div>
           
           <!-- Phú Yên - center of purple province -->
-          <div class="map-pin" style="top: 53%; left: 65%;" data-id="phuyen" onclick="selectProvince('phuyen')">
+          <div class="map-pin" style="top: 56%; left: 65%;" data-id="phuyen" onclick="selectProvince('phuyen')">
             <div class="pin-pulse"></div>
             <div class="pin-pulse2"></div>
             <div class="pin-dot"></div>
@@ -1813,13 +1813,13 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           <!-- === City Stars (red 3D) at capital positions === -->
           
           <!-- Pleiku - Gia Lai capital -->
-          <div class="city-star" style="top: 33%; left: 41%;">
+          <div class="city-star" style="top: 36%; left: 40%;">
             <div class="city-star-icon">⭐</div>
             <div class="city-star-name">Pleiku</div>
           </div>
           
           <!-- Buôn Ma Thuột - Đắk Lắk capital -->
-          <div class="city-star" style="top: 65%; left: 44%;">
+          <div class="city-star" style="top: 70%; left: 46%;">
             <div class="city-star-icon">⭐</div>
             <div class="city-star-name">Buôn Ma Thuột</div>
           </div>
@@ -1831,7 +1831,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           </div>
           
           <!-- Tuy Hòa - Phú Yên capital -->
-          <div class="city-star" style="top: 57%; left: 75%;">
+          <div class="city-star" style="top: 58%; left: 76%;">
             <div class="city-star-icon">⭐</div>
             <div class="city-star-name">Tuy Hòa</div>
           </div>
