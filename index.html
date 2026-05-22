@@ -487,7 +487,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:29 22/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:35 22/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1922,7 +1922,7 @@ function showKeySetupCard() {
     const box = document.getElementById('trinhMsgs');
     if (document.getElementById('trinhKeyCard')) return;
     
-    const cardHtml = \`
+    const cardHtml = `
         <div class="trinh-key-card" id="trinhKeyCard">
             <div class="trinh-key-title">
                 🔑 Cấu Hình API Key Ngọc Trinh
@@ -1936,7 +1936,7 @@ function showKeySetupCard() {
             </div>
             <div id="trinhKeyStatus" style="font-size:11px; color:#be123c; display:none; margin-top: -4px;"></div>
         </div>
-    \`;
+    `;
     box.innerHTML += cardHtml;
     box.scrollTop = box.scrollHeight;
 }
@@ -1960,7 +1960,7 @@ async function saveGeminiKey() {
     let targetBaseUrl = activeChatBaseUrl;
     
     try {
-        const response = await fetch(\`\${targetBaseUrl}/save_key\`, {
+        const response = await fetch(`${targetBaseUrl}/save_key`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: key })
@@ -1976,7 +1976,7 @@ async function saveGeminiKey() {
                 if (card) card.remove();
                 
                 const box = document.getElementById('trinhMsgs');
-                box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                box.innerHTML += `<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>`;
                 box.scrollTop = box.scrollHeight;
             }, 1500);
         } else {
@@ -2004,7 +2004,7 @@ async function saveGeminiKey() {
                         const card = document.getElementById('trinhKeyCard');
                         if (card) card.remove();
                         const box = document.getElementById('trinhMsgs');
-                        box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                        box.innerHTML += `<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>`;
                         box.scrollTop = box.scrollHeight;
                     }, 1500);
                     return;
@@ -2108,7 +2108,7 @@ async function sendToTrinh() {
     let response;
     let data;
     try {
-        response = await fetch(\`\${activeChatBaseUrl}/chat\`, {
+        response = await fetch(`${activeChatBaseUrl}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -2123,7 +2123,7 @@ async function sendToTrinh() {
         if (activeChatBaseUrl !== 'http://127.0.0.1:5005') {
             try {
                 activeChatBaseUrl = 'http://127.0.0.1:5005';
-                response = await fetch(\`\${activeChatBaseUrl}/chat\`, {
+                response = await fetch(`${activeChatBaseUrl}/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -2136,13 +2136,13 @@ async function sendToTrinh() {
             } catch(fallbackErr) {
                 console.error("Fallback chat connection failed as well.", fallbackErr);
                 document.getElementById('trinhTyping').style.display = 'none';
-                box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới máy chủ (cả online và local). Sếp vui lòng khởi chạy <code>chat_service.py</code> và thử lại nhé!</div>\`;
+                box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối tới máy chủ (cả online và local). Sếp vui lòng khởi chạy <code>chat_service.py</code> và thử lại nhé!</div>`;
                 box.scrollTop = box.scrollHeight;
                 return;
             }
         } else {
             document.getElementById('trinhTyping').style.display = 'none';
-            box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới local chat service (http://127.0.0.1:5005). Sếp vui lòng kiểm tra xem <code>chat_service.py</code> đã được khởi chạy chưa nhé!</div>\`;
+            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối tới local chat service (http://127.0.0.1:5005). Sếp vui lòng kiểm tra xem <code>chat_service.py</code> đã được khởi chạy chưa nhé!</div>`;
             box.scrollTop = box.scrollHeight;
             return;
         }
