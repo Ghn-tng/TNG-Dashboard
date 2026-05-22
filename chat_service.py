@@ -364,6 +364,24 @@ Data: {json.dumps(compact_context, ensure_ascii=False)}"""
         "status": "failed"
     }), 200
 
+@app.route('/save_key', methods=['POST'])
+def save_key():
+    try:
+        req_data = request.json or {}
+        key = req_data.get('key', '').strip()
+        if not key:
+            return jsonify({"response": "Mã khóa API trống, Sếp vui lòng nhập lại nhé!", "status": "error"}), 400
+        
+        # Write securely to GOOGLE_API_KEY.txt
+        with open('GOOGLE_API_KEY.txt', 'w', encoding='utf-8') as f:
+            f.write(key + '\n')
+            
+        print("✅ Đã lưu API Key mới thành công vào GOOGLE_API_KEY.txt")
+        return jsonify({"response": "Đã lưu API Key thành công!", "status": "success"})
+    except Exception as e:
+        print(f"❌ Lỗi khi lưu API Key: {e}")
+        return jsonify({"response": f"Không thể lưu key: {str(e)}", "status": "error"}), 500
+
 if __name__ == '__main__':
     print("🚀 Ngọc Trinh Chat Service starting on port 5005...")
     app.run(port=5005, host='0.0.0.0', debug=False)

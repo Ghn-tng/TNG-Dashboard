@@ -1489,6 +1489,58 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
   cursor: pointer; line-height: 1;
 }}
 
+.trinh-key-card {{
+  background: rgba(255, 241, 242, 0.95);
+  border: 1px dashed #f43f5e;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.1);
+}}
+.trinh-key-title {{
+  color: #db2777;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}}
+.trinh-key-input-container {{
+  display: flex;
+  gap: 8px;
+}}
+.trinh-key-input {{
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #fda4af;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  transition: all 0.2s;
+}}
+.trinh-key-input:focus {{
+  border-color: #db2777;
+  box-shadow: 0 0 0 2px rgba(219, 39, 119, 0.2);
+}}
+.trinh-key-save-btn {{
+  background: #db2777;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}}
+.trinh-key-save-btn:hover {{
+  background: #be123c;
+  transform: translateY(-1px);
+}}
 </style>
 </head>
 <body>
@@ -2393,7 +2445,10 @@ const _db = {json.dumps(data, ensure_ascii=False)};
             <h3>Trợ Lý Ngọc Trinh</h3>
             <p><span class="trinh-status-dot"></span> Cố vấn vận hành cao cấp</p>
         </div>
-        <button onclick="toggleTrinh()" style="margin-left:auto; background:none; border:none; color:#cbd5e1; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+            <button onclick="showKeySetupCard()" title="Cấu hình API Key" style="background:none; border:none; color:#cbd5e1; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding: 5px; transition: color 0.2s;" onmouseover="this.style.color='#db2777'" onmouseout="this.style.color='#cbd5e1'">🔑</button>
+            <button onclick="toggleTrinh()" style="background:none; border:none; color:#cbd5e1; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
+        </div>
     </div>
     <div class="trinh-messages" id="trinhMsgs">
         <div class="trinh-msg bot">Chào Sếp!<br>Em Ngọc Trinh- Trợ lý của Sếp đây ạ.<br>Sếp cần em phân tích các số liệu nào của Vùng Tây Nguyên thì cứ bảo em nhé! 💋</div>
@@ -2423,6 +2478,114 @@ const _db = {json.dumps(data, ensure_ascii=False)};
 <script>
 let trinhHistory = [];
 let selectedFiles = [];
+let activeChatBaseUrl = '';
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
+    activeChatBaseUrl = 'http://127.0.0.1:5005';
+}} else {{
+    activeChatBaseUrl = (typeof BOT_URL !== 'undefined' && BOT_URL) ? BOT_URL : 'http://127.0.0.1:5005';
+}}
+
+function showKeySetupCard() {{
+    const box = document.getElementById('trinhMsgs');
+    if (document.getElementById('trinhKeyCard')) return;
+    
+    const cardHtml = \`
+        <div class="trinh-key-card" id="trinhKeyCard">
+            <div class="trinh-key-title">
+                🔑 Cấu Hình API Key Ngọc Trinh
+            </div>
+            <div style="font-size:12px; color:#475569; line-height:1.4;">
+                Sếp ơi, để em có thể hoạt động, Sếp vui lòng nhập mã <b>Gemini API Key</b> vào đây nhé. Key sẽ được lưu bảo mật trong file <code>GOOGLE_API_KEY.txt</code> trên máy của Sếp và tuyệt đối KHÔNG bị đẩy lên GitHub.
+            </div>
+            <div class="trinh-key-input-container">
+                <input type="password" id="trinhKeyInput" class="trinh-key-input" placeholder="Dán Gemini API Key tại đây...">
+                <button onclick="saveGeminiKey()" id="trinhKeySaveBtn" class="trinh-key-save-btn">Lưu Key</button>
+            </div>
+            <div id="trinhKeyStatus" style="font-size:11px; color:#be123c; display:none; margin-top: -4px;"></div>
+        </div>
+    \`;
+    box.innerHTML += cardHtml;
+    box.scrollTop = box.scrollHeight;
+}}
+
+async function saveGeminiKey() {{
+    const input = document.getElementById('trinhKeyInput');
+    const status = document.getElementById('trinhKeyStatus');
+    const btn = document.getElementById('trinhKeySaveBtn');
+    const key = input.value.trim();
+    
+    if (!key) {{
+        status.textContent = "Sếp chưa nhập Key kìa!";
+        status.style.display = "block";
+        return;
+    }}
+    
+    btn.disabled = true;
+    btn.textContent = "Đang lưu...";
+    status.style.display = "none";
+    
+    let targetBaseUrl = activeChatBaseUrl;
+    
+    try {{
+        const response = await fetch(\`\${{targetBaseUrl}}/save_key\`, {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json' }},
+            body: JSON.stringify({{ key: key }})
+        }});
+        const data = await response.json();
+        if (data.status === 'success') {{
+            status.textContent = "Lưu Key thành công! Đang tải lại trợ lý...";
+            status.style.color = "#22c55e";
+            status.style.display = "block";
+            
+            setTimeout(() => {{
+                const card = document.getElementById('trinhKeyCard');
+                if (card) card.remove();
+                
+                const box = document.getElementById('trinhMsgs');
+                box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                box.scrollTop = box.scrollHeight;
+            }}, 1500);
+        }} else {{
+            status.textContent = "Lỗi: " + data.response;
+            status.style.display = "block";
+            btn.disabled = false;
+            btn.textContent = "Lưu Key";
+        }}
+    }} catch(e) {{
+        console.error("Error saving key to active url:", e);
+        if (targetBaseUrl !== 'http://127.0.0.1:5005') {{
+            try {{
+                const response = await fetch('http://127.0.0.1:5005/save_key', {{
+                    method: 'POST',
+                    headers: {{ 'Content-Type': 'application/json' }},
+                    body: JSON.stringify({{ key: key }})
+                }});
+                const data = await response.json();
+                if (data.status === 'success') {{
+                    activeChatBaseUrl = 'http://127.0.0.1:5005';
+                    status.textContent = "Lưu Key thành công! Đang tải lại trợ lý...";
+                    status.style.color = "#22c55e";
+                    status.style.display = "block";
+                    setTimeout(() => {{
+                        const card = document.getElementById('trinhKeyCard');
+                        if (card) card.remove();
+                        const box = document.getElementById('trinhMsgs');
+                        box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                        box.scrollTop = box.scrollHeight;
+                    }}, 1500);
+                    return;
+                }}
+            }} catch(localErr) {{
+                console.error("Local save fallback failed:", localErr);
+            }}
+        }}
+        status.textContent = "Không thể kết nối tới chat service để lưu key. Sếp hãy chắc chắn chat_service.py đã được chạy.";
+        status.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Lưu Key";
+    }}
+}}
 
 function toggleTrinh() {{
     const win = document.getElementById('trinhWin');
@@ -2509,58 +2672,70 @@ async function sendToTrinh() {{
 
     document.getElementById('trinhTyping').style.display = 'block';
 
-    let chatApiUrl = 'http://localhost:5005/chat';
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
-        fetch('http://localhost:5001/', {{ mode: 'no-cors' }}).catch(() => {{}});
-    }} else {{
-        if (typeof BOT_URL !== 'undefined' && BOT_URL) {{
-            chatApiUrl = BOT_URL + '/chat';
+    let response;
+    let data;
+    try {{
+        response = await fetch(\`\${{activeChatBaseUrl}}/chat\`, {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json' }},
+            body: JSON.stringify({{ 
+                message: msg || "Phân tích file đính kèm này giúp Sếp", 
+                history: trinhHistory,
+                files: base64Files
+            }})
+        }});
+        data = await response.json();
+    }} catch(err) {{
+        console.warn("Primary chat connection failed. Attempting fallback...", err);
+        if (activeChatBaseUrl !== 'http://127.0.0.1:5005') {{
+            try {{
+                activeChatBaseUrl = 'http://127.0.0.1:5005';
+                response = await fetch(\`\${{activeChatBaseUrl}}/chat\`, {{
+                    method: 'POST',
+                    headers: {{ 'Content-Type': 'application/json' }},
+                    body: JSON.stringify({{ 
+                        message: msg || "Phân tích file đính kèm này giúp Sếp", 
+                        history: trinhHistory,
+                        files: base64Files
+                    }})
+                }});
+                data = await response.json();
+            }} catch(fallbackErr) {{
+                console.error("Fallback chat connection failed as well.", fallbackErr);
+                document.getElementById('trinhTyping').style.display = 'none';
+                box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới máy chủ (cả online và local). Sếp vui lòng khởi chạy <code>chat_service.py</code> và thử lại nhé!</div>\`;
+                box.scrollTop = box.scrollHeight;
+                return;
+            }}
+        }} else {{
+            document.getElementById('trinhTyping').style.display = 'none';
+            box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới local chat service (http://127.0.0.1:5005). Sếp vui lòng kiểm tra xem <code>chat_service.py</code> đã được khởi chạy chưa nhé!</div>\`;
+            box.scrollTop = box.scrollHeight;
+            return;
         }}
     }}
 
-    const maxRetries = 2;
-    for (let i = 0; i <= maxRetries; i++) {{
-        try {{
-            const response = await fetch(chatApiUrl, {{
-                method: 'POST',
-                headers: {{ 'Content-Type': 'application/json' }},
-                body: JSON.stringify({{ 
-                    message: msg || "Phân tích file đính kèm này giúp Sếp", 
-                    history: trinhHistory,
-                    files: base64Files
-                }})
-            }});
-            const data = await response.json();
-            document.getElementById('trinhTyping').style.display = 'none';
-            
-            if(data.status === 'success') {{
-                const botMsg = data.response;
-                const formatted = botMsg
-                    .replace(/<\\/div>\\n/g, '</div>')
-                    .replace(/\\n\\n/g, '<br>')
-                    .replace(/\\n/g, '<br>')
-                    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')
-                    .replace(/^- (.*)$/gm, '• $1');
-                box.innerHTML += `<div class="trinh-msg bot">${{formatted}}</div>`;
-                trinhHistory.push({{role: 'user', content: msg || "Phân tích file đính kèm"}});
-                trinhHistory.push({{role: 'model', content: botMsg}});
-            }} else {{
-                box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: ${{data.response}}</div>`;
-            }}
-            box.scrollTop = box.scrollHeight;
-            lucide.createIcons();
-            return;
-        }} catch(e) {{
-            if (i < maxRetries) {{
-                console.log("Retrying connection...");
-                await new Promise(r => setTimeout(r, 2000));
-                continue;
-            }}
-            document.getElementById('trinhTyping').style.display = 'none';
-            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối. Sếp đợi 1 chút để em khởi động nhé! (Nhấn F5 nếu cần)</div>`;
-            box.scrollTop = box.scrollHeight;
+    document.getElementById('trinhTyping').style.display = 'none';
+    
+    if(data.status === 'success') {{
+        const botMsg = data.response;
+        const formatted = botMsg
+            .replace(/<\\/div>\\n/g, '</div>')
+            .replace(/\\n\\n/g, '<br>')
+            .replace(/\\n/g, '<br>')
+            .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')
+            .replace(/^- (.*)$/gm, '• $1');
+        box.innerHTML += `<div class="trinh-msg bot">\${{formatted}}</div>`;
+        trinhHistory.push({{role: 'user', content: msg || "Phân tích file đính kèm"}});
+        trinhHistory.push({{role: 'model', content: botMsg}});
+    }} else {{
+        box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: \${{data.response}}</div>`;
+        if (data.response && data.response.includes('GOOGLE_API_KEY.txt')) {{
+            showKeySetupCard();
         }}
     }}
+    box.scrollTop = box.scrollHeight;
+    lucide.createIcons();
 }}
 
 const provinceData = {{
