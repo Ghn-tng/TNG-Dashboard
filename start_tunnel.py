@@ -29,24 +29,29 @@ def start_tunnel():
         cmd = [cf_path, 'tunnel', '--url', 'http://127.0.0.1:5005']
         with open(log_file, 'w') as f:
             subprocess.Popen(cmd, stdout=f, stderr=f, text=True)
-        time.sleep(2)
     else:
         log("ℹ️ Tunnel is already running.")
 
-    # 2. Extract URL from log
+    # 2. Extract URL from log (with polling/retries up to 15 seconds if starting new)
     url = None
-    if os.path.exists(log_file):
-        with open(log_file, 'r') as f:
-            content = f.read()
-            match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', content)
-            if match:
-                url = match.group(0)
+    max_wait = 15 if not is_running else 2
+    start_time = time.time()
+    
+    while time.time() - start_time < max_wait:
+        if os.path.exists(log_file):
+            with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+                match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', content)
+                if match:
+                    url = match.group(0)
+                    break
+        time.sleep(0.5)
 
     if url:
         # 3. Check if bot_url.js needs update
         current_js = ""
         if os.path.exists('bot_url.js'):
-            with open('bot_url.js', 'r') as f:
+            with open('bot_url.js', 'r', encoding='utf-8') as f:
                 current_js = f.read()
         
         expected_js = f'window.BOT_URL = "{url}";'
@@ -57,7 +62,7 @@ def start_tunnel():
         else:
             log(f"✅ bot_url.js is already up to date: {url}")
     else:
-        log("❌ Could not find public URL. Try deleting tunnel_public.log and restarting.")
+        log("❌ Could not find public URL in log file. Try deleting tunnel_public.log and restarting.")
 
 if __name__ == "__main__":
     start_tunnel()

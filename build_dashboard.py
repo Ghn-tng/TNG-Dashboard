@@ -1066,6 +1066,7 @@ for province in provinces:
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="bot_url.js"></script>
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 :root{{--bg:linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);--card:#ffffff;--card2:#f1f5f9;--border:#cbd5e1;--text:#0f172a;--dim:#475569;--accent:#0284c7;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--cyan:#0ea5e9}}
@@ -2488,8 +2489,17 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 // Tự động đánh thức Ngọc Trinh qua cổng 5001 khi mở dashboard/link online
 async function wakeupNgocTrinh() {{
     try {{
-        fetch('http://127.0.0.1:5001/wakeup', {{ method: 'GET', mode: 'cors' }}).catch(() => {{}});
-    }} catch(e) {{}}
+        const response = await fetch('http://127.0.0.1:5001/wakeup', {{ method: 'GET', mode: 'cors' }});
+        const data = await response.json();
+        if (data.status === 'success' && data.bot_url) {{
+            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {{
+                activeChatBaseUrl = data.bot_url;
+            }}
+            console.log("🌸 Ngọc Trinh đã thức giấc và kết nối qua: " + activeChatBaseUrl);
+        }}
+    }} catch(e) {{
+        console.warn("⚠️ Không thể đánh thức Ngọc Trinh qua cổng local 5001. Có thể remote_server.py chưa chạy.");
+    }}
 }}
 wakeupNgocTrinh();
 
@@ -2498,7 +2508,7 @@ function showKeySetupCard() {{
     const box = document.getElementById('trinhMsgs');
     if (document.getElementById('trinhKeyCard')) return;
     
-    const cardHtml = \`
+    const cardHtml = `
         <div class="trinh-key-card" id="trinhKeyCard">
             <div class="trinh-key-title">
                 🔑 Cấu Hình API Key Ngọc Trinh
@@ -2512,7 +2522,7 @@ function showKeySetupCard() {{
             </div>
             <div id="trinhKeyStatus" style="font-size:11px; color:#be123c; display:none; margin-top: -4px;"></div>
         </div>
-    \`;
+    `;
     box.innerHTML += cardHtml;
     box.scrollTop = box.scrollHeight;
 }}
@@ -2536,7 +2546,7 @@ async function saveGeminiKey() {{
     let targetBaseUrl = activeChatBaseUrl;
     
     try {{
-        const response = await fetch(\`\${{targetBaseUrl}}/save_key\`, {{
+        const response = await fetch(`${{targetBaseUrl}}/save_key`, {{
             method: 'POST',
             headers: {{ 'Content-Type': 'application/json' }},
             body: JSON.stringify({{ key: key }})
@@ -2552,7 +2562,7 @@ async function saveGeminiKey() {{
                 if (card) card.remove();
                 
                 const box = document.getElementById('trinhMsgs');
-                box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                box.innerHTML += `<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>`;
                 box.scrollTop = box.scrollHeight;
             }}, 1500);
         }} else {{
@@ -2580,7 +2590,7 @@ async function saveGeminiKey() {{
                         const card = document.getElementById('trinhKeyCard');
                         if (card) card.remove();
                         const box = document.getElementById('trinhMsgs');
-                        box.innerHTML += \`<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>\`;
+                        box.innerHTML += `<div class="trinh-msg bot">✅ Em đã nhận được API Key và sẵn sàng phục vụ Sếp rồi ạ! Sếp có thể tiếp tục hỏi em nhé.</div>`;
                         box.scrollTop = box.scrollHeight;
                     }}, 1500);
                     return;
@@ -2684,7 +2694,7 @@ async function sendToTrinh() {{
     let response;
     let data;
     try {{
-        response = await fetch(\`\${{activeChatBaseUrl}}/chat\`, {{
+        response = await fetch(`${{activeChatBaseUrl}}/chat`, {{
             method: 'POST',
             headers: {{ 'Content-Type': 'application/json' }},
             body: JSON.stringify({{ 
@@ -2699,7 +2709,7 @@ async function sendToTrinh() {{
         if (activeChatBaseUrl !== 'http://127.0.0.1:5005') {{
             try {{
                 activeChatBaseUrl = 'http://127.0.0.1:5005';
-                response = await fetch(\`\${{activeChatBaseUrl}}/chat\`, {{
+                response = await fetch(`${{activeChatBaseUrl}}/chat`, {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
                     body: JSON.stringify({{ 
@@ -2712,13 +2722,13 @@ async function sendToTrinh() {{
             }} catch(fallbackErr) {{
                 console.error("Fallback chat connection failed as well.", fallbackErr);
                 document.getElementById('trinhTyping').style.display = 'none';
-                box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới máy chủ (cả online và local). Sếp vui lòng khởi chạy <code>chat_service.py</code> và thử lại nhé!</div>\`;
+                box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối tới máy chủ (cả online và local). Sếp vui lòng khởi chạy <code>chat_service.py</code> và thử lại nhé!</div>`;
                 box.scrollTop = box.scrollHeight;
                 return;
             }}
         }} else {{
             document.getElementById('trinhTyping').style.display = 'none';
-            box.innerHTML += \`<div class="trinh-msg bot" style="color:red">Không thể kết nối tới local chat service (http://127.0.0.1:5005). Sếp vui lòng kiểm tra xem <code>chat_service.py</code> đã được khởi chạy chưa nhé!</div>\`;
+            box.innerHTML += `<div class="trinh-msg bot" style="color:red">Không thể kết nối tới local chat service (http://127.0.0.1:5005). Sếp vui lòng kiểm tra xem <code>chat_service.py</code> đã được khởi chạy chưa nhé!</div>`;
             box.scrollTop = box.scrollHeight;
             return;
         }}
