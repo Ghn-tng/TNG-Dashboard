@@ -393,3 +393,67 @@
 2026-05-21 17:46:50 [INFO] Data validation passed. No fixes needed.
 2026-05-21 17:48:29 [INFO] Data validation passed. No fixes needed.
 2026-05-21 17:53:23 [INFO] Data validation passed. No fixes needed.
+2026-05-21 17:57:18 [INFO] Data validation passed. No fixes needed.
+2026-05-21 17:57:48 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:00:37 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:01:00 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 18:01:01 [INFO] FIX: Data repair completed and saved.
+2026-05-21 18:06:33 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:08:05 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:14:30 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:20:06 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:21:57 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:23:45 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:45:10 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:46:35 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:48:24 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:52:49 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:53:32 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:53:52 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:55:25 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:57:38 [INFO] Data validation passed. No fixes needed.
+2026-05-21 18:58:38 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:00:43 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 19:00:43 [INFO] FIX: Data repair completed and saved.
+2026-05-21 19:01:34 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:02:40 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:05:25 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:06:04 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:11:24 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:13:11 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:15:04 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:18:42 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:19:12 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:22:29 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:25:29 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:27:02 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:27:51 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:31:33 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:42:35 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:45:18 [ERROR] Data file not found: data.json
+2026-05-21 19:45:51 [INFO] FIX: Removed closed bưu cục from canh_bao_vung: 1 entries.
+2026-05-21 19:45:51 [INFO] FIX: Data repair completed and saved.
+2026-05-21 19:49:29 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:49:38 [INFO] Data validation passed. No fixes needed.
+2026-05-21 19:51:42 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 19:51:42 [INFO] FIX: Data repair completed and saved.
+2026-05-21 20:00:43 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 20:00:43 [INFO] FIX: Data repair completed and saved.
+2026-05-21 21:05:22 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 21:05:22 [INFO] FIX: Data repair completed and saved.
+2026-05-21 22:03:01 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-21 22:03:01 [INFO] FIX: Data repair completed and saved.
+2026-05-22 07:02:10 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-22 07:02:10 [INFO] FIX: Data repair completed and saved.
+2026-05-22 08:03:08 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-22 08:03:08 [INFO] FIX: Data repair completed and saved.
+2026-05-22 10:03:39 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-22 10:03:39 [INFO] FIX: Data repair completed and saved.
+2026-05-22 10:46:10 [INFO] Data validation passed. No fixes needed.
+2026-05-22 11:00:49 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-22 11:00:49 [INFO] FIX: Data repair completed and saved.
+2026-05-22 11:15:58 [INFO] Data validation passed. No fixes needed.
+2026-05-22 11:17:27 [INFO] Data validation passed. No fixes needed.
+2026-05-22 14:26:45 [INFO] Data validation passed. No fixes needed.
+2026-05-22 15:00:44 [INFO] FIX: Recalculating grand_total_gtc_tts from gtc_tts_tinh.
+2026-05-22 15:00:44 [INFO] FIX: Data repair completed and saved.
