@@ -24,8 +24,8 @@ def sync():
 
     # 2. Check if there are changes to commit
     try:
-        # Add files (chỉ add các file giao diện công khai và file cấu hình bot_url)
-        files_to_sync = ['index.html', 'dashboard.html', 'bot_url.js', 'tay_nguyen_3d_map.png']
+        # Add files (chỉ add các file giao diện công khai và file cấu hình bot_url, .nojekyll)
+        files_to_sync = ['index.html', 'dashboard.html', 'bot_url.js', 'tay_nguyen_3d_map.png', '.nojekyll']
         # Filter only existing files
         existing_files = [f for f in files_to_sync if os.path.exists(f)]
         
@@ -36,20 +36,26 @@ def sync():
         if not status:
             log("😴 No changes to sync.")
             return
-
+ 
         # 3. Commit and Push
         commit_msg = f"Auto-update Dashboard: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
         
-        # Force push to main branch
+        # Push to main branch
         log("🚀 Pushing to GitHub (main)...")
-        result = subprocess.run(['git', 'push', 'origin', 'HEAD:main'], capture_output=True, text=True)
+        result_main = subprocess.run(['git', 'push', 'origin', 'HEAD:main'], capture_output=True, text=True)
+        if result_main.returncode != 0:
+            log(f"⚠️ Push to main failed: {result_main.stderr}")
+            
+        # Push to gh-pages branch (force push to ensure update)
+        log("🚀 Pushing to GitHub (gh-pages)...")
+        result_pages = subprocess.run(['git', 'push', 'origin', 'HEAD:gh-pages', '--force'], capture_output=True, text=True)
         
-        if result.returncode == 0:
+        if result_pages.returncode == 0 or result_main.returncode == 0:
             log("✅ Successfully synced to GitHub Pages!")
             log(f"🔗 Link: https://Ghn-tng.github.io/TNG-Dashboard/")
         else:
-            log(f"❌ Push failed: {result.stderr}")
+            log(f"❌ Both branch pushes failed: Main: {result_main.stderr} | Pages: {result_pages.stderr}")
 
     except subprocess.CalledProcessError as e:
         log(f"❌ Git operation failed: {e}")

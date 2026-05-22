@@ -1327,8 +1327,8 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
   50% {{ transform: translateY(-2px); }}
 }}
 
-.section-title{{font-size:19px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
-.section-title span{{width:4px;height:22px;border-radius:2px;background:var(--accent)}}
+.section-title{{font-size:21px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}}
+.section-title span{{width:4px;height:24px;border-radius:2px;background:var(--accent)}}
 .grid-2{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
 .card{{background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);border:1px solid #cbd5e1;border-radius:12px;padding:16px;margin-bottom:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), inset 0 1px 0 #fff;}}
 table{{width:100%;border-collapse:collapse;font-size:13px}}
@@ -1837,6 +1837,9 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
       <!-- Description -->
       <div style="display: flex; flex-direction: column; justify-content: space-between">
         <div>
+          <div style="font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 6px">
+            <span style="width:3px; height:16px; background:var(--accent); border-radius:1.5px"></span>Đặc Thù Địa Bàn
+          </div>
           <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
             Vùng Tây Nguyên (TNG) trong bản đồ vận hành của Giao Hàng Nhanh bao gồm 4 tỉnh chiến lược: <strong>Đắk Lắk, Gia Lai, Phú Yên và Bình Định</strong>. Đây là khu vực có đặc thù địa lý vô cùng độc đáo, kết hợp giữa núi cao hiểm trở, cao nguyên đất đỏ trập trùng và dải duyên hải Nam Trung Bộ.
           </p>
