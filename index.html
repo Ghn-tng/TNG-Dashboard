@@ -488,7 +488,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:53 22/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 15:56 22/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1904,7 +1904,7 @@ const _db = {"report_date": "2026-05-21", "gtc_tinh": [{"tinh": "Đắk Lắk", 
 let trinhHistory = [];
 let selectedFiles = [];
 let activeChatBaseUrl = '';
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.hostname) {
     activeChatBaseUrl = 'http://127.0.0.1:5005';
 } else {
     activeChatBaseUrl = (typeof BOT_URL !== 'undefined' && BOT_URL) ? BOT_URL : 'http://127.0.0.1:5005';
@@ -1916,7 +1916,7 @@ async function wakeupNgocTrinh() {
         const response = await fetch('http://127.0.0.1:5001/wakeup', { method: 'GET', mode: 'cors' });
         const data = await response.json();
         if (data.status === 'success' && data.bot_url) {
-            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:' && window.location.hostname !== '') {
                 activeChatBaseUrl = data.bot_url;
             }
             console.log("🌸 Ngọc Trinh đã thức giấc và kết nối qua: " + activeChatBaseUrl);
