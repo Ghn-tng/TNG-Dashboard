@@ -52,7 +52,23 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # Mọi truy cập đều kích hoạt kiểm tra dịch vụ chat
         ensure_chat_service()
+        if self.path in ['/ping', '/wakeup']:
+            self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"status":"success","message":"Ngoc Trinh is awake!"}')
+            return
         super().do_GET()
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     print(f"Server Ngọc Trinh phục vụ tại Port {PORT}")

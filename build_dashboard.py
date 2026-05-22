@@ -2485,6 +2485,15 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     activeChatBaseUrl = (typeof BOT_URL !== 'undefined' && BOT_URL) ? BOT_URL : 'http://127.0.0.1:5005';
 }}
 
+// Tự động đánh thức Ngọc Trinh qua cổng 5001 khi mở dashboard/link online
+async function wakeupNgocTrinh() {{
+    try {{
+        fetch('http://127.0.0.1:5001/wakeup', {{ method: 'GET', mode: 'cors' }}).catch(() => {{}});
+    }} catch(e) {{}}
+}}
+wakeupNgocTrinh();
+
+
 function showKeySetupCard() {{
     const box = document.getElementById('trinhMsgs');
     if (document.getElementById('trinhKeyCard')) return;
