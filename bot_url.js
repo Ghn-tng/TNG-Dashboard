@@ -1,1 +1,1 @@
-window.BOT_URL = "https://soap-besides-cons-hosting.trycloudflare.com";
+window.BOT_URL = "https://originally-deluxe-physician-taxes.trycloudflare.com";
