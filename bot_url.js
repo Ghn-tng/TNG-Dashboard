@@ -1,1 +1,1 @@
-window.BOT_URL = "https://originally-deluxe-physician-taxes.trycloudflare.com";
+window.BOT_URL = "https://maternity-vehicles-recipient-producer.trycloudflare.com";
