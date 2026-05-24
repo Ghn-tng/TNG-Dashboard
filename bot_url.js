@@ -1,1 +1,1 @@
-window.BOT_URL = "https://maternity-vehicles-recipient-producer.trycloudflare.com";
+window.BOT_URL = "https://reliability-trading-camel-packing.trycloudflare.com";
