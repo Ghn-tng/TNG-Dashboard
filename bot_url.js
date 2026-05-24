@@ -1,1 +1,1 @@
-window.BOT_URL = "https://reliability-trading-camel-packing.trycloudflare.com";
+window.BOT_URL = "https://msgstr-committees-modular-anything.trycloudflare.com";
