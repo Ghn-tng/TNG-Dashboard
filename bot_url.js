@@ -1,1 +1,1 @@
-window.BOT_URL = "https://moses-after-ideas-tournaments.trycloudflare.com";
+window.BOT_URL = "https://breeds-grams-heating-videos.trycloudflare.com";
