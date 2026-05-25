@@ -1,1 +1,1 @@
-window.BOT_URL = "https://msgstr-committees-modular-anything.trycloudflare.com";
+window.BOT_URL = "https://moses-after-ideas-tournaments.trycloudflare.com";
