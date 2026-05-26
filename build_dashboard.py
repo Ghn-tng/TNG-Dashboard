@@ -610,11 +610,14 @@ for x in data.get('canh_bao_vung', []):
 
 # Calculate Risk Score
 for bc, m in bc_metrics.items():
-    if m['gtc'] < 0.75:
-        m['risk_score'] += 3
+    if m['gtc'] < 0.65:
+        m['risk_score'] += 10
+        m['issues'].append(f"GTC chạm đáy (<b>{pct(m['gtc'])}</b>)")
+    elif m['gtc'] < 0.75:
+        m['risk_score'] += 5
         m['issues'].append(f"GTC cực thấp (<b>{pct(m['gtc'])}</b>)")
     elif m['gtc'] < 0.80:
-        m['risk_score'] += 1
+        m['risk_score'] += 2
         m['issues'].append(f"GTC thấp (<b>{pct(m['gtc'])}</b>)")
         
     if m['odr'] < 0.90:
@@ -674,12 +677,15 @@ for x in data.get('bc_kd_lay', []):
         am_metrics[am_name]['luyke'] = safe_num(x.get('luyke', 0))
 
 for am, m in am_metrics.items():
-    if m['gtc'] < 0.75:
-        m['risk_score'] += 3
-        m['issues'].append(f"GTC <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])}, Tồn: {pct(m['ton'])})")
+    if m['gtc'] < 0.65:
+        m['risk_score'] += 10
+        m['issues'].append(f"GTC chạm đáy <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])}, Tồn: {pct(m['ton'])})")
+    elif m['gtc'] < 0.75:
+        m['risk_score'] += 5
+        m['issues'].append(f"GTC cực thấp <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])}, Tồn: {pct(m['ton'])})")
     elif m['gtc'] < 0.80:
-        m['risk_score'] += 1
-        m['issues'].append(f"GTC <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])})")
+        m['risk_score'] += 2
+        m['issues'].append(f"GTC thấp <b>{pct(m['gtc'])}</b> (Ca1: {pct(m['ca1'])})")
         
     if m['odr'] < 0.90:
         chg_str = f"giảm {abs(m['odr_chg'])*100:.1f}%" if m['odr_chg'] < 0 else f"tăng {m['odr_chg']*100:.1f}%"
@@ -688,7 +694,8 @@ for am, m in am_metrics.items():
         
     if m['ns_thieu'] >= 2: # Reduce threshold to 2 to show more HR issues
         m['risk_score'] += 3
-        m['issues'].append(f"Thiếu <b>{m['ns_thieu']} NS</b> (Cần {m['ns_can']}, Có {m['ns_co']})")
+        active_thieu = max(0, m['ns_can'] - m['ns_co'])
+        m['issues'].append(f"Thiếu <b>{active_thieu} NS</b> (Cần {m['ns_can']}, Có {m['ns_co']}) | Cần tuyển: <b>{m['ns_thieu']} NS</b>")
         
     if m['gr'] < -5:
         m['risk_score'] += 2
