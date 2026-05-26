@@ -78,3 +78,13 @@ with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
 print(f"\nBackup successfully created at: {zip_filepath}")
 size_mb = os.path.getsize(zip_filepath) / (1024 * 1024)
 print(f"Backup file size: {size_mb:.2f} MB")
+
+# 4. Copy dashboard.html as dashboard_backup.html
+print("\n=== COPYING DASHBOARD HTML BACKUP ===")
+src_dashboard = os.path.join(base_dir, "dashboard.html")
+dest_dashboard = os.path.join(backup_dir, "dashboard_backup.html")
+if os.path.exists(src_dashboard):
+    shutil.copy2(src_dashboard, dest_dashboard)
+    print(f"Copied dashboard.html to backups/dashboard_backup.html")
+else:
+    print("Warning: dashboard.html not found, skipped HTML copy.")
