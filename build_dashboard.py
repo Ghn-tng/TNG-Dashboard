@@ -87,6 +87,84 @@ if os.path.exists('gtc_tts_prov_history.json'):
             gtc_tts_prov_hist = json.load(f)
     except: pass
 
+# Ensure key historical dates (May 18 and May 19) are populated with user's exact values
+updated = False
+
+if '2026-05-18' not in history:
+    history['2026-05-18'] = {
+        "vol": 53000,
+        "gtc_vung": 0.7301,
+        "gtc_tts": 0.7351,
+        "ontime": 0.948,
+        "opr": 0.745,
+        "dt_luyke": 2400000000.0,
+        "ns_thieu": 43,
+        "n_warn": 0
+    }
+    updated = True
+if '2026-05-19' not in history:
+    history['2026-05-19'] = {
+        "vol": 54200,
+        "gtc_vung": 0.7150,
+        "gtc_tts": 0.7200,
+        "ontime": 0.947,
+        "opr": 0.735,
+        "dt_luyke": 2600000000.0,
+        "ns_thieu": 42,
+        "n_warn": 0
+    }
+    updated = True
+    
+if '2026-05-18' not in gtc_prov_hist:
+    gtc_prov_hist['2026-05-18'] = {
+        "Bình Định": 78.50,
+        "Đắk Lắk": 63.20,
+        "Gia Lai": 76.80,
+        "Phú Yên": 79.10,
+        "Vùng TNG": 73.01
+    }
+    updated = True
+if '2026-05-19' not in gtc_prov_hist:
+    gtc_prov_hist['2026-05-19'] = {
+        "Bình Định": 80.20,
+        "Đắk Lắk": 63.00,
+        "Gia Lai": 76.50,
+        "Phú Yên": 79.20,
+        "Vùng TNG": 71.50
+    }
+    updated = True
+
+if '2026-05-18' not in gtc_tts_prov_hist:
+    gtc_tts_prov_hist['2026-05-18'] = {
+        "Bình Định": 79.00,
+        "Đắk Lắk": 63.80,
+        "Gia Lai": 77.30,
+        "Phú Yên": 79.60,
+        "Vùng TNG": 73.51
+    }
+    updated = True
+if '2026-05-19' not in gtc_tts_prov_hist:
+    gtc_tts_prov_hist['2026-05-19'] = {
+        "Bình Định": 80.50,
+        "Đắk Lắk": 63.60,
+        "Gia Lai": 77.00,
+        "Phú Yên": 79.70,
+        "Vùng TNG": 72.00
+    }
+    updated = True
+
+if updated:
+    try:
+        with open('history.json', 'w', encoding='utf-8') as f:
+            json.dump(history, f, indent=2, ensure_ascii=False)
+        with open('gtc_prov_history.json', 'w', encoding='utf-8') as f:
+            json.dump(gtc_prov_hist, f, indent=2, ensure_ascii=False)
+        with open('gtc_tts_prov_history.json', 'w', encoding='utf-8') as f:
+            json.dump(gtc_tts_prov_hist, f, indent=2, ensure_ascii=False)
+        print("💾 Permanent recovery applied: Wrote historical GTC totals for May 18 & 19.")
+    except Exception as e:
+        print(f"⚠️ Could not write auto-repaired history files: {e}")
+
 dates_hist = sorted([d for d in gtc_prov_hist.keys() if d < today_str], reverse=True)
 prev_date = dates_hist[0] if dates_hist else None
 prev_data = gtc_prov_hist.get(prev_date, {}) if prev_date else {}
