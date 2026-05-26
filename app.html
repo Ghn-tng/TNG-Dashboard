@@ -488,7 +488,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 </head>
 <body>
 <div class="header">
-<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 11:56 26/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
+<div><h1>GHN • VÙNG TÂY NGUYÊN</h1><div class="date">Cập nhật: 13:54 26/05/2026 • <b>TNG - Kỷ Luật Là Sức Mạnh</b></div></div>
 <div style="display:flex;gap:10px;align-items:center">
 <a href="https://noibo.ghn.vn/eform/form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">📋 Duyệt EF</a>
 <a href="https://noibo.ghn.vn/qlns/form?tab=list-form" target="_blank" class="btn-quick" style="background:linear-gradient(135deg,#10b981,#059669)">👥 QLNS</a>
@@ -1088,6 +1088,16 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 <div class="panel" id="p7">
 <div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tình Hình Nhân Sự Toàn Vùng (NVPTTT: Định biên 719 | Có 704 | Thiếu 43)</div>
 <div class="chart-container" style="height:300px"><canvas id="chartNS"></canvas></div></div>
+<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tổng Hợp Theo Tỉnh</div>
+<div class="table-scroll"><table id="tblNSTinh"><thead>
+<tr><th class="text-left" rowspan="2">Tỉnh</th><th rowspan="2">SL BC</th><th colspan="8">NVPTTT</th><th colspan="2">NVXL</th></tr>
+<tr><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th><th>Định biên</th><th>Có</th></tr>
+</thead><tbody><tr><td class='text-left'>Đắk Lắk</td><td>24</td><td>254</td><td>248</td><td class='status-danger'>20</td><td>21</td><td>1</td><td>1</td><td>0</td><td>20</td><td>0</td><td>0</td></tr>
+<tr><td class='text-left'>Gia Lai</td><td>15</td><td>178</td><td>171</td><td class='status-danger'>17</td><td>18</td><td>1</td><td>1</td><td>0</td><td>17</td><td>0</td><td>0</td></tr>
+<tr><td class='text-left'>Bình Định</td><td>16</td><td>173</td><td>173</td><td class='status-warn'>2</td><td>2</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td></tr>
+<tr><td class='text-left'>Phú Yên</td><td>10</td><td>114</td><td>112</td><td class='status-warn'>4</td><td>5</td><td>1</td><td>1</td><td>0</td><td>4</td><td>0</td><td>0</td></tr>
+<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>65</td><td>719</td><td>704</td><td class='status-danger'>43</td><td>46</td><td>3</td><td>3</td><td>0</td><td>43</td><td>0</td><td>0</td></tr>
+</tbody></table></div></div>
 <div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tổng Hợp Theo AM</div>
 <div class="table-scroll"><table id="tblNSAM"><thead>
 <tr><th class="text-left" rowspan="2">AM</th><th rowspan="2">SL BC</th><th colspan="8">NVPTTT</th><th colspan="2">NVXL</th></tr>
@@ -1107,7 +1117,7 @@ th .filter-icon:hover{opacity:1;background:rgba(255,255,255,0.2);border-radius:3
 <tr><td class='text-left'>Trần Nhật Thương</td><td>5</td><td>45</td><td>45</td><td class='status-good'>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 <tr><td class='text-left'>Lê Văn Tài</td><td>4</td><td>45</td><td>46</td><td class='status-good'>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 <tr><td class='text-left'>Nguyễn Đình Trung</td><td>3</td><td>32</td><td>32</td><td class='status-good'>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>65</td><td>719</td><td>704</td><td class='status-danger'>43</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>65</td><td>719</td><td>704</td><td class='status-danger'>43</td><td>46</td><td>3</td><td>3</td><td>0</td><td>43</td><td>0</td><td>0</td></tr>
 </tbody></table></div></div>
 <div class="card"><div class="section-title"><span></span>Chi Tiết Theo Bưu Cục</div>
 <div class="table-scroll"><table id="tblNS"><thead><tr><th class="text-left">Tỉnh</th><th class="text-left">AM</th><th class="text-left">Bưu Cục</th><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th></tr></thead><tbody><tr><td class="text-left">Bình Định</td><td class="text-left">Phan Thanh Thức</td><td class="bc-name text-left">Bưu Cục Khu Vực Kim Châu-An Nhơn-Bình Định</td><td>21</td><td>20</td><td class="">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>

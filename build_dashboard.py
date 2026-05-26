@@ -542,6 +542,12 @@ gtc_tts_am_rows += f"<td>{num(gtc_tts_total_vol)}</td><td>{pct(gtc_tts_total_gan
 
 # HR summary rows
 ns_total = data.get('ns_total',{})
+total_yctd = int(sum(safe_num(x.get('yctd',0)) for x in data.get('ns_bc',[])))
+total_da_tuyen = int(sum(safe_num(x.get('da_tuyen',0)) for x in data.get('ns_bc',[])))
+total_con_lam = int(sum(safe_num(x.get('con_lam',0)) for x in data.get('ns_bc',[])))
+total_dk_ob = int(sum(safe_num(x.get('dk_ob',0)) for x in data.get('ns_bc',[])))
+total_can_tuyen = int(sum(safe_num(x.get('can_tuyen',0)) for x in data.get('ns_bc',[])))
+
 ns_am_rows = ''
 for x in sorted(data.get('ns_am',[]), key=lambda a: a.get('so_thieu',0), reverse=True):
     thieu = x.get('so_thieu',0)
@@ -552,7 +558,39 @@ for x in sorted(data.get('ns_am',[]), key=lambda a: a.get('so_thieu',0), reverse
 # Add Vùng TNG total row for HR AM
 thieu_total = ns_total.get('so_thieu',0)
 cls_thieu_total = 'status-danger' if thieu_total > 5 else ('status-warn' if thieu_total > 0 else 'status-good')
-ns_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{len(data.get('ns_bc', []))}</td><td>{int(ns_total.get('ptt_can',0))}</td><td>{int(ns_total.get('ptt_co',0))}</td><td class='{cls_thieu_total}'>{int(thieu_total)}</td><td>{int(ns_total.get('yctd',0))}</td><td>{int(ns_total.get('da_tuyen',0))}</td><td>{int(ns_total.get('con_lam',0))}</td><td>{int(ns_total.get('dk_ob',0))}</td><td>{int(ns_total.get('can_tuyen',0))}</td><td>0</td><td>0</td></tr>\n"
+ns_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{len(data.get('ns_bc', []))}</td><td>{int(ns_total.get('ptt_can',0))}</td><td>{int(ns_total.get('ptt_co',0))}</td><td class='{cls_thieu_total}'>{int(thieu_total)}</td><td>{total_yctd}</td><td>{total_da_tuyen}</td><td>{total_con_lam}</td><td>{total_dk_ob}</td><td>{total_can_tuyen}</td><td>0</td><td>0</td></tr>\n"
+
+# HR summary by province
+ns_tinh_rows = ''
+provinces_order = ['Đắk Lắk', 'Gia Lai', 'Bình Định', 'Phú Yên']
+ns_tinh_data = {
+    p: {
+        'can': 0, 'co': 0, 'thieu': 0, 'yctd': 0, 'da_tuyen': 0,
+        'con_lam': 0, 'dk_ob': 0, 'can_tuyen': 0, 'bc_count': 0
+    } for p in provinces_order
+}
+
+for b in data.get('ns_bc', []):
+    tinh = b.get('tinh', '').strip()
+    if tinh in ns_tinh_data:
+        ns_tinh_data[tinh]['bc_count'] += 1
+        ns_tinh_data[tinh]['can'] += safe_num(b.get('can', 0))
+        ns_tinh_data[tinh]['co'] += safe_num(b.get('co', 0))
+        ns_tinh_data[tinh]['thieu'] += safe_num(b.get('thieu', 0))
+        ns_tinh_data[tinh]['yctd'] += safe_num(b.get('yctd', 0))
+        ns_tinh_data[tinh]['da_tuyen'] += safe_num(b.get('da_tuyen', 0))
+        ns_tinh_data[tinh]['con_lam'] += safe_num(b.get('con_lam', 0))
+        ns_tinh_data[tinh]['dk_ob'] += safe_num(b.get('dk_ob', 0))
+        ns_tinh_data[tinh]['can_tuyen'] += safe_num(b.get('can_tuyen', 0))
+
+for p in provinces_order:
+    x = ns_tinh_data[p]
+    thieu = x['thieu']
+    cls_thieu = 'status-danger' if thieu > 5 else ('status-warn' if thieu > 0 else 'status-good')
+    ns_tinh_rows += f"<tr><td class='text-left'>{p}</td><td>{x['bc_count']}</td><td>{int(x['can'])}</td><td>{int(x['co'])}</td><td class='{cls_thieu}'>{int(thieu)}</td><td>{int(x['yctd'])}</td><td>{int(x['da_tuyen'])}</td><td>{int(x['con_lam'])}</td><td>{int(x['dk_ob'])}</td><td>{int(x['can_tuyen'])}</td><td>0</td><td>0</td></tr>\n"
+
+# Add Vùng TNG total row for HR Province
+ns_tinh_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{len(data.get('ns_bc', []))}</td><td>{int(ns_total.get('ptt_can',0))}</td><td>{int(ns_total.get('ptt_co',0))}</td><td class='{cls_thieu_total}'>{int(thieu_total)}</td><td>{total_yctd}</td><td>{total_da_tuyen}</td><td>{total_con_lam}</td><td>{total_dk_ob}</td><td>{total_can_tuyen}</td><td>0</td><td>0</td></tr>\n"
 
 ns_detail_rows = ''
 sorted_ns_bc = sorted(data.get('ns_bc',[]), key=lambda x: (x.get('tinh',''), x.get('am',''), -safe_num(x.get('thieu',0))))
@@ -1993,6 +2031,11 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <div class="panel" id="p7">
 <div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tình Hình Nhân Sự Toàn Vùng (NVPTTT: Định biên {int(safe_num(ns_total.get('ptt_can',0)))} | Có {int(safe_num(ns_total.get('ptt_co',0)))} | Thiếu {int(safe_num(ns_total.get('so_thieu',0)))})</div>
 <div class="chart-container" style="height:300px"><canvas id="chartNS"></canvas></div></div>
+<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tổng Hợp Theo Tỉnh</div>
+<div class="table-scroll"><table id="tblNSTinh"><thead>
+<tr><th class="text-left" rowspan="2">Tỉnh</th><th rowspan="2">SL BC</th><th colspan="8">NVPTTT</th><th colspan="2">NVXL</th></tr>
+<tr><th>Định biên</th><th>Có</th><th>Thiếu</th><th>YCTD</th><th>Đã Tuyển</th><th>Còn Làm</th><th>DK OB</th><th>Cần Tuyển</th><th>Định biên</th><th>Có</th></tr>
+</thead><tbody>{ns_tinh_rows}</tbody></table></div></div>
 <div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Tổng Hợp Theo AM</div>
 <div class="table-scroll"><table id="tblNSAM"><thead>
 <tr><th class="text-left" rowspan="2">AM</th><th rowspan="2">SL BC</th><th colspan="8">NVPTTT</th><th colspan="2">NVXL</th></tr>
