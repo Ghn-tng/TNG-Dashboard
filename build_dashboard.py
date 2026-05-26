@@ -764,11 +764,17 @@ for x in risk_forecast_list:
 
 # 3. Đề Xuất Hành Động
 proposals = []
+used_bcs = set()
+used_ams = set()
+
 worst_bc_tuple = sorted_bcs[0] if sorted_bcs and sorted_bcs[0][1]['risk_score'] > 0 else None
 
 if worst_bc_tuple:
     bc_name, m = worst_bc_tuple
     am_name = m['am']
+    used_bcs.add(bc_name)
+    used_ams.add(am_name)
+    
     actions = []
     if m['gtc'] < 0.75: actions.append(f"1. Giải quyết triệt để đơn tồn (hiện đạt {pct(m['ton'])}) để cứu vãn tỷ lệ GTC trong ca tiếp theo.")
     if m['odr'] < 0.90: actions.append(f"2. Giám sát gắt gao lộ trình của shipper để chống trễ hẹn ODR (hiện tại {pct(m['odr'])}).")
@@ -790,11 +796,25 @@ else:
 proposals.append(p1)
 
 if risk_forecast_list:
-    top_risk = risk_forecast_list[0]
+    top_risk = None
+    for r in risk_forecast_list:
+        bc = r.get('bc', '-')
+        m = bc_metrics.get(bc, {})
+        am = m.get('am', bc_to_am.get(bc.strip(), "-"))
+        if bc not in used_bcs and am not in used_ams:
+            top_risk = r
+            break
+            
+    if not top_risk:
+        top_risk = risk_forecast_list[0]
+        
     tr_bc = top_risk.get('bc','-')
     tr_gap = safe_num(top_risk.get('gap',0))
     m = bc_metrics.get(tr_bc, {})
     tr_am = m.get('am', bc_to_am.get(tr_bc.strip(), "-"))
+    
+    used_bcs.add(tr_bc)
+    used_ams.add(tr_am)
     
     p2 = {
         'icon': '📉', 'title': 'ƯU TIÊN 2: NGĂN CHẶN RỦI RO PHÁT SINH',
@@ -812,26 +832,34 @@ sys_odr_low = sum(1 for _, m in bc_metrics.items() if m['odr'] < 0.90)
 sys_ns_thieu = sum(m['ns_thieu'] for _, m in bc_metrics.items())
 
 if sys_ns_thieu >= 15:
-    # Sort AMs by shortage
     sorted_ns_am = sorted(data.get('ns_am', []), key=lambda a: safe_num(a.get('so_thieu', 0)), reverse=True)
     top_am_shortages = []
-    for am_row in sorted_ns_am[:2]:
+    for am_row in sorted_ns_am:
         am_name = am_row.get('am')
+        if am_name in used_ams:
+            continue
         thieu = int(safe_num(am_row.get('so_thieu', 0)))
         if thieu > 0:
             top_am_shortages.append(f"AM <b>{am_name}</b> (thiếu <b>{thieu}</b> NS)")
+            used_ams.add(am_name)
+        if len(top_am_shortages) == 2:
+            break
             
-    # Sort Bưu cục by shortage
     sorted_ns_bc = sorted(data.get('ns_bc', []), key=lambda a: safe_num(a.get('thieu', 0)), reverse=True)
     top_bc_shortages = []
-    for bc_row in sorted_ns_bc[:2]:
+    for bc_row in sorted_ns_bc:
         bc_name = bc_row.get('bc')
-        thieu = int(safe_num(bc_row.get('thieu', 0)))
         am_name = bc_row.get('am')
+        if bc_name in used_bcs or am_name in used_ams:
+            continue
+        thieu = int(safe_num(bc_row.get('thieu', 0)))
         if thieu > 0:
-            # Clean and shorten the name for readability
             short_bc = bc_name.split('-')[0]
             top_bc_shortages.append(f"<b>{short_bc}</b> (AM <b>{am_name}</b>, thiếu <b>{thieu}</b> NS)")
+            used_bcs.add(bc_name)
+            used_ams.add(am_name)
+        if len(top_bc_shortages) == 2:
+            break
             
     am_str = " và ".join(top_am_shortages)
     bc_str = " và ".join(top_bc_shortages)
