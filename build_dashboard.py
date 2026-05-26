@@ -1657,7 +1657,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <!-- TAB 1: GTC Tổng -->
 <div class="panel active" id="p0">
 <div class="grid-2">
-  <div class="card"><div class="section-title"><span></span>Xu Hướng % GTC 8 Ngày Gần Nhất</div><div class="chart-container" style="height:550px"><canvas id="chartTrend"></canvas></div></div>
+  <div class="card"><div class="section-title"><span></span>Xu Hướng % GTC 7 Ngày Gần Nhất</div><div class="chart-container" style="height:550px"><canvas id="chartTrend"></canvas></div></div>
   <div class="card"><div class="section-title"><span></span>Tỷ Trọng Volume Theo AM</div><div class="chart-container" style="height:550px"><canvas id="chartGtc"></canvas></div></div>
 </div>
 
