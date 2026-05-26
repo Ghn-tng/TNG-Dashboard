@@ -81,6 +81,8 @@ def download_sheet():
     success = True
     try:
         r = requests.get(DOWNLOAD_URL, timeout=30)
+        if not r.content.startswith(b'PK'):
+            raise ValueError("Downloaded content is not a valid Excel file (might be a login or permission error page).")
         with open(OUTPUT_FILE, 'wb') as f:
             f.write(r.content)
         log(f"✅ Downloaded Ops: {len(r.content):,} bytes")
@@ -90,6 +92,8 @@ def download_sheet():
         
     try:
         r_hr = requests.get(HR_DOWNLOAD_URL, timeout=30)
+        if not r_hr.content.startswith(b'PK'):
+            raise ValueError("Downloaded content is not a valid Excel file (might be a login or permission error page).")
         with open(HR_OUTPUT_FILE, 'wb') as f:
             f.write(r_hr.content)
         log(f"✅ Downloaded HR: {len(r_hr.content):,} bytes")
@@ -99,6 +103,8 @@ def download_sheet():
 
     try:
         r_opr = requests.get(OPR_DOWNLOAD_URL, timeout=30)
+        if not r_opr.content.startswith(b'PK'):
+            raise ValueError("Downloaded content is not a valid Excel file (might be a login or permission error page).")
         with open(OPR_OUTPUT_FILE, 'wb') as f:
             f.write(r_opr.content)
         log(f"✅ Downloaded OPR: {len(r_opr.content):,} bytes")
@@ -197,7 +203,7 @@ def run_extraction():
             })
         data['gtc_tts_am'] = gtc_tts_am
         data['grand_total_gtc'] = {'vol': sn(ws.cell(9,12).value), 'gan': sn(ws.cell(9,13).value), 'gtc': sn(ws.cell(9,14).value)}
-        data['grand_total_gtc_tts'] = {'vol': sn(ws.cell(67,12).value), 'gan': sn(ws.cell(67,13).value), 'gtc': sn(ws.cell(67,14).value)}
+        data['grand_total_gtc_tts'] = {'vol': sn(ws.cell(61,12).value), 'gan': sn(ws.cell(61,13).value), 'gtc': sn(ws.cell(61,14).value)}
     except Exception as e:
         log(f"⚠️ Error extracting GTC: {e}")
 
@@ -416,21 +422,60 @@ def run_extraction():
         ws_opr = wb_opr['DATA ']
         raw = []
         all_dates, all_procs, all_frames = set(), set(), set()
+        
+        def extract_tinh(chi_tiet):
+            chi_tiet = str(chi_tiet or '').strip()
+            if not chi_tiet:
+                return None
+            chi_tiet_norm = chi_tiet.replace('Đăk Lắk', 'Đắk Lắk').replace('Đăk Lăk', 'Đắk Lắk').replace('Đắc Lắc', 'Đắk Lắk')
+            if '-' in chi_tiet_norm:
+                tinh = chi_tiet_norm.split('-')[-1].strip()
+                tinh = tinh.replace('Đăk Lắk', 'Đắk Lắk')
+                return tinh
+            for p in ['Bình Định', 'Đắk Lắk', 'Gia Lai', 'Phú Yên']:
+                if p.lower() in chi_tiet_norm.lower():
+                    return p
+            return None
+
         for r in range(2, ws_opr.max_row + 1):
             prov = str(ws_opr.cell(r, 1).value or '').strip()
+            chi_tiet = str(ws_opr.cell(r, 2).value or '').strip()
             frame = str(ws_opr.cell(r, 3).value or '').strip()
             date = str(ws_opr.cell(r, 4).value or '').strip()[:10]
             if not prov or prov == 'None': continue
-            item = {'prov': prov, 'frame': frame, 'date': date, 'vol_ltc': sn(ws_opr.cell(r, 5).value), 'vol': sn(ws_opr.cell(r, 7).value)}
-            raw.append(item); all_dates.add(date); all_procs.add(prov); all_frames.add(frame)
+            
+            tinh = extract_tinh(chi_tiet) or 'Khác'
+            item = {
+                'prov': prov, 
+                'tinh': tinh, 
+                'frame': frame, 
+                'date': date, 
+                'vol_ltc': sn(ws_opr.cell(r, 5).value), 
+                'vol': sn(ws_opr.cell(r, 7).value)
+            }
+            raw.append(item)
+            all_dates.add(date)
+            all_procs.add(prov)
+            all_frames.add(frame)
         
         sorted_dates, sorted_procs, sorted_frames = sorted(list(all_dates)), sorted(list(all_procs)), sorted(list(all_frames))
-        matrix = {p: {f: {d: {'vol_ltc':0, 'vol':0} for d in sorted_dates} for f in sorted_frames + ['Total']} for p in sorted_procs}
+        sorted_tinhs = ['Bình Định', 'Đắk Lắk', 'Gia Lai', 'Phú Yên']
+        
+        matrix_am = {p: {f: {d: {'vol_ltc':0, 'vol':0} for d in sorted_dates} for f in sorted_frames + ['Total']} for p in sorted_procs}
+        matrix_tinh = {t: {f: {d: {'vol_ltc':0, 'vol':0} for d in sorted_dates} for f in sorted_frames + ['Total']} for t in sorted_tinhs}
         grand_total = {d: {'vol_ltc':0, 'vol':0} for d in sorted_dates}
+        
         for item in raw:
-            p, f, d = item['prov'], item['frame'], item['date']
-            matrix[p][f][d]['vol_ltc'] += item['vol_ltc']; matrix[p][f][d]['vol'] += item['vol']
-            matrix[p]['Total'][d]['vol_ltc'] += item['vol_ltc']; matrix[p]['Total'][d]['vol'] += item['vol']
+            p, t, f, d = item['prov'], item['tinh'], item['frame'], item['date']
+            # Update AM Matrix
+            matrix_am[p][f][d]['vol_ltc'] += item['vol_ltc']; matrix_am[p][f][d]['vol'] += item['vol']
+            matrix_am[p]['Total'][d]['vol_ltc'] += item['vol_ltc']; matrix_am[p]['Total'][d]['vol'] += item['vol']
+            
+            # Update Province Matrix
+            if t in matrix_tinh:
+                matrix_tinh[t][f][d]['vol_ltc'] += item['vol_ltc']; matrix_tinh[t][f][d]['vol'] += item['vol']
+                matrix_tinh[t]['Total'][d]['vol_ltc'] += item['vol_ltc']; matrix_tinh[t]['Total'][d]['vol'] += item['vol']
+                
             grand_total[d]['vol_ltc'] += item['vol_ltc']; grand_total[d]['vol'] += item['vol']
         
         opr_report = {'dates': sorted_dates, 'procs': []}
@@ -439,15 +484,28 @@ def run_extraction():
             for f in sorted_frames + ['Total']:
                 fd = {'name': f, 'vals': {}}
                 for d in sorted_dates:
-                    d_data = matrix[p][f][d]
+                    d_data = matrix_am[p][f][d]
                     opr = d_data['vol']/d_data['vol_ltc'] if d_data['vol_ltc'] > 0 else 0
                     fd['vals'][d] = {'vol_ltc': d_data['vol_ltc'], 'opr': opr}
                 proc_item['frames'].append(fd)
             opr_report['procs'].append(proc_item)
+            
+        opr_tinh_report = {'dates': sorted_dates, 'procs': []}
+        for t in sorted_tinhs:
+            proc_item = {'name': t, 'frames': []}
+            for f in sorted_frames + ['Total']:
+                fd = {'name': f, 'vals': {}}
+                for d in sorted_dates:
+                    d_data = matrix_tinh[t][f][d]
+                    opr = d_data['vol']/d_data['vol_ltc'] if d_data['vol_ltc'] > 0 else 0
+                    fd['vals'][d] = {'vol_ltc': d_data['vol_ltc'], 'opr': opr}
+                proc_item['frames'].append(fd)
+            opr_tinh_report['procs'].append(proc_item)
         
         target_date = sorted_dates[-1] if sorted_dates else datetime.now().strftime('%Y-%m-%d')
         opr_total = grand_total[target_date]['vol']/grand_total[target_date]['vol_ltc'] if target_date in grand_total and grand_total[target_date]['vol_ltc'] > 0 else 0
         data['opr_report'] = opr_report
+        data['opr_tinh_report'] = opr_tinh_report
         data['opr_total'] = opr_total
         data['opr_daily'] = {d: (grand_total[d]['vol']/grand_total[d]['vol_ltc'] if grand_total[d]['vol_ltc'] > 0 else 0) for d in sorted_dates}
     except Exception as e: log(f"⚠️ OPR Extraction failed: {e}")
@@ -533,6 +591,19 @@ def update_history_json(report_date):
             with open(prov_hist_file, 'w', encoding='utf-8') as f: json.dump(prov_hist, f, indent=2, ensure_ascii=False)
             log(f"📈 Provincial History updated for {report_date}")
         except Exception as e: log(f"⚠️ Provincial history update failed: {e}")
+
+        # Update Provincial GTC TTS History
+        try:
+            prov_tts_hist_file = os.path.join(os.path.dirname(__file__), 'gtc_tts_prov_history.json')
+            prov_tts_hist = {}
+            if os.path.exists(prov_tts_hist_file):
+                with open(prov_tts_hist_file, 'r', encoding='utf-8') as f: prov_tts_hist = json.load(f)
+            # Filter out 'Grand Total' or 'Vùng TNG' from gtc_tts_tinh and save
+            prov_tts_hist[report_date] = {x['tinh']: round(x['total_gtc']*100, 2) for x in data.get('gtc_tts_tinh', []) if 'Grand' not in x['tinh'] and 'Vùng' not in x['tinh']}
+            prov_tts_hist[report_date]['Vùng TNG'] = round(data['grand_total_gtc_tts']['gtc']*100, 2)
+            with open(prov_tts_hist_file, 'w', encoding='utf-8') as f: json.dump(prov_tts_hist, f, indent=2, ensure_ascii=False)
+            log(f"📈 Provincial GTC TTS History updated for {report_date}")
+        except Exception as e: log(f"⚠️ Provincial GTC TTS history update failed: {e}")
     else:
         log(f"⏭️ History skip update for {report_date} (Current hour {current_hour} is not cutoff 23h)")
 
@@ -563,6 +634,11 @@ def refresh():
                 extract_and_build()
     else:
         log("⚠️ Using existing files due to download failure.")
+        try:
+            report_date = run_extraction()
+            update_history_json(report_date)
+        except Exception as e:
+            log(f"❌ Extraction on existing files failed: {e}")
         extract_and_build()
 
 if __name__ == '__main__':
