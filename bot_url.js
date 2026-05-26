@@ -1,1 +1,1 @@
-window.BOT_URL = "https://possibility-soldiers-corporation-share.trycloudflare.com";
+window.BOT_URL = "https://initiative-van-instantly-directory.trycloudflare.com";
