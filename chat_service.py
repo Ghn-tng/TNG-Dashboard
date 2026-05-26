@@ -81,7 +81,7 @@ def get_compact_data(data, user_msg=""):
             gtc_tts_tinh_details[t_name] = f"{item.get('total_gtc', 0)*100:.2f}%"
 
     opr_tinh_details = {}
-    for proc in data.get("opr_report", {}).get("procs", []):
+    for proc in data.get("opr_tinh_report", {}).get("procs", []):
         t_name = proc.get("name")
         if t_name:
             for frame in proc.get("frames", []):
