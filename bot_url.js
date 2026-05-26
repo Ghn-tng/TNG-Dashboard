@@ -1,1 +1,1 @@
-window.BOT_URL = "https://breeds-grams-heating-videos.trycloudflare.com";
+window.BOT_URL = "https://possibility-soldiers-corporation-share.trycloudflare.com";
