@@ -79,9 +79,18 @@ if os.path.exists('gtc_prov_history.json'):
             gtc_prov_hist = json.load(f)
     except: pass
 
+# Load Provincial GTC TTS History for N-1 columns
+gtc_tts_prov_hist = {}
+if os.path.exists('gtc_tts_prov_history.json'):
+    try:
+        with open('gtc_tts_prov_history.json', 'r', encoding='utf-8') as f:
+            gtc_tts_prov_hist = json.load(f)
+    except: pass
+
 dates_hist = sorted([d for d in gtc_prov_hist.keys() if d < today_str], reverse=True)
 prev_date = dates_hist[0] if dates_hist else None
 prev_data = gtc_prov_hist.get(prev_date, {}) if prev_date else {}
+prev_tts_data = gtc_tts_prov_hist.get(prev_date, {}) if prev_date else {}
 
 def get_delta(key, current_val):
     dates = sorted([d for d in history.keys() if d < today_str], reverse=True)
@@ -120,7 +129,7 @@ def render_delta(delta, invert=False):
         return f'<div class="kpi-delta" style="color:{color}">{icon} {abs(v)*100:.1f}{symbol}</div>'
     else:
         val_str = f"{int(abs(v)):,}".replace(",", ".")
-        suffix = "đ" if delta.get('is_rev') else ""
+        suffix = ""
         return f'<div class="kpi-delta" style="color:{color}">{icon} {val_str}{suffix}</div>'
 
 ontime_vals = []
@@ -141,8 +150,8 @@ def num(v):
     except: return '0'
 
 def money(v):
-    try: return f'{int(float(v)):,}đ'.replace(',','.')
-    except: return '0đ'
+    try: return f'{int(float(v)):,}'.replace(',','.')
+    except: return '0'
 
 def status_class(v):
     try:
@@ -393,10 +402,15 @@ for i,x in enumerate(data.get('gtc_tts_tinh',[])):
     is_grand = 'Grand Total' in tinh_name or 'Vùng TNG' in tinh_name
     row_style = 'font-weight:700; background:var(--card2)' if is_grand else ''
     
-    # N-1 logic (using the same provincial history for now, assuming TTS is similar or we use Total for comparison)
-    # If there's specific TTS history, we'd use it here.
-    # For now, let's just use the same logic if applicable or show '-' if not available.
-    n1_val = safe_num(prev_data.get('Vùng TNG' if is_grand else tinh_name, 0)) / 100.0
+    # N-1 logic for GTC TTS: use specific TTS history, and apply fallback if missing or 0
+    key_name = 'Vùng TNG' if is_grand else tinh_name
+    n1_val = safe_num(prev_tts_data.get(key_name, 0)) / 100.0
+    if n1_val == 0:
+        # Fallback to GTC Vùng (prev_data) + 0.5%
+        gtc_vung_n1 = safe_num(prev_data.get(key_name, 0)) / 100.0
+        if gtc_vung_n1 > 0:
+            n1_val = gtc_vung_n1 + 0.005
+            
     diff = total_gtc - n1_val
     diff_cls = 'trend-up' if diff > 0 else 'trend-down'
     diff_sign = '▲' if diff > 0 else ('▼' if diff < 0 else '→')
@@ -645,7 +659,7 @@ risk_rows = ''
 for x in risk_forecast_list:
     bc_name = x.get("bc","")
     gap = safe_num(x.get('gap', 0))
-    trend = '▼ Giảm' if gap < 0 else '▲ Tăng'
+    trend = '▼ Giảm' if gap < 0 else '▲ Cách'
     trend_cls = 'trend-down' if gap < 0 else 'trend-up'
     risk_level = '🔴 Nguy cấp' if gap < -0.05 else ('🔴 Cảnh báo' if gap < 0 else '🟡 Theo dõi')
     
@@ -661,7 +675,7 @@ for x in risk_forecast_list:
     if m.get('ns_thieu', 0) > 0: other_issues.append(f"Thiếu {m['ns_thieu']} NS")
     other_issues_str = ", ".join(other_issues) if other_issues else "Không"
     
-    risk_rows += f'<tr><td class="text-left" style="font-weight:500">{am_name}</td><td class="text-left" style="font-weight:500">{bc_name}</td><td>{x.get("tinh","")}</td><td style="font-weight:700">{pct(x.get("gtc_7d",0))}</td><td class="{trend_cls}">{trend} ({abs(gap)*100:.1f}%)</td><td style="font-size:12px; color:var(--dim); font-weight:500">{other_issues_str}</td><td style="font-weight:600">{risk_level}</td></tr>'
+    risk_rows += f'<tr><td class="text-left" style="font-weight:500">{am_name}</td><td class="text-left" style="font-weight:500">{bc_name}</td><td>{x.get("tinh","")}</td><td style="font-weight:700">{pct(x.get("gtc_7d",0))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td class="{trend_cls}">{trend} ({abs(gap)*100:.1f}%)</td><td style="font-size:12px; color:var(--dim); font-weight:500">{other_issues_str}</td><td style="font-weight:600">{risk_level}</td></tr>'
 
 # 3. Đề Xuất Hành Động
 proposals = []
@@ -713,10 +727,40 @@ sys_odr_low = sum(1 for _, m in bc_metrics.items() if m['odr'] < 0.90)
 sys_ns_thieu = sum(m['ns_thieu'] for _, m in bc_metrics.items())
 
 if sys_ns_thieu >= 15:
+    # Sort AMs by shortage
+    sorted_ns_am = sorted(data.get('ns_am', []), key=lambda a: safe_num(a.get('so_thieu', 0)), reverse=True)
+    top_am_shortages = []
+    for am_row in sorted_ns_am[:2]:
+        am_name = am_row.get('am')
+        thieu = int(safe_num(am_row.get('so_thieu', 0)))
+        if thieu > 0:
+            top_am_shortages.append(f"AM <b>{am_name}</b> (thiếu <b>{thieu}</b> NS)")
+            
+    # Sort Bưu cục by shortage
+    sorted_ns_bc = sorted(data.get('ns_bc', []), key=lambda a: safe_num(a.get('thieu', 0)), reverse=True)
+    top_bc_shortages = []
+    for bc_row in sorted_ns_bc[:2]:
+        bc_name = bc_row.get('bc')
+        thieu = int(safe_num(bc_row.get('thieu', 0)))
+        am_name = bc_row.get('am')
+        if thieu > 0:
+            # Clean and shorten the name for readability
+            short_bc = bc_name.split('-')[0]
+            top_bc_shortages.append(f"<b>{short_bc}</b> (AM <b>{am_name}</b>, thiếu <b>{thieu}</b> NS)")
+            
+    am_str = " và ".join(top_am_shortages)
+    bc_str = " và ".join(top_bc_shortages)
+    
+    how_text = (
+        f"1. <b>Tập trung tuyển dụng bổ sung cho toàn vùng TNG:</b> Đẩy mạnh chiến dịch qua các kênh Local và chạy quảng cáo khu vực, trong đó ưu tiên hàng đầu phân bổ cho {am_str} đang thiếu hụt lớn nhất.<br>"
+        f"2. <b>Chi viện nhân sự khẩn cấp:</b> BP. Vận hành lên phương án điều chuyển tạm thời shipper từ các bưu cục ổn định sang chi viện cho {bc_str}.<br>"
+        f"3. <b>Liên hệ ứng viên cũ:</b> BP Tuyển dụng vùng rà soát danh sách ứng viên cũ tại địa bàn để phỏng vấn gấp và Onboard trong vòng 3 ngày."
+    )
+
     p3 = {
         'icon': '🟡', 'title': 'ƯU TIÊN 3: GIẢI QUYẾT BÀI TOÁN NHÂN SỰ VÙNG',
-        'target': f"Toàn vùng (Đang thiếu tổng cộng {sys_ns_thieu} NS)",
-        'how': "1. Đẩy mạnh chạy quảng cáo tuyển dụng qua kênh Local và các hội nhóm khu vực.<br>2. Tạm thời điều chuyển nhân sự từ các Bưu cục đang ổn định sang chi viện vùng nóng.<br>3. Liên hệ lại danh sách ứng viên cũ để mời đi làm ngay trong tuần.",
+        'target': f"Toàn vùng TNG (Đang thiếu tổng cộng {sys_ns_thieu} NS)",
+        'how': how_text,
         'when': 'Hoàn tất phỏng vấn và Onboarding trong 3 ngày tới.',
         'resource': 'BP. Tuyển dụng Vùng phối hợp cùng GĐV.'
     }
@@ -842,32 +886,49 @@ kd_cungky = json.dumps([round(safe_num(x.get('cungky',0))/1e6,1) for x in filter
 
 
 # OPR MATRIX
-rep = data.get('opr_report', {})
-dates = rep.get('dates', [])
+rep_tinh = data.get('opr_tinh_report', {})
+rep_am = data.get('opr_report', {})
+dates = rep_tinh.get('dates', [])
+if not dates and rep_am:
+    dates = rep_am.get('dates', [])
 
-# Calculate Vùng TNG for OPR Matrix if not present or needs update
-vung_procs = [p for p in rep.get('procs', []) if p['name'] not in ['Grand Total', 'Vùng TNG']]
-if vung_procs:
+# Calculate Vùng TNG for OPR Tỉnh Matrix
+vung_tinhs = [p for p in rep_tinh.get('procs', []) if p['name'] not in ['Grand Total', 'Vùng TNG']]
+if vung_tinhs:
     vung_total = {'name': 'Vùng TNG', 'frames': []}
     f_vals = {}
     for d in dates:
         # Only sum the 'Total' frame from each province
         vol = sum(safe_num(p_f['vals'].get(d, {}).get('vol_ltc', 0)) 
-                  for p in vung_procs 
+                  for p in vung_tinhs 
                   for p_f in p['frames'] if p_f['name'] == 'Total')
         opr_vol = sum(safe_num(p_f['vals'].get(d, {}).get('opr', 0)) * safe_num(p_f['vals'].get(d, {}).get('vol_ltc', 0))
-                      for p in vung_procs 
+                      for p in vung_tinhs 
                       for p_f in p['frames'] if p_f['name'] == 'Total')
         f_vals[d] = {'vol_ltc': vol, 'opr': opr_vol / max(vol, 1)}
     
-    # Add ONLY the summary 'Total' frame
     vung_total['frames'].append({'name': 'Total', 'vals': f_vals})
+    rep_tinh['procs'] = vung_tinhs + [vung_total]
+
+# Calculate Vùng TNG for OPR AM Matrix just in case
+vung_procs_am = [p for p in rep_am.get('procs', []) if p['name'] not in ['Grand Total', 'Vùng TNG']]
+if vung_procs_am:
+    vung_total_am = {'name': 'Vùng TNG', 'frames': []}
+    f_vals = {}
+    for d in dates:
+        vol = sum(safe_num(p_f['vals'].get(d, {}).get('vol_ltc', 0)) 
+                  for p in vung_procs_am 
+                  for p_f in p['frames'] if p_f['name'] == 'Total')
+        opr_vol = sum(safe_num(p_f['vals'].get(d, {}).get('opr', 0)) * safe_num(p_f['vals'].get(d, {}).get('vol_ltc', 0))
+                      for p in vung_procs_am 
+                      for p_f in p['frames'] if p_f['name'] == 'Total')
+        f_vals[d] = {'vol_ltc': vol, 'opr': opr_vol / max(vol, 1)}
     
-    # Update rep['procs'] to have Vùng TNG at the end
-    rep['procs'] = vung_procs + [vung_total]
+    vung_total_am['frames'].append({'name': 'Total', 'vals': f_vals})
+    rep_am['procs'] = vung_procs_am + [vung_total_am]
 
 opr_trend_data = {}
-for p in rep.get('procs', []):
+for p in rep_tinh.get('procs', []):
     p_name = p['name']
     if p_name == 'Grand Total': continue
     opr_trend_data[p_name] = []
@@ -881,45 +942,57 @@ for p in rep.get('procs', []):
 
 opr_trend_labels_js = json.dumps([datetime.strptime(d, '%Y-%m-%d').strftime('%d/%m') for d in dates])
 
-opr_header_1 = f'<tr><th rowspan="2" class="sticky-col-1" style="z-index:20; border:none !important; top:0">Quản lý</th><th rowspan="2" class="sticky-col-2" style="z-index:20; border:none !important; top:0">Khung giờ tạo đơn</th>'
-opr_header_2 = '<tr>'
-for d in dates:
-    opr_header_1 += f'<th colspan="2" style="text-align:center; border:none !important; top:0">{d}</th>'
-    opr_header_2 += '<th style="position:sticky; top:31px; z-index:20; border:none !important">Vol LTC</th><th style="position:sticky; top:31px; z-index:20; border:none !important">%OPR</th>'
-opr_header_1 += '</tr>'
-opr_header_2 += '</tr>'
+# Helper to build OPR table rows and headers
+def build_opr_table(rep_data, name_label):
+    tbl_dates = rep_data.get('dates', [])
+    if not tbl_dates:
+        tbl_dates = dates
+    
+    header_1 = f'<tr><th rowspan="2" class="sticky-col-1" style="z-index:20; border:none !important; top:0">{name_label}</th><th rowspan="2" class="sticky-col-2" style="z-index:20; border:none !important; top:0">Khung giờ tạo đơn</th>'
+    header_2 = '<tr>'
+    for d in tbl_dates:
+        header_1 += f'<th colspan="2" style="text-align:center; border:none !important; top:0">{d}</th>'
+        header_2 += '<th style="position:sticky; top:31px; z-index:20; border:none !important">Vol LTC</th><th style="position:sticky; top:31px; z-index:20; border:none !important">%OPR</th>'
+    header_1 += '</tr>'
+    header_2 += '</tr>'
+    
+    matrix_rows = ''
+    for p in rep_data.get('procs', []):
+        p_name = p['name']
+        is_grand = p_name == 'Vùng TNG'
+        n_frames = len(p['frames'])
+        for i, f in enumerate(p['frames']):
+            is_total = 'Total' in f['name'] or is_grand
+            row_bg = 'background:#e0f2fe;' if is_total and not is_grand else ('background:#fee2e2;' if is_grand else '')
+            row_fw = 'font-weight:bold;' if is_total else ''
+            row = f'<tr style="{row_bg} {row_fw}">'
+            
+            if i == 0:
+                if is_grand:
+                    row += f'<td class="sticky-col-1 text-left" colspan="2" style="color:#ef4444; background:inherit">{p_name}</td>'
+                else:
+                    row += f'<td class="sticky-col-1 text-left" rowspan="{n_frames}" style="vertical-align:middle; background:inherit">{p_name}</td>'
+            
+            if not is_grand:
+                if 'Total' in f['name']:
+                    row += f'<td class="sticky-col-2 text-left" style="background:inherit">{p_name} Total</td>'
+                else:
+                    row += f'<td class="sticky-col-2 text-left" style="background:inherit">{f["name"]}</td>'
+            
+            for d in tbl_dates:
+                v = f['vals'].get(d, {'vol_ltc': 0, 'opr': 0})
+                c = "color:#ef4444" if v['opr'] < 0.95 and v['vol_ltc'] > 0 else ("color:#22c55e" if v['vol_ltc'] > 0 else "")
+                if is_grand: c = "color:#ef4444"
+                row += f'<td style="text-align:center">{num(v["vol_ltc"])}</td>'
+                row += f'<td style="{c}; text-align:center">{pct(v["opr"]) if v["vol_ltc"] > 0 else "-"}</td>'
+            row += '</tr>'
+            matrix_rows += row
+            
+    return header_1, header_2, matrix_rows
 
-opr_matrix_rows = ''
-for p in rep.get('procs', []):
-    p_name = p['name']
-    is_grand = p_name == 'Vùng TNG'
-    n_frames = len(p['frames'])
-    for i, f in enumerate(p['frames']):
-        is_total = 'Total' in f['name'] or is_grand
-        row_bg = 'background:#e0f2fe;' if is_total and not is_grand else ('background:#fee2e2;' if is_grand else '')
-        row_fw = 'font-weight:bold;' if is_total else ''
-        row = f'<tr style="{row_bg} {row_fw}">'
-        
-        if i == 0:
-            if is_grand:
-                row += f'<td class="sticky-col-1 text-left" colspan="2" style="color:#ef4444; background:inherit">{p_name}</td>'
-            else:
-                row += f'<td class="sticky-col-1 text-left" rowspan="{n_frames}" style="vertical-align:middle; background:inherit">{p_name}</td>'
-        
-        if not is_grand:
-            if 'Total' in f['name']:
-                row += f'<td class="sticky-col-2 text-left" style="background:inherit">{p_name} Total</td>'
-            else:
-                row += f'<td class="sticky-col-2 text-left" style="background:inherit">{f["name"]}</td>'
-        
-        for d in dates:
-            v = f['vals'].get(d, {'vol_ltc': 0, 'opr': 0})
-            c = "color:#ef4444" if v['opr'] < 0.95 and v['vol_ltc'] > 0 else ("color:#22c55e" if v['vol_ltc'] > 0 else "")
-            if is_grand: c = "color:#ef4444" # Grand total red as in screen
-            row += f'<td style="text-align:center">{num(v["vol_ltc"])}</td>'
-            row += f'<td style="{c}; text-align:center">{pct(v["opr"]) if v["vol_ltc"] > 0 else "-"}</td>'
-        row += '</tr>'
-        opr_matrix_rows += row
+# Build tables
+opr_tinh_header_1, opr_tinh_header_2, opr_tinh_matrix_rows = build_opr_table(rep_tinh, 'Tỉnh')
+opr_am_header_1, opr_am_header_2, opr_am_matrix_rows = build_opr_table(rep_am, 'Quản lý')
 
 opr_total_val = safe_num(data.get('opr_total', 0))
 now = datetime.now().strftime('%d/%m/%Y')
@@ -934,7 +1007,7 @@ if total_cungky > 0:
     color = "#10b981" if diff_rev > 0 else "#ef4444"
     icon = "▲" if diff_rev > 0 else "▼"
     rev_str = f"{int(abs(diff_rev)):,}".replace(",", ".")
-    delta_rev = f'<div class="kpi-delta" style="color:{color}">{icon} {rev_str}đ</div>'
+    delta_rev = f'<div class="kpi-delta" style="color:{color}">{icon} {rev_str}</div>'
 else:
     delta_rev = ""
 
@@ -952,8 +1025,8 @@ try:
 except:
     full_hist = {}
 
-# Sort dates and take last 7
-sorted_dates = sorted(full_hist.keys())[-7:]
+# Sort dates and take last 8
+sorted_dates = sorted(full_hist.keys())[-8:]
 trend_labels = [datetime.strptime(d, '%Y-%m-%d').strftime('%d/%m') for d in sorted_dates]
 
 provinces = ['Bình Định', 'Đắk Lắk', 'Gia Lai', 'Phú Yên', 'Vùng TNG']
@@ -1091,13 +1164,13 @@ body{{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);background
 .kpi-label{{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:0.3px;margin-bottom:6px;white-space:nowrap;overflow:visible}}
 .kpi-value{{font-size:19px;font-weight:800;white-space:nowrap;margin-bottom:2px}}
 .kpi-delta{{font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:2px}}
-#tblOPR td{{border:1px solid #cbd5e1}}
-#tblOPR .sticky-col-1{{position:sticky; left:0; z-index:10; background:inherit; width:120px; min-width:120px}}
-#tblOPR .sticky-col-2{{position:sticky; left:120px; z-index:10; background:inherit; width:150px; min-width:150px}}
-#tblOPR th.sticky-col-1, #tblOPR th.sticky-col-2{{background:#0ea5e9 !important; color:#ffffff !important; border-bottom:1px solid #0284c7 !important; border-right:1px solid rgba(255,255,255,0.1) !important}}
-#tblOPR th{{border:none !important}}
-#tblOPR{{border-collapse:collapse; border:none}}
-#tblOPR tr:hover .sticky-col-1, #tblOPR tr:hover .sticky-col-2{{background:var(--card2)}}
+.tbl-opr td{{border:1px solid #cbd5e1}}
+.tbl-opr .sticky-col-1{{position:sticky; left:0; z-index:10; background:inherit; width:120px; min-width:120px}}
+.tbl-opr .sticky-col-2{{position:sticky; left:120px; z-index:10; background:inherit; width:150px; min-width:150px}}
+.tbl-opr th.sticky-col-1, .tbl-opr th.sticky-col-2{{background:#0ea5e9 !important; color:#ffffff !important; border-bottom:1px solid #0284c7 !important; border-right:1px solid rgba(255,255,255,0.1) !important}}
+.tbl-opr th{{border:none !important}}
+.tbl-opr{{border-collapse:collapse; border:none}}
+.tbl-opr tr:hover .sticky-col-1, .tbl-opr tr:hover .sticky-col-2{{background:var(--card2)}}
 .kpi-card:nth-child(1) .kpi-value{{color:var(--accent)}}
 .kpi-card:nth-child(2) .kpi-value{{color:var(--cyan)}}
 .kpi-card:nth-child(3) .kpi-value{{color:var(--green)}}
@@ -1584,7 +1657,7 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <!-- TAB 1: GTC Tổng -->
 <div class="panel active" id="p0">
 <div class="grid-2">
-  <div class="card"><div class="section-title"><span></span>Xu Hướng % GTC 7 Ngày Gần Nhất</div><div class="chart-container" style="height:550px"><canvas id="chartTrend"></canvas></div></div>
+  <div class="card"><div class="section-title"><span></span>Xu Hướng % GTC 8 Ngày Gần Nhất</div><div class="chart-container" style="height:550px"><canvas id="chartTrend"></canvas></div></div>
   <div class="card"><div class="section-title"><span></span>Tỷ Trọng Volume Theo AM</div><div class="chart-container" style="height:550px"><canvas id="chartGtc"></canvas></div></div>
 </div>
 
@@ -1622,7 +1695,8 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
           <th class="text-left">Bưu cục</th>
           <th>Tỉnh</th>
           <th>% GTC 7 Ngày</th>
-          <th>Xu Hướng (vs 30d)</th>
+          <th>Mức cảnh báo</th>
+          <th>Khoảng cách</th>
           <th>Các chỉ số khác</th>
           <th>Mức độ rủi ro</th>
         </tr>
@@ -1747,8 +1821,12 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
 <div class="panel" id="p4">
 <div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>Xu Hướng % OPR TTS 7 Ngày Gần Nhất</div>
 <div class="chart-container" style="height:350px"><canvas id="chartOPRTrend"></canvas></div></div>
-<div class="card"><div class="section-title"><span></span>🚀 % OPR TTS</div>
-<div class="table-scroll"><table id="tblOPR" class="no-interactive"><thead>{opr_header_1}{opr_header_2}</thead><tbody>{opr_matrix_rows}</tbody></table></div></div>
+
+<div class="card" style="margin-bottom:16px"><div class="section-title"><span></span>🚀 % OPR TTS Theo Tỉnh</div>
+<div class="table-scroll"><table id="tblOPRTinh" class="tbl-opr no-interactive"><thead>{opr_tinh_header_1}{opr_tinh_header_2}</thead><tbody>{opr_tinh_matrix_rows}</tbody></table></div></div>
+
+<div class="card"><div class="section-title"><span></span>🚀 % OPR TTS Theo AM</div>
+<div class="table-scroll"><table id="tblOPRAM" class="tbl-opr no-interactive"><thead>{opr_am_header_1}{opr_am_header_2}</thead><tbody>{opr_am_matrix_rows}</tbody></table></div></div>
 </div>
 
 <!-- TAB 5: LTC -->
@@ -1894,10 +1972,10 @@ th .filter-icon:hover{{opacity:1;background:rgba(255,255,255,0.2);border-radius:
             <span style="width:3px; height:16px; background:var(--accent); border-radius:1.5px"></span>Đặc Thù Địa Bàn
           </div>
           <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
-            Vùng Tây Nguyên (TNG) trong bản đồ vận hành của Giao Hàng Nhanh bao gồm 4 tỉnh chiến lược: <strong>Đắk Lắk, Gia Lai, Phú Yên và Bình Định</strong>. Đây là khu vực có đặc thù địa lý vô cùng độc đáo, kết hợp giữa núi cao hiểm trở, cao nguyên đất đỏ trập trùng và dải duyên hải Nam Trung Bộ.
+            Vùng Tây Nguyên (TNG) trong bản đồ vận hành của Giao Hàng Nhanh bao gồm 4 tỉnh chiến lược: <strong>Đắk Lắk, Gia Lai, Phú Yên và Bình Định</strong> với tổng <strong>65 bưu cục</strong>. Đây là khu vực có đặc thù địa lý vô cùng độc đáo, kết hợp giữa núi cao hiểm trở, cao nguyên đất đỏ trập trùng và dải duyên hải Nam Trung Bộ.
           </p>
           <p style="font-size: 14px; line-height: 1.6; color: var(--dim); margin-bottom: 12px">
-            Vận hành tại Tây Nguyên đòi hỏi sự linh hoạt tối đa do khoảng cách giữa các bưu cục huyện thị rất lớn, hạ tầng giao thông chịu ảnh hưởng nặng nề vào mùa mưa kéo dài, cùng sự biến động nhân sự lớn theo mùa vụ nông sản (cà phê, hồ tiêu).
+            Vận hành tại Tây Nguyên đòi hỏi sự linh hoạt tối đa do khoảng cách giữa các bưu cục huyện thị rất lớn, hạ tầng giao thông chịu ảnh hưởng nặng nề vào mùa mưa kéo dài, cùng sự biến động nhân sự lớn theo mùa vụ nông sản (sầu riêng, cà phê, hồ tiêu).
           </p>
           <p style="font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; background: #e0f2fe; padding: 8px 12px; border-radius: 6px; display: inline-block">
             👉 Nhấp chuột vào từng tỉnh trên bản đồ để xem chi tiết thông tin vận hành khu vực!
@@ -2447,7 +2525,6 @@ const _db = {json.dumps(data, ensure_ascii=False)};
             <p><span class="trinh-status-dot"></span> Cố vấn vận hành cao cấp</p>
         </div>
         <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-            <button onclick="showKeySetupCard()" title="Cấu hình API Key" style="background:none; border:none; color:#cbd5e1; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding: 5px; transition: color 0.2s;" onmouseover="this.style.color='#db2777'" onmouseout="this.style.color='#cbd5e1'">🔑</button>
             <button onclick="toggleTrinh()" style="background:none; border:none; color:#cbd5e1; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
         </div>
     </div>
@@ -2480,7 +2557,7 @@ const _db = {json.dumps(data, ensure_ascii=False)};
 let trinhHistory = [];
 let selectedFiles = [];
 let activeChatBaseUrl = '';
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {{
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.hostname) {{
     activeChatBaseUrl = 'http://127.0.0.1:5005';
 }} else {{
     activeChatBaseUrl = (typeof BOT_URL !== 'undefined' && BOT_URL) ? BOT_URL : 'http://127.0.0.1:5005';
@@ -2492,7 +2569,7 @@ async function wakeupNgocTrinh() {{
         const response = await fetch('http://127.0.0.1:5001/wakeup', {{ method: 'GET', mode: 'cors' }});
         const data = await response.json();
         if (data.status === 'success' && data.bot_url) {{
-            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {{
+            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:' && window.location.hostname !== '') {{
                 activeChatBaseUrl = data.bot_url;
             }}
             console.log("🌸 Ngọc Trinh đã thức giấc và kết nối qua: " + activeChatBaseUrl);
@@ -2744,11 +2821,11 @@ async function sendToTrinh() {{
             .replace(/\\n/g, '<br>')
             .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')
             .replace(/^- (.*)$/gm, '• $1');
-        box.innerHTML += `<div class="trinh-msg bot">\${{formatted}}</div>`;
+        box.innerHTML += `<div class="trinh-msg bot">${{formatted}}</div>`;
         trinhHistory.push({{role: 'user', content: msg || "Phân tích file đính kèm"}});
         trinhHistory.push({{role: 'model', content: botMsg}});
     }} else {{
-        box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: \${{data.response}}</div>`;
+        box.innerHTML += `<div class="trinh-msg bot" style="color:red">Lỗi: ${{data.response}}</div>`;
         if (data.response && data.response.includes('GOOGLE_API_KEY.txt')) {{
             showKeySetupCard();
         }}
@@ -2761,7 +2838,7 @@ const provinceData = {{
   gialai: {{
     name: "Gia Lai",
     capital: "Pleiku",
-    hubs: 18,
+    hubs: 15,
     am: "{gialai_am}",
     target: "{gialai_gtc_avg}",
     staff: "{gialai_ns}",
@@ -2794,7 +2871,7 @@ const provinceData = {{
   phuyen: {{
     name: "Phú Yên",
     capital: "Tuy Hòa",
-    hubs: 12,
+    hubs: 10,
     am: "{phuyen_am}",
     target: "{phuyen_gtc_avg}",
     staff: "{phuyen_ns}",
