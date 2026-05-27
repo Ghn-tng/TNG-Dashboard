@@ -459,6 +459,9 @@ if gt_ot:
     ontime_am_rows += f"<tr style='font-weight:700; background:var(--card2)'><td class='text-left'>Vùng TNG</td><td>{pct(gt_ot.get('day3',0))}</td><td>{pct(gt_ot.get('day4',0))}</td><td>{pct(gt_ot.get('day5',0))}</td><td>{pct(gt_ot.get('day6',0))}</td><td>{pct(gt_ot.get('day7',0))}</td><td>{pct(gt_ot.get('day8',0))}</td><td style='{color}; font-weight:700'>{pct(t)}</td><td class='{nc_cls}'>{pct(nc)}</td></tr>\n"
 
 cb_rows = ''.join(f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{bc_to_am.get(x.get("bc","").strip(), "-")}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:#ef4444;font-weight:600">{pct(safe_num(x.get("n1",0)))}</td><td>{pct(safe_num(x.get("n2",0)))}</td><td>{pct(safe_num(x.get("n3",0)))}</td></tr>' for x in data.get('canh_bao',[]))
+if not cb_rows:
+    cb_rows = '<tr><td colspan="9" style="text-align:left; color:#ef4444; font-weight:bold; padding:15px; font-size:14px;">Không có bưu cục cảnh báo OE</td></tr>'
+
 
 cb_vung_rows = ''
 for x in data.get('canh_bao_vung',[]):
