@@ -1,1 +1,1 @@
-window.BOT_URL = "https://initiative-van-instantly-directory.trycloudflare.com";
+window.BOT_URL = "https://respiratory-audience-vanilla-town.trycloudflare.com";
