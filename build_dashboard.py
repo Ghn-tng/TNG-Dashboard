@@ -2244,8 +2244,10 @@ function sortTable(th){{
   th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
 
   rows.sort((a,b)=>{{
-    let valA = a.cells[colIdx].innerText.replace(/[%]/g,'').replace(/,/g,'').trim();
-    let valB = b.cells[colIdx].innerText.replace(/[%]/g,'').replace(/,/g,'').trim();
+    const cellA = a.cells[colIdx];
+    const cellB = b.cells[colIdx];
+    let valA = cellA ? cellA.innerText.replace(/[%]/g,'').replace(/,/g,'').trim() : '';
+    let valB = cellB ? cellB.innerText.replace(/[%]/g,'').replace(/,/g,'').trim() : '';
     const numA = parseFloat(valA); const numB = parseFloat(valB);
     if(!isNaN(numA) && !isNaN(numB)) return (numA - numB) * dir;
     return valA.localeCompare(valB, 'vi', {{sensitivity: 'base'}}) * dir;
@@ -2270,7 +2272,7 @@ function toggleFilter(e, thIcon){{
   document.body.appendChild(dd);
   
   const rows = Array.from(table.tBodies[0].rows);
-  const vals = [...new Set(rows.map(r => r.cells[colIdx].textContent.trim()))].sort();
+  const vals = [...new Set(rows.map(r => r.cells[colIdx] ? r.cells[colIdx].textContent.trim() : ''))].filter(Boolean).sort();
   const activeFilters = _filters[table.id]?.[colIdx];
 
   dd.innerHTML = `
@@ -2396,7 +2398,11 @@ function execGlobalTableFilter(table){{
     let show = true;
     for(let colIdx in tableFilters){{
       const allowed = tableFilters[colIdx];
-      if(allowed && !allowed.includes(r.cells[colIdx].textContent.trim())) show = false;
+      if(allowed) {{
+        const cell = r.cells[colIdx];
+        const text = cell ? cell.textContent.trim() : '';
+        if(!allowed.includes(text)) show = false;
+      }}
     }}
     r.style.display = show ? '' : 'none';
   }});
@@ -2415,7 +2421,8 @@ document.addEventListener('DOMContentLoaded', ()=>{{
     
     // Heuristic for numeric columns
     const firstRow = table.tBodies[0].rows[0];
-    const sampleVal = firstRow ? firstRow.cells[colIdx].innerText.replace(/[%.,]/g,'').trim() : '';
+    const sampleCell = firstRow && firstRow.cells[colIdx];
+    const sampleVal = sampleCell ? sampleCell.innerText.replace(/[%.,]/g,'').trim() : '';
     const isNumeric = sampleVal !== '' && !isNaN(parseFloat(sampleVal));
 
     let inner = `<div class="th-content"><span>${{content}}</span>`;
