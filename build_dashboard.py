@@ -468,7 +468,9 @@ for x in data.get('canh_bao_vung',[]):
     gap = safe_num(x.get("gap",0))
     gap_color = "#10b981" if gap >= 0 else "#ef4444"
     am_name = bc_to_am.get(x.get("bc", "").strip(), "-")
-    cb_vung_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{am_name}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:{gap_color};font-weight:600">{pct(gap)}</td><td>{x.get("nhom","")}</td></tr>\n'
+    nhom_val = x.get("nhom","")
+    nhom_style = ' style="color:#ef4444;font-weight:bold"' if "Nguy hiểm" in nhom_val or "Nguy Hiểm" in nhom_val else ''
+    cb_vung_rows += f'<tr><td class="text-left">{x.get("tinh","")}</td><td class="text-left">{am_name}</td><td class="bc-name text-left">{x["bc"]}</td><td>{pct(safe_num(x.get("gtc_7d",0)))}</td><td>{pct(safe_num(x.get("gtc_30d",0)))}</td><td>{pct(safe_num(x.get("target",0)))}</td><td style="color:{gap_color};font-weight:600">{pct(gap)}</td><td{nhom_style}>{nhom_val}</td></tr>\n'
 
 tts_rows = ''
 for i,x in enumerate(sorted(data['gtc_tts'], key=lambda a: safe_num(a.get('total_gtc',0)))):
