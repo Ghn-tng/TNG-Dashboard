@@ -1,1 +1,1 @@
-window.BOT_URL = "https://impose-lucky-computing-medicines.trycloudflare.com";
+window.BOT_URL = "https://efficient-indicated-kde-islamic.trycloudflare.com";
