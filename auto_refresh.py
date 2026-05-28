@@ -126,13 +126,21 @@ def run_extraction():
         if not v: return False
         s = str(v).strip()
         return '225 Phạm Văn Đồng' in s or '225 Pham Van Dong' in s
+
+    def get_sheet_by_keyword(wb, keyword, exclude_keyword=None):
+        for name in wb.sheetnames:
+            if keyword.lower() in name.lower():
+                if exclude_keyword and exclude_keyword.lower() in name.lower():
+                    continue
+                return wb[name]
+        raise KeyError(f"Sheet with keyword '{keyword}' (excluding '{exclude_keyword}') not found.")
     
     wb = openpyxl.load_workbook(OUTPUT_FILE, data_only=True)
     
     # Extract actual report date from Excel (e.g. from '6.ONTIME TTS' cell I2)
     report_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
     try:
-        ws_date = wb['6.ONTIME TTS']
+        ws_date = get_sheet_by_keyword(wb, 'ONTIME TTS')
         date_str = str(ws_date.cell(2,9).value or '') # Cell I2
         match = re.search(r'(\d{4}-\d{2}-\d{2})', date_str)
         if match:
@@ -146,7 +154,7 @@ def run_extraction():
     data = {'report_date': report_date}
     
     try:
-        ws = wb['1. % GTC AM']
+        ws = get_sheet_by_keyword(wb, 'GTC AM')
         gtc_tinh = []
         for r in range(5, 10):
             tinh = ws.cell(r,2).value
@@ -208,7 +216,7 @@ def run_extraction():
         log(f"⚠️ Error extracting GTC: {e}")
 
     try:
-        ws = wb['2. %LTC AM - BC']
+        ws = get_sheet_by_keyword(wb, 'LTC AM')
         ltc_am = []
         # Table 1: %LTC AM (Tổng ngày)
         for r in range(5, 22): # Data typically rows 5-20
@@ -247,7 +255,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting LTC AM/TTS: {e}")
 
     try:
-        ws = wb['3. % GTC-BC']
+        ws = get_sheet_by_keyword(wb, 'GTC-BC')
         gtc_bc = []
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,2).value; bc = ws.cell(r,3).value
@@ -262,7 +270,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting GTC BC: {e}")
 
     try:
-        ws = wb['5. % GTC TTS-BC']
+        ws = get_sheet_by_keyword(wb, 'GTC TTS-BC')
         gtc_tts = []
         for r in range(3, ws.max_row+1):
             am = ws.cell(r,2).value; bc = ws.cell(r,3).value
@@ -277,7 +285,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting GTC TTS: {e}")
 
     try:
-        ws = wb['6.ONTIME TTS']
+        ws = get_sheet_by_keyword(wb, 'ONTIME TTS')
         
         # Extract ontime dates from row 2
         ontime_dates = []
@@ -310,7 +318,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting Ontime TTS: {e}")
 
     try:
-        ws = wb['9.BC Cảnh Báo']
+        ws = get_sheet_by_keyword(wb, 'BC Cảnh Báo', 'Vùng')
         canh_bao = []
         for r in range(4, ws.max_row+1):
             bc = ws.cell(r,3).value
@@ -326,7 +334,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting Cảnh Báo: {e}")
 
     try:
-        ws = wb['10.BC Cảnh Báo Vùng']
+        ws = get_sheet_by_keyword(wb, 'Cảnh Báo Vùng')
         canh_bao_vung = []
         for r in range(2, ws.max_row+1):
             bc = ws.cell(r,3).value
@@ -342,7 +350,7 @@ def run_extraction():
     except Exception as e: log(f"⚠️ Error extracting Cảnh Báo Vùng: {e}")
 
     try:
-        ws = wb['11. BC KINH DOANH']
+        ws = get_sheet_by_keyword(wb, 'KINH DOANH')
         bc_kd_lay = []; total_lay = {}
         for r in range(4, ws.max_row+1):
             am = str(ws.cell(r,1).value or '').strip()
