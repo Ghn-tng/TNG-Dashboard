@@ -251,8 +251,12 @@ QUY TẮC CỐT LÕI VỀ TRÌNH BÀY (BẮT BUỘC):
 2. TIÊU ĐỀ NHỎ: Đánh số từ 1. Viết HOA, IN ĐẬM, màu hồng và margin-bottom: 2.5px. Mẫu code: `<div style="color:#db2777; font-weight:bold; margin-top:0.5px; margin-bottom:2.5px; font-size:15px;">1. TIÊU ĐỀ NHỎ</div>`.
 3. DANH SÁCH: Xuống dòng cho mỗi mục. Nếu có ICON thì CẤM DÙNG dấu (•). Nếu KHÔNG có icon mới dùng dấu (•).
 4. ĐỊNH DẠNG: In đậm tất cả số liệu (phần trăm %, số lượng) và tên Tỉnh/Bưu cục.
-5. CẤU TRÚC 4 PHẦN CHO BÁO CÁO VẬN HÀNH: 1. ĐÁNH GIÁ CHUNG, 2. TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG, 3. DỰ BÁO RỦI RO, 4. PHƯƠNG ÁN & ĐỀ XUẤT HÀNH ĐỘNG. Luôn liệt kê đủ 4 tỉnh: Đắk Lắk, Gia Lai, Bình Định, Phú Yên trong Đánh giá chung.
-6. YÊU CẦU BÁO CÁO ĐIỂM NÓNG (BẮT BUỘC): Trong phần '2. TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG', PHẢI cung cấp đầy đủ chi tiết số liệu cụ thể của từng điểm nóng (chỉ số GTC 7 ngày, mục tiêu, độ lệch/gap), ghi rõ điểm nóng đó thuộc bưu cục nào (tên bưu cục đầy đủ) và dưới quyền quản lý của AM nào, đồng thời nêu rõ cụ thể lỗi/vấn đề điểm nóng ở đây là gì (ví dụ: GTC sụt giảm nghiêm trọng so với mục tiêu, tỷ lệ đúng giờ processing thấp, hay thiếu hụt nhân sự ở mức báo động). Tuyệt đối CẤM báo cáo chung chung thiếu số liệu hoặc thiếu thông tin AM/bưu cục!
+5. CẤU TRÚC BÁO CÁO VẬN HÀNH BẮT BUỘC (3 PHẦN):
+   - PHẦN 1: **🔥 ĐIỂM NÓNG HÔM NAY**: Nhận định tổng quan, chỉ ra các vùng trũng vận hành. PHẢI liệt kê đủ tình trạng của 4 tỉnh: Đắk Lắk, Gia Lai, Bình Định, Phú Yên. PHẢI cung cấp đầy đủ chi tiết số liệu của từng điểm nóng (GTC 7 ngày, mục tiêu, độ lệch/gap), tên Bưu cục đầy đủ và tên AM quản lý trực tiếp, đồng thời nêu rõ lỗi/vấn đề cụ thể (nhân sự thiếu, tồn đọng hàng, GTC sụt giảm).
+   - PHẦN 2: **📉 DỰ BÁO RỦI RO (7 NGÀY VS 30 NGÀY)**: Dự báo xu hướng vận hành của 5 Bưu cục có nguy cơ cao nhất dựa trên so sánh GTC trung bình 7 ngày vs 30 ngày gần nhất (mỗi bưu cục một dòng dạng danh sách, có dấu đầu dòng, KHÔNG ngăn cách dấu phẩy). Nội dung rủi ro phải gắn kết logic chặt chẽ với số liệu điểm nóng ở Phần 1.
+   - PHẦN 3: **📢 ĐỀ XUẤT HÀNH ĐỘNG**: Chỉ đích danh Tên AM và Bưu cục cần xử lý để giải quyết dứt điểm các vấn đề đã chỉ ra ở Phần 1 và Phần 2. Không khuyên chung chung, ngôn ngữ phải mang tính chỉ đạo, quyết liệt cao.
+6. LIÊN HỆ LOGIC CHẶT CHẼ VÀ ĐỒNG NHẤT (BẮT BUỘC): Cả 3 phần trên phải cập nhật theo số liệu mới nhất trong `Data`, đồng thời phải có sự liên kết chặt chẽ, thống nhất thông tin và logic vận hành với nhau. Vấn đề chỉ ra ở Phần 1 và 2 phải được giải quyết trực diện bằng các hành động cụ thể cho AM tương ứng ở Phần 3!
+
 
 Data: {json.dumps(compact_context, ensure_ascii=False)}"""
 
