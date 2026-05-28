@@ -198,18 +198,6 @@ def chat():
     if not user_msg and not files:
         return jsonify({"response": "Sếp ơi, Sếp chưa nhập nội dung câu hỏi ạ!", "status": "error"})
 
-    # 1. Persistent Cache Check
-    data_timestamp = ""
-    try:
-        if os.path.exists('data.json'):
-            data_timestamp = str(os.path.getmtime('data.json'))
-    except: pass
-    
-    cache_key = hashlib.md5(f"{user_msg}_{data_timestamp}".encode()).hexdigest()
-    if cache_key in RESPONSE_CACHE:
-        cached = RESPONSE_CACHE[cache_key]
-        if time.time() - cached.get('time', 0) < CACHE_EXPIRY:
-            return jsonify({"response": cached['response'], "status": "success"})
 
     # Load context data
     dashboard_data = {}
@@ -264,8 +252,17 @@ QUY TẮC CỐT LÕI VỀ TRÌNH BÀY (BẮT BUỘC):
 3. DANH SÁCH: Xuống dòng cho mỗi mục. Nếu có ICON thì CẤM DÙNG dấu (•). Nếu KHÔNG có icon mới dùng dấu (•).
 4. ĐỊNH DẠNG: In đậm tất cả số liệu (phần trăm %, số lượng) và tên Tỉnh/Bưu cục.
 5. CẤU TRÚC 4 PHẦN CHO BÁO CÁO VẬN HÀNH: 1. ĐÁNH GIÁ CHUNG, 2. TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG, 3. DỰ BÁO RỦI RO, 4. PHƯƠNG ÁN & ĐỀ XUẤT HÀNH ĐỘNG. Luôn liệt kê đủ 4 tỉnh: Đắk Lắk, Gia Lai, Bình Định, Phú Yên trong Đánh giá chung.
+6. YÊU CẦU BÁO CÁO ĐIỂM NÓNG (BẮT BUỘC): Trong phần '2. TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG', PHẢI cung cấp đầy đủ chi tiết số liệu cụ thể của từng điểm nóng (chỉ số GTC 7 ngày, mục tiêu, độ lệch/gap), ghi rõ điểm nóng đó thuộc bưu cục nào (tên bưu cục đầy đủ) và dưới quyền quản lý của AM nào, đồng thời nêu rõ cụ thể lỗi/vấn đề điểm nóng ở đây là gì (ví dụ: GTC sụt giảm nghiêm trọng so với mục tiêu, tỷ lệ đúng giờ processing thấp, hay thiếu hụt nhân sự ở mức báo động). Tuyệt đối CẤM báo cáo chung chung thiếu số liệu hoặc thiếu thông tin AM/bưu cục!
 
 Data: {json.dumps(compact_context, ensure_ascii=False)}"""
+
+    # 1. Persistent Cache Check based on user message and prompt content hash (to auto-invalidate on code/data updates)
+    prompt_hash = hashlib.md5(system_prompt.encode()).hexdigest()
+    cache_key = hashlib.md5(f"{user_msg}_{prompt_hash}".encode()).hexdigest()
+    if cache_key in RESPONSE_CACHE:
+        cached = RESPONSE_CACHE[cache_key]
+        if time.time() - cached.get('time', 0) < CACHE_EXPIRY:
+            return jsonify({"response": cached['response'], "status": "success"})
 
     api_keys = get_keys()
     if not api_keys:

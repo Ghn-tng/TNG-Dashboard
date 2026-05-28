@@ -41,6 +41,9 @@ CHỈ ÁP DỤNG cho các yêu cầu về **Vận hành** (GTC, ODR, OPR, Nhân 
 
 ### **2: TÌNH HÌNH CHI TIẾT & ĐIỂM NÓNG (HIGHLIGHTS)**
 - Chỉ ra các "vùng trũng" (AM hụt chỉ tiêu, bưu cục tồn cao, thiếu nhân sự).
+- **YÊU CẦU BẮT BUỘC**: Phải liệt kê chi tiết số liệu cụ thể của các điểm nóng (ví dụ: chỉ số GTC 7 ngày, mục tiêu, độ lệch/gap).
+- **YÊU CẦU BẮT BUỘC**: Phải chỉ rõ điểm nóng đó thuộc bưu cục nào và thuộc quản lý của AM nào (không viết chung chung).
+- **YÊU CẦU BẮT BUỘC**: Nêu rõ cụ thể điểm nóng ở đây là gì (ví dụ: GTC sụt giảm nghiêm trọng so với mục tiêu, tỷ lệ đúng giờ processing thấp, hay thiếu hụt nhân sự ở mức báo động).
 - Phân tích nguyên nhân khách quan và chủ quan.
 - Sử dụng icon mạnh (🔴, ⚠️, 🔥) để highlight các điểm nóng.
 
