@@ -1,1 +1,1 @@
-window.BOT_URL = "https://catalogs-saw-exchange-ranch.trycloudflare.com";
+window.BOT_URL = "https://semester-unsigned-encourage-apr.trycloudflare.com";
