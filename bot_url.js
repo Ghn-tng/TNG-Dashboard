@@ -1,1 +1,1 @@
-window.BOT_URL = "https://efficient-indicated-kde-islamic.trycloudflare.com";
+window.BOT_URL = "https://catalogs-saw-exchange-ranch.trycloudflare.com";
