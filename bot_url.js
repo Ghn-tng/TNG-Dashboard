@@ -1,1 +1,1 @@
-window.BOT_URL = "https://floors-absolute-thehun-appointment.trycloudflare.com";
+window.BOT_URL = "https://api.trycloudflare.com";
