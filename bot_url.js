@@ -1,1 +1,1 @@
-window.BOT_URL = "https://api.trycloudflare.com";
+window.BOT_URL = "https://supplement-bringing-equipment-leaving.trycloudflare.com";
